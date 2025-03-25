@@ -1,0 +1,35 @@
+{
+  "name": "@codacy/codacy-mcp",
+  "version": "0.6.2",
+  "description": "MCP server for using the Codacy API",
+  "license": "MIT",
+  "author": "Codacy",
+  "homepage": "https://www.codacy.com",
+  "type": "module",
+  "bin": {
+    "codacy-mcp-server": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc && shx chmod +x dist/*.js",
+    "prepare": "npm run build",
+    "watch": "tsc --watch",
+    "fetch-api": "curl https://artifacts.codacy.com/api/codacy-api/42.0.0/apiv3.yaml -o ./api-v3/api-swagger.yaml --create-dirs",
+    "generate-api": "rm -rf ./src/api/client && openapi --input ./api-v3/api-swagger.yaml --output ./src/api/client --useUnionTypes --indent 2 --client fetch --importExtension",
+    "update-api": "npm run fetch-api && npm run generate-api"    
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.0.1",
+    "@types/node": "^22",
+    "@types/node-fetch": "^2.6.12",
+    "node-fetch": "^3.3.2",
+    "universal-user-agent": "^7.0.2"
+  },
+  "devDependencies": {
+    "@codacy/openapi-typescript-codegen": "0.0.7",
+    "shx": "^0.3.4",
+    "typescript": "^5.6.2"
+  }
+}
