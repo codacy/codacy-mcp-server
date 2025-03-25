@@ -1,6 +1,6 @@
 # Codacy MCP Server
 
-MCP Server for the Codacy API, enabling file operations, repository management, search functionality, and more.
+MCP Server for the Codacy API, enabling access to repositories, files, quality, coverage, security and more.
 
 ### Features
 
@@ -8,8 +8,8 @@ MCP Server for the Codacy API, enabling file operations, repository management, 
 
 ## Setup
 
-### Personal Access Token
-
+### Personal API Access Token
+Get your Codacy's Account API Token from your [Codacy Account](https://app.codacy.com/account/access-management).
 
 ### Usage with Claude Desktop
 To use this with Claude Desktop, add the following to your `claude_desktop_config.json`:
@@ -55,8 +55,33 @@ To use this with Claude Desktop, add the following to your `claude_desktop_confi
 }
 ```
 
+### Node (when using NVM)
+When using NVM, NPX won't work. You can use Node directly:
+
+```json
+{
+  "mcpServers": {
+    "codacy": {
+      "command": "/Users/yourusername/.nvm/versions/node/vXX.X.X/bin/node",
+      "args": [
+        "/path-to/codacy-mcp/dist/index.js",
+      ],
+      "env": {
+        "CODACY_ACCOUNT_TOKEN": "<YOUR_TOKEN>"
+      }
+    }
+  }
+}
+```
+
 
 ## Build
+
+Local:
+
+```bash
+npm run build
+```
 
 Docker build:
 
