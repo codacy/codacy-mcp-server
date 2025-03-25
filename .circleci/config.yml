@@ -67,7 +67,8 @@ jobs:
 workflows:
   compile_deploy:
     jobs:
-      - codacy/checkout_and_version
+      - codacy/checkout_and_version:
+          overwrite_package_json_version: true
       - build_package:
           requires:
             - codacy/checkout_and_version
