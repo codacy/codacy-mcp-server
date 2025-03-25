@@ -1,0 +1,83 @@
+version: 2.1
+
+orbs:
+  codacy: codacy/base@10.8.0
+
+references:
+  release_filter: &release_filter
+    filters:
+      branches:
+        only:
+          - master
+
+jobs:
+  build_package:
+    docker:
+      - image: cimg/node:20.1.0
+    working_directory: ~/workdir
+    steps:
+      - attach_workspace:
+          at: ~/workdir
+      - run:
+          name: Check current version of node and npm
+          command: |
+            node -v
+            npm -v
+      - run:
+          name: Install dependencies and generate
+          command: |
+            npm install --unsafe-perm=true
+      - run:
+          name: Build library
+          command: |
+            npm run build
+      - persist_to_workspace:
+          root: ~/workdir
+          paths:
+            - bin/
+            - dist/
+            - node_modules/
+
+  publish_packages:
+    docker:
+      - image: cimg/node:20.1.0
+    working_directory: ~/workdir
+    steps:
+      - attach_workspace:
+          at: ~/workdir
+      - run:
+          name: Setup npm credentials
+          command: |
+            npm config set @codacy:registry https://registry.npmjs.org/
+            npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
+            npm config set access public
+            npm config set save-exact true
+      - run:
+          name: Publish packages
+          command: |
+            # Update version in packages to publish
+            npm version --no-git-tag-version --no-commit-hooks "$(cat .version)"
+            # Publish package versions to npmjs.org
+            if [ "$CIRCLE_BRANCH" = "master" ]; then
+              npm publish
+            else
+              npm publish --tag unstable
+            fi
+
+workflows:
+  compile_deploy:
+    jobs:
+      - codacy/checkout_and_version
+      - build_package:
+          requires:
+            - codacy/checkout_and_version
+      - codacy/tag_version:
+          name: tag_version
+          context: CodacyAWS
+          requires:
+            - build_package
+      - publish_packages:
+          <<: *release_filter
+          requires:
+            - tag_version
+          context: CodacyNPM

@@ -1,10 +1,16 @@
 {
   "name": "@codacy/codacy-mcp",
-  "version": "0.6.2",
-  "description": "MCP server for using the Codacy API",
+  "version": "0.0.1",
+  "description": "Codacy MCP server",
   "license": "MIT",
   "author": "Codacy",
   "homepage": "https://www.codacy.com",
+  "keywords": [
+    "codacy",
+    "mcp",
+    "mcp-server",
+    "ai"
+  ],
   "type": "module",
   "bin": {
     "codacy-mcp-server": "dist/index.js"
@@ -22,7 +28,8 @@
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "format": "prettier --write \"**/*.{ts,json,md}\"",
-    "format:check": "prettier --check \"**/*.{ts,json,md}\""
+    "format:check": "prettier --check \"**/*.{ts,json,md}\"",
+    "postinstall": "npm run update-api"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.0.1",
