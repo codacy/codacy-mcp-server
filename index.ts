@@ -1,12 +1,10 @@
 #!/usr/bin/env node
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
-  Tool,
-} from '@modelcontextprotocol/sdk/types.js';
-import { OpenAPI, OrganizationService } from './src/api/client/index.js';
+import { OpenAPI } from './src/api/client/index.js';
+import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
+import { listOrganizationRepositoriesTool } from './src/tools/index.js';
+import { listOrganizationRepositoriesHandler } from './src/handlers/index.js';
 
 OpenAPI.BASE = 'https://app.codacy.com/api/v3';
 OpenAPI.HEADERS = {
@@ -24,46 +22,6 @@ const server = new Server(
     },
   }
 );
-
-// Tool definitions
-const listOrganizationRepositoriesTool: Tool = {
-  name: 'codacy_list_repositories',
-  description: 'List repositories in an organization with pagination',
-  inputSchema: {
-    type: 'object',
-    properties: {
-      provider: {
-        type: 'string',
-        description:
-          "Organization's git provider: GitHub (gh), GitLab (gl) or BitBucket (bb). Accepted values: gh, gl, bb.",
-      },
-      organization: {
-        type: 'string',
-        description: 'Organization name',
-      },
-      cursor: {
-        type: 'string',
-        description: 'Pagination cursor for next page of results',
-      },
-      limit: {
-        type: 'number',
-        description: 'Maximum number of results to return (default 100, max 100)',
-        default: 100,
-      },
-    },
-  },
-};
-
-const listOrganizationRepositoriesHandler = async (args: any) => {
-  const { provider, organization, limit, cursor } = args;
-
-  return await OrganizationService.listOrganizationRepositories(
-    provider,
-    organization,
-    cursor,
-    limit
-  );
-};
 
 // Register tools
 server.setRequestHandler(ListToolsRequestSchema, async () => {

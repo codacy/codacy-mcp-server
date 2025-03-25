@@ -61,3 +61,6 @@ coverage/
 # Temporary folders
 tmp/
 temp/
+
+# Workspace settings
+.vscode/
