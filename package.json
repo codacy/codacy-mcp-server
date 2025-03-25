@@ -32,7 +32,7 @@
     "universal-user-agent": "^7.0.2"
   },
   "devDependencies": {
-    "@codacy/openapi-typescript-codegen": "0.0.7",
+    "@codacy/openapi-typescript-codegen": "0.0.8",
     "@typescript-eslint/eslint-plugin": "^7.1.0",
     "@typescript-eslint/parser": "^7.1.0",
     "eslint": "^8.57.0",
