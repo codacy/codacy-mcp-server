@@ -1,22 +1,22 @@
 #!/usr/bin/env node
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
   Tool,
-} from "@modelcontextprotocol/sdk/types.js";
-import { OpenAPI, OrganizationService } from "./src/api/client/index.js";
+} from '@modelcontextprotocol/sdk/types.js';
+import { OpenAPI, OrganizationService } from './src/api/client/index.js';
 
-OpenAPI.BASE = "https://app.codacy.com/api/v3";
+OpenAPI.BASE = 'https://app.codacy.com/api/v3';
 OpenAPI.HEADERS = {
-  "api-token": process.env.CODACY_ACCOUNT_TOKEN || "",
+  'api-token': process.env.CODACY_ACCOUNT_TOKEN || '',
 };
 
 const server = new Server(
   {
-    name: "codacy-mcp-server",
-    version: "0.1.0",
+    name: 'codacy-mcp-server',
+    version: '0.1.0',
   },
   {
     capabilities: {
@@ -27,28 +27,27 @@ const server = new Server(
 
 // Tool definitions
 const listOrganizationRepositoriesTool: Tool = {
-  name: "codacy_list_repositories",
-  description: "List repositories in an organization with pagination",
+  name: 'codacy_list_repositories',
+  description: 'List repositories in an organization with pagination',
   inputSchema: {
-    type: "object",
+    type: 'object',
     properties: {
       provider: {
-        type: "string",
+        type: 'string',
         description:
           "Organization's git provider: GitHub (gh), GitLab (gl) or BitBucket (bb). Accepted values: gh, gl, bb.",
       },
       organization: {
-        type: "string",
-        description: "Organization name",
+        type: 'string',
+        description: 'Organization name',
       },
       cursor: {
-        type: "string",
-        description: "Pagination cursor for next page of results",
+        type: 'string',
+        description: 'Pagination cursor for next page of results',
       },
       limit: {
-        type: "number",
-        description:
-          "Maximum number of results to return (default 100, max 100)",
+        type: 'number',
+        description: 'Maximum number of results to return (default 100, max 100)',
         default: 100,
       },
     },
@@ -74,19 +73,17 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 });
 
 // Register request handlers
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
+server.setRequestHandler(CallToolRequestSchema, async request => {
   try {
     if (!request.params.arguments) {
-      throw new Error("Arguments are required");
+      throw new Error('Arguments are required');
     }
 
     switch (request.params.name) {
-      case "codacy_list_repositories": {
-        const result = await listOrganizationRepositoriesHandler(
-          request.params.arguments
-        );
+      case 'codacy_list_repositories': {
+        const result = await listOrganizationRepositoriesHandler(request.params.arguments);
         return {
-          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
         };
       }
 
@@ -102,10 +99,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 async function runServer() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error("Codacy MCP Server running on stdio");
+  console.error('Codacy MCP Server running on stdio');
 }
 
-runServer().catch((error) => {
-  console.error("Fatal error in main():", error);
+runServer().catch(error => {
+  console.error('Fatal error in main():', error);
   process.exit(1);
 });
