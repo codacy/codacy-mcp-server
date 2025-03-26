@@ -3,12 +3,12 @@ version: 2.1
 orbs:
   codacy: codacy/base@10.8.0
 
-references:
-  release_filter: &release_filter
-    filters:
-      branches:
-        only:
-          - master
+# references:
+#   release_filter: &release_filter
+#     filters:
+#       branches:
+#         only:
+#           - master
 
 jobs:
   build_package:
@@ -78,7 +78,7 @@ workflows:
           requires:
             - build_package
       - publish_packages:
-          <<: *release_filter
+          # <<: *release_filter
           requires:
             - tag_version
           context: CodacyNPM
