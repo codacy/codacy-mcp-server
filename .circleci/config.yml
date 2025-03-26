@@ -27,6 +27,7 @@ jobs:
           name: Install dependencies and generate
           command: |
             npm install --unsafe-perm=true
+            npm run update-api
       - run:
           name: Build library
           command: |
