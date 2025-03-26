@@ -6,7 +6,12 @@ import {
   ListToolsRequestSchema,
   Tool,
 } from '@modelcontextprotocol/sdk/types.js';
-import { OpenAPI, OrganizationService, RepositoryService } from './src/api/client/index.js';
+import {
+  OpenAPI,
+  OrganizationService,
+  RepositoryService,
+  AnalysisService,
+} from './src/api/client/index.js';
 
 OpenAPI.BASE = 'https://app.codacy.com/api/v3';
 OpenAPI.HEADERS = {
@@ -24,6 +29,65 @@ const server = new Server(
     },
   }
 );
+
+const codacyLanguages = [
+  'C',
+  'CPP',
+  'CSharp',
+  'Java',
+  'Go',
+  'Kotlin',
+  'Ruby',
+  'Scala',
+  'Dart',
+  'Python',
+  'TypeScript',
+  'Javascript',
+  'CoffeeScript',
+  'Swift',
+  'JSP',
+  'VisualBasic',
+  'PHP',
+  'PLSQL',
+  'SQL',
+  'TSQL',
+  'Crystal',
+  'Haskell',
+  'Elixir',
+  'Groovy',
+  'Apex',
+  'VisualForce',
+  'Velocity',
+  'CSS',
+  'HTML',
+  'LESS',
+  'SASS',
+  'Dockerfile',
+  'Terraform',
+  'Shell',
+  'Powershell',
+  'JSON',
+  'XML',
+  'YAML',
+  'Markdown',
+  'Cobol',
+  'ABAP',
+  'ObjectiveC',
+  'Rust',
+];
+
+const issueCategories = [
+  'security',
+  'errorprone',
+  'performance',
+  'complexity',
+  'unusedcode',
+  'comprehensibility',
+  'compatibility',
+  'bestpractice',
+  'codestyle',
+  'documentation',
+];
 
 // Tool definitions
 const listOrganizationRepositoriesTool: Tool = {
@@ -54,7 +118,70 @@ const listOrganizationRepositoriesTool: Tool = {
   },
 };
 
-//File endpoints
+const searchRepositoryIssuesTool: Tool = {
+  name: 'codacy_list_repository_issues',
+  description: 'List issues in a repository with pagination',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      provider: {
+        type: 'string',
+        description:
+          "Organization's git provider: GitHub (gh), GitLab (gl) or BitBucket (bb). Accepted values: gh, gl, bb.",
+      },
+      organization: {
+        type: 'string',
+        description: 'Organization name on the Git provider',
+      },
+      repository: {
+        type: 'string',
+        description: 'Repository name on the Git provider organization',
+      },
+      body: {
+        type: 'object',
+        description: 'Search parameters to filter the list of issues in a repository',
+        properties: {
+          branchName: {
+            type: 'string',
+            description:
+              'Branch name, by default the main branch defined on the Codacy repository settings is used',
+          },
+          patternIds: {
+            type: 'array',
+            description: 'Set of code pattern identifiers',
+          },
+          languages: {
+            type: 'array',
+            description: `Set of language names, without spaces. Accepted values: ${codacyLanguages.join(', ')}`,
+          },
+          categories: {
+            type: 'array',
+            description: `Set of issue categories. Accepted values: ${issueCategories.join(', ')}`,
+          },
+          levels: {
+            type: 'array',
+            description:
+              'Set of issue severity levels. Accepted values: Info, Warning and Error. Codacy maps these values as follows: Info->Minor, Warning->Medium, Error->Critical',
+          },
+          authorEmails: {
+            type: 'array',
+            description: 'Set of commit author email addresses',
+          },
+        },
+      },
+      cursor: {
+        type: 'string',
+        description: 'Pagination cursor for next page of results',
+      },
+      limit: {
+        type: 'number',
+        description: 'Maximum number of results to return (default 100, max 100)',
+        default: 100,
+      },
+    },
+  },
+};
+
 const listFilesTool: Tool = {
   name: 'codacy_list_files',
   description: 'List files in a repository with pagination',
@@ -168,6 +295,7 @@ const getFileCoverageTool: Tool = {
   },
 };
 
+// Handlers
 const listOrganizationRepositoriesHandler = async (args: any) => {
   const { provider, organization, limit, cursor } = args;
 
@@ -214,11 +342,25 @@ const getFileCoverageHandler = async (args: any) => {
   return await RepositoryService.getFileCoverage(provider, organization, repository, fileId);
 };
 
+const searchRepositoryIssuesHandler = async (args: any) => {
+  const { provider, organization, repository, limit, cursor, body } = args;
+
+  return await AnalysisService.searchRepositoryIssues(
+    provider,
+    organization,
+    repository,
+    cursor,
+    limit,
+    body
+  );
+};
+
 // Register tools
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: [
       listOrganizationRepositoriesTool,
+      searchRepositoryIssuesTool,
       listFilesTool,
       getFileIssuesTool,
       getFileCoverageTool,
@@ -254,6 +396,12 @@ server.setRequestHandler(CallToolRequestSchema, async request => {
       }
       case 'codacy_get_file_coverage': {
         const result = await getFileCoverageHandler(request.params.arguments);
+        return {
+          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+        };
+      }
+      case 'codacy_list_repository_issues': {
+        const result = await searchRepositoryIssuesHandler(request.params.arguments);
         return {
           content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
         };
