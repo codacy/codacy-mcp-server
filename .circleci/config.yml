@@ -52,6 +52,15 @@ jobs:
       - attach_workspace:
           at: ~/workdir
       - run:
+          name: Verify workspace contents
+          command: |
+            pwd
+            ls -la
+            echo "Version file contents:"
+            cat .version || echo "Version file not found"
+            echo "Package.json contents:"
+            cat package.json || echo "Package.json not found"
+      - run:
           name: Setup npm credentials
           command: |
             npm config set @codacy:registry https://registry.npmjs.org/
@@ -61,7 +70,6 @@ jobs:
       - run:
           name: Publish packages
           command: |
-            echo "Updating version in packages to publish"
             # Update version in packages to publish
             npm version --no-git-tag-version --no-commit-hooks "$(cat .version)"
             # Publish package versions to npmjs.org
