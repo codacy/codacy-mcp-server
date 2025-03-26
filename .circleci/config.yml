@@ -75,10 +75,10 @@ jobs:
             # Publish package versions to npmjs.org
             if [ "$CIRCLE_BRANCH" = "master" ]; then
               echo "Publishing to stable"
-              npm publish
+              npm publish --allow-same-version --verbose
             else
               echo "Publishing to unstable"
-              npm publish --tag unstable
+              npm publish --tag unstable --allow-same-version --verbose
             fi
 
 workflows:
