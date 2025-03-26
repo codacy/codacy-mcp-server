@@ -328,8 +328,7 @@ const securityScanTypes = [
 
 const searchSecurityItemsTool: Tool = {
   name: 'codacy_list_srm_items',
-  description:
-    'List security and risk management (SRM) items/issues/vulnerabilities/findings for an organization with pagination',
+  description: `Primary tool to list security items/issues/vulnerabilities/findings, results are related to the organization security and risk management (SRM) dashboard on Codacy. This tool contains pagination. Returns comprehensive security analysis including ${securityScanTypes.map(scanType => `${scanType.value} (${scanType.name})`).join(', ')} security issues. Provides advanced filtering by security categories, priorities, and scan types. Use this as the first tool when investigating security or compliance concerns.`,
   inputSchema: {
     type: 'object',
     properties: {
