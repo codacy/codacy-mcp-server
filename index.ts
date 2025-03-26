@@ -6,7 +6,12 @@ import {
   ListToolsRequestSchema,
   Tool,
 } from '@modelcontextprotocol/sdk/types.js';
-import { OpenAPI, OrganizationService, RepositoryService } from './src/api/client/index.js';
+import {
+  AnalysisService,
+  OpenAPI,
+  OrganizationService,
+  RepositoryService,
+} from './src/api/client/index.js';
 
 OpenAPI.BASE = 'https://app.codacy.com/api/v3';
 OpenAPI.HEADERS = {
@@ -168,6 +173,52 @@ const getFileCoverageTool: Tool = {
   },
 };
 
+//PR endpoints
+const listPullRequestIssuesTool: Tool = {
+  name: 'codacy_list_pull_request_issues',
+  description:
+    'Returns a list of issues found in a pull request. We can request either new or fixed issues.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      provider: {
+        type: 'string',
+        description:
+          "Organization's git provider: GitHub (gh), GitLab (gl) or BitBucket (bb). Accepted values: gh, gl, bb.",
+      },
+      organization: {
+        type: 'string',
+        description: 'Organization name on the Git provider',
+      },
+      repository: {
+        type: 'string',
+        description: 'Repository name on the Git provider organization',
+      },
+      pullRequestNumber: {
+        type: 'number',
+        description: 'Pull request number',
+      },
+      status: {
+        type: 'string',
+        description: 'Filter issues by status. Accepted values: all, new, fixed.',
+      },
+      onlyPotential: {
+        type: 'boolean',
+        description: 'If true, retrieves only potential issues',
+      },
+      cursor: {
+        type: 'string',
+        description: 'Pagination cursor for next page of results',
+      },
+      limit: {
+        type: 'number',
+        description: 'Maximum number of results to return (default 100, max 100)',
+        default: 100,
+      },
+    },
+  },
+};
+
 const listOrganizationRepositoriesHandler = async (args: any) => {
   const { provider, organization, limit, cursor } = args;
 
@@ -214,6 +265,29 @@ const getFileCoverageHandler = async (args: any) => {
   return await RepositoryService.getFileCoverage(provider, organization, repository, fileId);
 };
 
+const listPullRequestIssuesHandler = async (args: any) => {
+  const {
+    provider,
+    organization,
+    repository,
+    pullRequestNumber,
+    status,
+    onlyPotential,
+    cursor,
+    limit,
+  } = args;
+  return await AnalysisService.listPullRequestIssues(
+    provider,
+    organization,
+    repository,
+    pullRequestNumber,
+    status,
+    onlyPotential,
+    cursor,
+    limit
+  );
+};
+
 // Register tools
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
@@ -222,6 +296,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       listFilesTool,
       getFileIssuesTool,
       getFileCoverageTool,
+      listPullRequestIssuesTool,
     ],
   };
 });
@@ -254,6 +329,12 @@ server.setRequestHandler(CallToolRequestSchema, async request => {
       }
       case 'codacy_get_file_coverage': {
         const result = await getFileCoverageHandler(request.params.arguments);
+        return {
+          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+        };
+      }
+      case 'list_pull_request_issues': {
+        const result = await listPullRequestIssuesHandler(request.params.arguments);
         return {
           content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
         };
