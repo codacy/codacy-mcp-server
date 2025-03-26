@@ -71,14 +71,14 @@ jobs:
           name: Publish packages
           command: |
             # Update version in packages to publish
-            npm version --no-git-tag-version --no-commit-hooks "$(cat .version)"
+            npm version --no-git-tag-version --no-commit-hooks "$(cat .version)" --allow-same-version --verbose
             # Publish package versions to npmjs.org
             if [ "$CIRCLE_BRANCH" = "master" ]; then
               echo "Publishing to stable"
-              npm publish --allow-same-version --verbose
+              npm publish --verbose
             else
               echo "Publishing to unstable"
-              npm publish --tag unstable --allow-same-version --verbose
+              npm publish --tag unstable --verbose
             fi
 
 workflows:
