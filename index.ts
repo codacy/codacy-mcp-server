@@ -333,6 +333,52 @@ const securityScanTypes = {
   PenTesting: 'Penetration testing',
 };
 
+//PR endpoints
+const listPullRequestIssuesTool: Tool = {
+  name: 'codacy_list_pull_request_issues',
+  description:
+    'Returns a list of issues found in a pull request. We can request either new or fixed issues.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      provider: {
+        type: 'string',
+        description:
+          "Organization's git provider: GitHub (gh), GitLab (gl) or BitBucket (bb). Accepted values: gh, gl, bb.",
+      },
+      organization: {
+        type: 'string',
+        description: 'Organization name on the Git provider',
+      },
+      repository: {
+        type: 'string',
+        description: 'Repository name on the Git provider organization',
+      },
+      pullRequestNumber: {
+        type: 'number',
+        description: 'Pull request number',
+      },
+      status: {
+        type: 'string',
+        description: 'Filter issues by status. Accepted values: all, new, fixed.',
+      },
+      onlyPotential: {
+        type: 'boolean',
+        description: 'If true, retrieves only potential issues',
+      },
+      cursor: {
+        type: 'string',
+        description: 'Pagination cursor for next page of results',
+      },
+      limit: {
+        type: 'number',
+        description: 'Maximum number of results to return (default 100, max 100)',
+        default: 100,
+      },
+    },
+  },
+};
+
 const searchSecurityItemsTool: Tool = {
   name: 'codacy_list_srm_items',
   description: `Primary tool to list security items/issues/vulnerabilities/findings, results are related to the organization security and risk management (SRM) dashboard on Codacy. This tool contains pagination. Returns comprehensive security analysis including ${Object.keys(securityScanTypes).join(', ')} security issues. Provides advanced filtering by security categories, priorities, and scan types. Use this as the first tool when investigating security or compliance concerns. Map the results statuses as open issues: ${securityStatuses.Open.join(', ')}; and closed issues: ${securityStatuses.Closed.join(', ')}. Prioritize the open issues as the most important ones in the results.`,
@@ -420,7 +466,6 @@ const searchSecurityItemsTool: Tool = {
   },
 };
 
-// Handlers
 const listOrganizationRepositoriesHandler = async (args: any) => {
   const { provider, organization, limit, cursor } = args;
 
@@ -456,8 +501,8 @@ const getFileIssuesHandler = async (args: any) => {
     organization,
     repository,
     fileId,
-    limit,
-    cursor
+    cursor,
+    limit
   );
 };
 
@@ -494,6 +539,30 @@ const searchSecurityItemsHandler = async (args: any) => {
   );
 };
 
+const listPullRequestIssuesHandler = async (args: any) => {
+  const {
+    provider,
+    organization,
+    repository,
+    pullRequestNumber,
+    status,
+    onlyPotential,
+    cursor,
+    limit,
+  } = args;
+
+  return await AnalysisService.listPullRequestIssues(
+    provider,
+    organization,
+    repository,
+    pullRequestNumber,
+    status,
+    onlyPotential,
+    cursor,
+    limit
+  );
+};
+
 // Register tools
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
@@ -504,6 +573,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       getFileIssuesTool,
       getFileCoverageTool,
       searchSecurityItemsTool,
+      listPullRequestIssuesTool,
     ],
   };
 });
@@ -548,6 +618,12 @@ server.setRequestHandler(CallToolRequestSchema, async request => {
       }
       case 'codacy_list_srm_items': {
         const result = await searchSecurityItemsHandler(request.params.arguments);
+        return {
+          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+        };
+      }
+      case 'list_pull_request_issues': {
+        const result = await listPullRequestIssuesHandler(request.params.arguments);
         return {
           content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
         };
