@@ -121,7 +121,8 @@ const listOrganizationRepositoriesTool: Tool = {
 
 const searchRepositoryIssuesTool: Tool = {
   name: 'codacy_list_repository_issues',
-  description: 'List issues in a repository with pagination',
+  description:
+    'Lists and filters code quality issues in a repository. This is the primary tool for investigating general code quality concerns (e.g. best practices, performance, complexity, style) but NOT security issues. For security-related issues, use the SRM items tool instead. Features include:\n\n- Pagination support for handling large result sets\n- Filtering by multiple criteria including severity, category, and language\n- Author-based filtering for accountability\n- Branch-specific analysis\n- Pattern-based searching\n\nCommon use cases:\n- Code quality audits\n- Technical debt assessment\n- Style guide compliance checks\n- Performance issue investigation\n- Complexity analysis',
   inputSchema: {
     type: 'object',
     properties: {
@@ -296,6 +297,11 @@ const getFileCoverageTool: Tool = {
   },
 };
 
+const securityStatuses = {
+  Open: ['OnTrack', 'DueSoon', 'Overdue'],
+  Closed: ['ClosedOnTime', 'ClosedLate', 'Ignored'],
+};
+
 const securityCategories = [
   'Auth',
   'CommandInjection',
@@ -314,22 +320,22 @@ const securityCategories = [
   'UnexpectedBehaviour',
   'Visibility',
   'XSS',
+  '_other_',
 ];
 
-const securityScanTypes = [
-  { value: 'SAST', name: 'Code scanning' },
-  { value: 'Secrets', name: 'Secret scanning' },
-  { value: 'SCA', name: 'Dependency scanning' },
-  { value: 'IaC', name: 'Infrastructure-as-code scanning' },
-  { value: 'CICD', name: 'CI/CD scanning' },
-  { value: 'DAST', name: 'DAST' },
-  { value: 'PenTesting', name: 'Penetration testing' },
-];
+const securityScanTypes = {
+  SAST: 'Code scanning',
+  Secrets: 'Secret scanning',
+  SCA: 'Dependency scanning',
+  IaC: 'Infrastructure-as-code scanning',
+  CICD: 'CI/CD scanning',
+  DAST: 'Dynamic Application Security Testing',
+  PenTesting: 'Penetration testing',
+};
 
 const searchSecurityItemsTool: Tool = {
   name: 'codacy_list_srm_items',
-  description:
-    'List security and risk management (SRM) items/issues/vulnerabilities/findings for an organization with pagination',
+  description: `Primary tool to list security items/issues/vulnerabilities/findings, results are related to the organization security and risk management (SRM) dashboard on Codacy. This tool contains pagination. Returns comprehensive security analysis including ${Object.keys(securityScanTypes).join(', ')} security issues. Provides advanced filtering by security categories, priorities, and scan types. Use this as the first tool when investigating security or compliance concerns. Map the results statuses as open issues: ${securityStatuses.Open.join(', ')}; and closed issues: ${securityStatuses.Closed.join(', ')}. Prioritize the open issues as the most important ones in the results.`,
   inputSchema: {
     type: 'object',
     properties: {
@@ -369,17 +375,39 @@ const searchSecurityItemsTool: Tool = {
             description: 'Repository names',
           },
           priorities: {
+            description: 'Array of security issue priorities/severities to filter by.',
+            type: 'array',
+            items: {
+              type: 'string',
+              enum: ['Low', 'Medium', 'High', 'Critical'],
+            },
+          },
+          statuses: {
             type: 'array',
             description:
-              'Security issue priorities/severities to filter. Accepted values: Low, Medium, High, Critical',
+              'Array of security issue statuses to filter by. Must be one or more of the following values:\n\nOpen issues:\n- OnTrack\n- DueSoon\n- Overdue\n\nClosed issues:\n- ClosedOnTime\n- ClosedLate\n- Ignored',
+            items: {
+              type: 'string',
+              enum: ['OnTrack', 'DueSoon', 'Overdue', 'ClosedOnTime', 'ClosedLate', 'Ignored'],
+            },
           },
           categories: {
+            description: 'Array of security categories to filter by.',
             type: 'array',
-            description: `Security categories to filter. Accepted values: ${securityCategories.join(', ')} or _other_ (to search for issues that don't have a security category)`,
+            items: {
+              type: 'string',
+              enum: securityCategories,
+            },
+            note: "_other_ can be used to search for issues that don't have a security category",
           },
           scanTypes: {
+            description: 'Array of security scan types to filter by.',
             type: 'array',
-            description: `Security issue scan types to filter. Accepted values: ${securityScanTypes.map(scanType => `${scanType.value} (${scanType.name})`).join(', ')}`,
+            items: {
+              type: 'string',
+              enum: Object.keys(securityScanTypes),
+            },
+            mapping: securityScanTypes,
           },
           segments: {
             type: 'array',
