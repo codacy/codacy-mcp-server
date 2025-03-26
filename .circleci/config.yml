@@ -36,6 +36,7 @@ jobs:
           paths:
             - bin/
             - dist/
+            - src/
             - node_modules/
             - package.json
             - package-lock.json
