@@ -356,10 +356,6 @@ const listRepositoryPullRequestsTool: Tool = {
         type: 'string',
         description: 'Repository name on the Git provider organization',
       },
-      search: {
-        type: 'string',
-        description: 'Filter the results searching by this string.',
-      },
       includeNotAnalyzed: {
         type: 'boolean',
         description: 'If true, includes pull requests that have not been analyzed',
