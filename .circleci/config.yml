@@ -55,6 +55,9 @@ jobs:
       - run:
           name: Publish packages
           command: |
+            echo "Build again to ensure we have the latest version"
+            npm install --unsafe-perm=true
+            npm run build
             echo "Updating version in packages to publish"
             # Update version in packages to publish
             npm version --no-git-tag-version --no-commit-hooks "$(cat .version)" --allow-same-version --verbose
@@ -76,12 +79,11 @@ workflows:
           requires:
             - codacy/checkout_and_version
       - codacy/tag_version:
-          name: tag_version
           context: CodacyAWS
           requires:
             - build_package
       - publish_packages:
           # <<: *release_filter
           requires:
-            - tag_version
+            - codacy/tag_version
           context: CodacyNPM
