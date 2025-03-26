@@ -37,6 +37,11 @@ jobs:
             - bin/
             - dist/
             - node_modules/
+            - package.json
+            - package-lock.json
+            - README.md
+            - LICENSE
+            - .version
 
   publish_packages:
     docker:
@@ -55,9 +60,6 @@ jobs:
       - run:
           name: Publish packages
           command: |
-            echo "Build again to ensure we have the latest version"
-            npm install --unsafe-perm=true
-            npm run build
             echo "Updating version in packages to publish"
             # Update version in packages to publish
             npm version --no-git-tag-version --no-commit-hooks "$(cat .version)" --allow-same-version --verbose
