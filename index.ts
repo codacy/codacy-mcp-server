@@ -12,6 +12,7 @@ import {
   RepositoryService,
   AnalysisService,
   SecurityService,
+  CoverageService,
 } from './src/api/client/index.js';
 
 OpenAPI.BASE = 'https://app.codacy.com/api/v3';
@@ -333,6 +334,117 @@ const securityScanTypes = {
   PenTesting: 'Penetration testing',
 };
 
+//PR endpoints
+
+const listRepositoryPullRequestsTool: Tool = {
+  name: 'codacy_list_repository_pull_requests',
+  description:
+    'List pull requests from a repository that the user has access to. You can search this endpoint for either last-updated (default), impact or merged',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      provider: {
+        type: 'string',
+        description:
+          "Organization's git provider: GitHub (gh), GitLab (gl) or BitBucket (bb). Accepted values: gh, gl, bb.",
+      },
+      organization: {
+        type: 'string',
+        description: 'Organization name on the Git provider',
+      },
+      repository: {
+        type: 'string',
+        description: 'Repository name on the Git provider organization',
+      },
+      includeNotAnalyzed: {
+        type: 'boolean',
+        description: 'If true, includes pull requests that have not been analyzed',
+      },
+      cursor: {
+        type: 'string',
+        description: 'Pagination cursor for next page of results',
+      },
+      limit: {
+        type: 'number',
+        description: 'Maximum number of results to return (default 100, max 100)',
+        default: 100,
+      },
+    },
+  },
+};
+
+const listPullRequestIssuesTool: Tool = {
+  name: 'codacy_list_pull_request_issues',
+  description:
+    'Returns a list of issues found in a pull request. We can request either new or fixed issues.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      provider: {
+        type: 'string',
+        description:
+          "Organization's git provider: GitHub (gh), GitLab (gl) or BitBucket (bb). Accepted values: gh, gl, bb.",
+      },
+      organization: {
+        type: 'string',
+        description: 'Organization name on the Git provider',
+      },
+      repository: {
+        type: 'string',
+        description: 'Repository name on the Git provider organization',
+      },
+      pullRequestNumber: {
+        type: 'number',
+        description: 'Pull request number',
+      },
+      status: {
+        type: 'string',
+        description: 'Filter issues by status. Accepted values: all, new, fixed.',
+      },
+      onlyPotential: {
+        type: 'boolean',
+        description: 'If true, retrieves only potential issues',
+      },
+      cursor: {
+        type: 'string',
+        description: 'Pagination cursor for next page of results',
+      },
+      limit: {
+        type: 'number',
+        description: 'Maximum number of results to return (default 100, max 100)',
+        default: 100,
+      },
+    },
+  },
+};
+
+const getRepositoryPullRequestFilesCoverageTool: Tool = {
+  name: 'codacy_get_repository_pull_request_files_coverage',
+  description: 'Get coverage information for all files in a pull request.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      provider: {
+        type: 'string',
+        description:
+          "Organization's git provider: GitHub (gh), GitLab (gl) or BitBucket (bb). Accepted values: gh, gl, bb.",
+      },
+      organization: {
+        type: 'string',
+        description: 'Organization name on the Git provider',
+      },
+      repository: {
+        type: 'string',
+        description: 'Repository name on the Git provider organization',
+      },
+      pullRequestNumber: {
+        type: 'number',
+        description: 'Pull request number',
+      },
+    },
+  },
+};
+
 const searchSecurityItemsTool: Tool = {
   name: 'codacy_list_srm_items',
   description: `Primary tool to list security items/issues/vulnerabilities/findings, results are related to the organization security and risk management (SRM) dashboard on Codacy. This tool contains pagination. Returns comprehensive security analysis including ${Object.keys(securityScanTypes).join(', ')} security issues. Provides advanced filtering by security categories, priorities, and scan types. Use this as the first tool when investigating security or compliance concerns. Map the results statuses as open issues: ${securityStatuses.Open.join(', ')}; and closed issues: ${securityStatuses.Closed.join(', ')}. Prioritize the open issues as the most important ones in the results.`,
@@ -420,7 +532,33 @@ const searchSecurityItemsTool: Tool = {
   },
 };
 
-// Handlers
+const getPullRequestGitDiffTool: Tool = {
+  name: 'codacy_get_pull_request_git_diff',
+  description: 'Returns the human-readable Git diff of a pull request',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      provider: {
+        type: 'string',
+        description:
+          "Organization's git provider: GitHub (gh), GitLab (gl) or BitBucket (bb). Accepted values: gh, gl, bb.",
+      },
+      organization: {
+        type: 'string',
+        description: 'Organization name on the Git provider',
+      },
+      repository: {
+        type: 'string',
+        description: 'Repository name on the Git provider organization',
+      },
+      pullRequestNumber: {
+        type: 'number',
+        description: 'Pull request number',
+      },
+    },
+  },
+};
+
 const listOrganizationRepositoriesHandler = async (args: any) => {
   const { provider, organization, limit, cursor } = args;
 
@@ -456,8 +594,8 @@ const getFileIssuesHandler = async (args: any) => {
     organization,
     repository,
     fileId,
-    limit,
-    cursor
+    cursor,
+    limit
   );
 };
 
@@ -480,6 +618,19 @@ const searchRepositoryIssuesHandler = async (args: any) => {
   );
 };
 
+const listRepositoryPullRequestsHandler = async (args: any) => {
+  const { provider, organization, repository, search, includeNotAnalyzed, cursor, limit } = args;
+  return await AnalysisService.listRepositoryPullRequests(
+    provider,
+    organization,
+    repository,
+    limit,
+    cursor,
+    search,
+    includeNotAnalyzed
+  );
+};
+
 const searchSecurityItemsHandler = async (args: any) => {
   const { provider, organization, cursor, limit, sort, direction, body } = args;
 
@@ -494,6 +645,50 @@ const searchSecurityItemsHandler = async (args: any) => {
   );
 };
 
+const listPullRequestIssuesHandler = async (args: any) => {
+  const {
+    provider,
+    organization,
+    repository,
+    pullRequestNumber,
+    status,
+    onlyPotential,
+    cursor,
+    limit,
+  } = args;
+
+  return await AnalysisService.listPullRequestIssues(
+    provider,
+    organization,
+    repository,
+    pullRequestNumber,
+    status,
+    onlyPotential,
+    cursor,
+    limit
+  );
+};
+
+const getRepositoryPullRequestFilesCoverageHandler = async (args: any) => {
+  const { provider, organization, repository, pullRequestNumber } = args;
+  return await CoverageService.getRepositoryPullRequestFilesCoverage(
+    provider,
+    organization,
+    repository,
+    pullRequestNumber
+  );
+};
+
+const getPullRequestGitDiffHandler = async (args: any) => {
+  const { provider, organization, repository, pullRequestNumber } = args;
+  return await CoverageService.getPullRequestGitDiff(
+    provider,
+    organization,
+    repository,
+    pullRequestNumber
+  );
+};
+
 // Register tools
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
@@ -504,6 +699,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       getFileIssuesTool,
       getFileCoverageTool,
       searchSecurityItemsTool,
+      listRepositoryPullRequestsTool,
+      listPullRequestIssuesTool,
+      getRepositoryPullRequestFilesCoverageTool,
+      getPullRequestGitDiffTool,
     ],
   };
 });
@@ -546,8 +745,32 @@ server.setRequestHandler(CallToolRequestSchema, async request => {
           content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
         };
       }
+      case 'codacy_list_repository_pull_requests': {
+        const result = await listRepositoryPullRequestsHandler(request.params.arguments);
+        return {
+          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+        };
+      }
       case 'codacy_list_srm_items': {
         const result = await searchSecurityItemsHandler(request.params.arguments);
+        return {
+          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+        };
+      }
+      case 'codacy_list_pull_request_issues': {
+        const result = await listPullRequestIssuesHandler(request.params.arguments);
+        return {
+          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+        };
+      }
+      case 'codacy_get_repository_pull_request_files_coverage': {
+        const result = await getRepositoryPullRequestFilesCoverageHandler(request.params.arguments);
+        return {
+          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+        };
+      }
+      case 'codacy_get_pull_request_git_diff': {
+        const result = await getPullRequestGitDiffHandler(request.params.arguments);
         return {
           content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
         };
