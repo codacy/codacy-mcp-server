@@ -11,6 +11,7 @@ import {
   OrganizationService,
   RepositoryService,
   AnalysisService,
+  SecurityService,
 } from './src/api/client/index.js';
 
 OpenAPI.BASE = 'https://app.codacy.com/api/v3';
@@ -295,6 +296,102 @@ const getFileCoverageTool: Tool = {
   },
 };
 
+const securityCategories = [
+  'Auth',
+  'CommandInjection',
+  'Cookies',
+  'Cryptography',
+  'CSRF',
+  'DoS',
+  'FileAccess',
+  'HTTP',
+  'InputValidation',
+  'InsecureModulesLibraries',
+  'InsecureStorage',
+  'Other',
+  'Regex',
+  'SQLInjection',
+  'UnexpectedBehaviour',
+  'Visibility',
+  'XSS',
+];
+
+const securityScanTypes = [
+  { value: 'SAST', name: 'Code scanning' },
+  { value: 'Secrets', name: 'Secret scanning' },
+  { value: 'SCA', name: 'Dependency scanning' },
+  { value: 'IaC', name: 'Infrastructure-as-code scanning' },
+  { value: 'CICD', name: 'CI/CD scanning' },
+  { value: 'DAST', name: 'DAST' },
+  { value: 'PenTesting', name: 'Penetration testing' },
+];
+
+const searchSecurityItemsTool: Tool = {
+  name: 'codacy_list_srm_items',
+  description:
+    'List security and risk management (SRM) items/issues/vulnerabilities/findings for an organization with pagination',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      provider: {
+        type: 'string',
+        description:
+          "Organization's git provider: GitHub (gh), GitLab (gl) or BitBucket (bb). Accepted values: gh, gl, bb.",
+      },
+      organization: {
+        type: 'string',
+        description: 'Organization name',
+      },
+      cursor: {
+        type: 'string',
+        description: 'Pagination cursor for next page of results',
+      },
+      limit: {
+        type: 'number',
+        description: 'Maximum number of results to return (default 100, max 100)',
+        default: 100,
+      },
+      sort: {
+        type: 'string',
+        description: 'Sort SRM items by. Accepted values: Status, DetectedAt',
+      },
+      direction: {
+        type: 'string',
+        description: 'Sort direction (ascending or descending). Accepted values: asc, desc',
+      },
+      body: {
+        type: 'object',
+        description:
+          'Search parameters to filter the metrics of the security issues dashboard of an organization',
+        properties: {
+          repositories: {
+            type: 'array',
+            description: 'Repository names',
+          },
+          priorities: {
+            type: 'array',
+            description:
+              'Security issue priorities/severities to filter. Accepted values: Low, Medium, High, Critical',
+          },
+          categories: {
+            type: 'array',
+            description: `Security categories to filter. Accepted values: ${securityCategories.join(', ')} or _other_ (to search for issues that don't have a security category)`,
+          },
+          scanTypes: {
+            type: 'array',
+            description: `Security issue scan types to filter. Accepted values: ${securityScanTypes.map(scanType => `${scanType.value} (${scanType.name})`).join(', ')}`,
+          },
+          segments: {
+            type: 'array',
+            description:
+              'Set of segments ids (type number). Segment is a Codacy concept that groups repositories by different criteria',
+          },
+        },
+      },
+    },
+  },
+};
+
 // Handlers
 const listOrganizationRepositoriesHandler = async (args: any) => {
   const { provider, organization, limit, cursor } = args;
@@ -355,6 +452,20 @@ const searchRepositoryIssuesHandler = async (args: any) => {
   );
 };
 
+const searchSecurityItemsHandler = async (args: any) => {
+  const { provider, organization, cursor, limit, sort, direction, body } = args;
+
+  return await SecurityService.searchSecurityItems(
+    provider,
+    organization,
+    cursor,
+    limit,
+    sort,
+    direction,
+    body
+  );
+};
+
 // Register tools
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
@@ -364,6 +475,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       listFilesTool,
       getFileIssuesTool,
       getFileCoverageTool,
+      searchSecurityItemsTool,
     ],
   };
 });
@@ -402,6 +514,12 @@ server.setRequestHandler(CallToolRequestSchema, async request => {
       }
       case 'codacy_list_repository_issues': {
         const result = await searchRepositoryIssuesHandler(request.params.arguments);
+        return {
+          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+        };
+      }
+      case 'codacy_list_srm_items': {
+        const result = await searchSecurityItemsHandler(request.params.arguments);
         return {
           content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
         };
