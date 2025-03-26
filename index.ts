@@ -553,16 +553,6 @@ const getPullRequestGitDiffHandler = async (args: any) => {
   );
 };
 
-// const getPullRequestDiffHandler = async (args: any) => {
-//   const { provider, organization, repository, pullRequestNumber } = args;
-//   return await RepositoryService.getPullRequestDiff(
-//     provider,
-//     organization,
-//     repository,
-//     pullRequestNumber
-//   );
-// };
-
 // Register tools
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
