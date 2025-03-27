@@ -1,5 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { repositorySchema } from './utils.js';
+import { fileSchema } from './utils.js';
 
 export const getFileCoverageTool: Tool = {
   name: 'codacy_get_file_coverage',
@@ -7,11 +7,7 @@ export const getFileCoverageTool: Tool = {
   inputSchema: {
     type: 'object',
     properties: {
-      ...repositorySchema,
-      fileId: {
-        type: 'string',
-        description: 'Identifier of a file in a specific commit',
-      },
+      ...fileSchema,
     },
   },
 };

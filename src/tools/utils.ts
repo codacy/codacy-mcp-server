@@ -130,10 +130,27 @@ export const getPaginationWithSorting = (sortDescription: string) => ({
   ...defaultPagination,
   direction: {
     type: 'string',
-    description: 'Sort direction (ascending or descending). Accepted values: asc, desc',
+    description:
+      "Sort direction (ascending or descending). Use 'desc' to see highest values first, 'asc' for lowest values first.",
   },
   sort: {
     type: 'string',
     description: sortDescription,
   },
 });
+
+export const branchSchema = {
+  branchName: {
+    type: 'string',
+    description:
+      'Branch name, by default the main/default branch defined on the Codacy repository settings is used',
+  },
+};
+
+export const fileSchema = {
+  ...repositorySchema,
+  fileId: {
+    type: 'string',
+    description: "Codacy's identifier of a file in a specific commit",
+  },
+};

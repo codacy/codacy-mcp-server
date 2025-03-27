@@ -49,3 +49,14 @@ export const searchRepositoryIssuesHandler = async (args: any) => {
     body
   );
 };
+
+export const getRepositoryWithAnalysisHandler = async (args: any) => {
+  const { provider, organization, repository, branch } = args;
+
+  return await AnalysisService.getRepositoryWithAnalysis(
+    provider,
+    organization,
+    repository,
+    branch
+  );
+};
