@@ -1,5 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { defaultPagination, repositorySchema } from './utils.js';
+import { defaultPagination, fileSchema } from './utils.js';
 
 export const listFileIssuesTool: Tool = {
   name: 'codacy_get_file_issues',
@@ -7,12 +7,8 @@ export const listFileIssuesTool: Tool = {
   inputSchema: {
     type: 'object',
     properties: {
-      ...repositorySchema,
+      ...fileSchema,
       ...defaultPagination,
-      fileId: {
-        type: 'string',
-        description: 'Identifier of a file in a specific commit',
-      },
     },
   },
 };

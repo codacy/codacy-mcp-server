@@ -30,7 +30,11 @@ import {
   searchRepositoryIssuesHandler,
   searchSecurityItemsHandler,
   listOrganizationRepositoriesHandler,
+  getRepositoryWithAnalysisHandler,
+  getFileWithAnalysisHandler,
 } from './src/handlers/index.js';
+import { getRepositoryWithAnalysisTool } from './src/tools/getRepositoryWithAnalysisTool.js';
+import { getFileWithAnalysisTool } from './src/tools/getFileWithAnalysisTool.js';
 
 OpenAPI.BASE = 'https://app.codacy.com/api/v3';
 OpenAPI.HEADERS = {
@@ -59,8 +63,9 @@ type toolKeys =
   | 'codacy_get_file_coverage'
   | 'codacy_get_repository_pull_request_files_coverage'
   | 'codacy_get_pull_request_git_diff'
-  | 'codacy_list_pull_request_issues';
-
+  | 'codacy_list_pull_request_issues'
+  | 'codacy_get_repository_with_analysis'
+  | 'codacy_get_file_with_analysis';
 interface ToolDefinition {
   tool: Tool;
   handler: (args: any) => Promise<any>;
@@ -94,6 +99,14 @@ const toolDefinitions: { [key in toolKeys]: ToolDefinition } = {
   codacy_list_pull_request_issues: {
     tool: listPullRequestIssuesTool,
     handler: listPullRequestIssuesHandler,
+  },
+  codacy_get_repository_with_analysis: {
+    tool: getRepositoryWithAnalysisTool,
+    handler: getRepositoryWithAnalysisHandler,
+  },
+  codacy_get_file_with_analysis: {
+    tool: getFileWithAnalysisTool,
+    handler: getFileWithAnalysisHandler,
   },
 };
 
