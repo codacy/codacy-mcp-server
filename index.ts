@@ -1,7 +1,11 @@
 #!/usr/bin/env node
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
+import {
+  CallToolRequestSchema,
+  ListToolsRequestSchema,
+  Tool,
+} from '@modelcontextprotocol/sdk/types.js';
 import { OpenAPI } from './src/api/client/index.js';
 import {
   getFileCoverageTool,
@@ -45,23 +49,58 @@ const server = new Server(
   }
 );
 
+type toolKeys =
+  | 'codacy_list_organization_repositories'
+  | 'codacy_list_srm_items'
+  | 'codacy_list_repository_issues'
+  | 'codacy_list_repository_pull_requests'
+  | 'codacy_list_files'
+  | 'codacy_get_file_issues'
+  | 'codacy_get_file_coverage'
+  | 'codacy_get_repository_pull_request_files_coverage'
+  | 'codacy_get_pull_request_git_diff'
+  | 'codacy_list_pull_request_issues';
+
+interface ToolDefinition {
+  tool: Tool;
+  handler: (args: any) => Promise<any>;
+}
+
+const toolDefinitions: { [key in toolKeys]: ToolDefinition } = {
+  codacy_list_organization_repositories: {
+    tool: listOrganizationRepositoriesTool,
+    handler: listOrganizationRepositoriesHandler,
+  },
+  codacy_list_srm_items: { tool: searchSecurityItemsTool, handler: searchSecurityItemsHandler },
+  codacy_list_repository_issues: {
+    tool: searchRepositoryIssuesTool,
+    handler: searchRepositoryIssuesHandler,
+  },
+  codacy_list_repository_pull_requests: {
+    tool: listRepositoryPullRequestsTool,
+    handler: listRepositoryPullRequestsHandler,
+  },
+  codacy_list_files: { tool: listFilesTool, handler: listFilesHandler },
+  codacy_get_file_issues: { tool: listFileIssuesTool, handler: getFileIssuesHandler },
+  codacy_get_file_coverage: { tool: getFileCoverageTool, handler: getFileCoverageHandler },
+  codacy_get_repository_pull_request_files_coverage: {
+    tool: getRepositoryPullRequestFilesCoverageTool,
+    handler: getRepositoryPullRequestFilesCoverageHandler,
+  },
+  codacy_get_pull_request_git_diff: {
+    tool: getPullRequestGitDiffTool,
+    handler: getPullRequestGitDiffHandler,
+  },
+  codacy_list_pull_request_issues: {
+    tool: listPullRequestIssuesTool,
+    handler: listPullRequestIssuesHandler,
+  },
+};
+
 // Register tools
-server.setRequestHandler(ListToolsRequestSchema, async () => {
-  return {
-    tools: [
-      listOrganizationRepositoriesTool,
-      searchRepositoryIssuesTool,
-      listFilesTool,
-      listFileIssuesTool,
-      getFileCoverageTool,
-      searchSecurityItemsTool,
-      listRepositoryPullRequestsTool,
-      listPullRequestIssuesTool,
-      getRepositoryPullRequestFilesCoverageTool,
-      getPullRequestGitDiffTool,
-    ],
-  };
-});
+server.setRequestHandler(ListToolsRequestSchema, async () => ({
+  tools: Object.values(toolDefinitions).map(({ tool }) => tool),
+}));
 
 // Register request handlers
 server.setRequestHandler(CallToolRequestSchema, async request => {
@@ -70,71 +109,14 @@ server.setRequestHandler(CallToolRequestSchema, async request => {
       throw new Error('Arguments are required');
     }
 
-    switch (request.params.name) {
-      case 'codacy_list_repositories': {
-        const result = await listOrganizationRepositoriesHandler(request.params.arguments);
-        return {
-          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
-        };
-      }
-      case 'codacy_list_files': {
-        const result = await listFilesHandler(request.params.arguments);
-        return {
-          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
-        };
-      }
-      case 'codacy_get_file_issues': {
-        const result = await getFileIssuesHandler(request.params.arguments);
-        return {
-          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
-        };
-      }
-      case 'codacy_get_file_coverage': {
-        const result = await getFileCoverageHandler(request.params.arguments);
-        return {
-          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
-        };
-      }
-      case 'codacy_list_repository_issues': {
-        const result = await searchRepositoryIssuesHandler(request.params.arguments);
-        return {
-          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
-        };
-      }
-      case 'codacy_list_repository_pull_requests': {
-        const result = await listRepositoryPullRequestsHandler(request.params.arguments);
-        return {
-          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
-        };
-      }
-      case 'codacy_list_srm_items': {
-        const result = await searchSecurityItemsHandler(request.params.arguments);
-        return {
-          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
-        };
-      }
-      case 'codacy_list_pull_request_issues': {
-        const result = await listPullRequestIssuesHandler(request.params.arguments);
-        return {
-          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
-        };
-      }
-      case 'codacy_get_repository_pull_request_files_coverage': {
-        const result = await getRepositoryPullRequestFilesCoverageHandler(request.params.arguments);
-        return {
-          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
-        };
-      }
-      case 'codacy_get_pull_request_git_diff': {
-        const result = await getPullRequestGitDiffHandler(request.params.arguments);
-        return {
-          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
-        };
-      }
+    const toolDefinition = toolDefinitions[request.params.name as toolKeys];
 
-      default:
-        throw new Error(`Unknown tool: ${request.params.name}`);
-    }
+    if (!toolDefinition) throw new Error(`Unknown tool: ${request.params.name}`);
+
+    const result = await toolDefinition.handler(request.params.arguments);
+    return {
+      content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+    };
   } catch (error) {
     console.error(error);
     throw error;
