@@ -5,7 +5,7 @@ import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprot
 import { OpenAPI } from './src/api/client/index.js';
 import {
   getFileCoverageTool,
-  getFileIssuesTool,
+  listFileIssuesTool,
   getPullRequestGitDiffTool,
   getRepositoryPullRequestFilesCoverageTool,
   listFilesTool,
@@ -52,7 +52,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       listOrganizationRepositoriesTool,
       searchRepositoryIssuesTool,
       listFilesTool,
-      getFileIssuesTool,
+      listFileIssuesTool,
       getFileCoverageTool,
       searchSecurityItemsTool,
       listRepositoryPullRequestsTool,

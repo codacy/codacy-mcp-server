@@ -92,3 +92,48 @@ export const securityScanTypes = {
   DAST: 'Dynamic Application Security Testing',
   PenTesting: 'Penetration testing',
 };
+
+export const organizationSchema = {
+  provider: {
+    type: 'string',
+    description:
+      "Organization's git provider: GitHub (gh), GitLab (gl) or BitBucket (bb). Accepted values: gh, gl, bb. In case a repository is given, use that repository's Git provider.",
+  },
+  organization: {
+    type: 'string',
+    description:
+      "Organization name on the Git provider. In case a repository is given, use that repository's owner (could be an organization name or username).",
+  },
+};
+
+export const repositorySchema = {
+  ...organizationSchema,
+  repository: {
+    type: 'string',
+    description: 'Repository name on the Git provider',
+  },
+};
+
+export const defaultPagination = {
+  cursor: {
+    type: 'string',
+    description: 'Pagination cursor for next page of results',
+  },
+  limit: {
+    type: 'number',
+    description: 'Maximum number of results to return (default 100, max 100)',
+    default: 100,
+  },
+};
+
+export const getPaginationWithSorting = (sortDescription: string) => ({
+  ...defaultPagination,
+  direction: {
+    type: 'string',
+    description: 'Sort direction (ascending or descending). Accepted values: asc, desc',
+  },
+  sort: {
+    type: 'string',
+    description: sortDescription,
+  },
+});

@@ -1,5 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { codacyLanguages, issueCategories } from './utils.js';
+import { codacyLanguages, defaultPagination, issueCategories, repositorySchema } from './utils.js';
 
 export const searchRepositoryIssuesTool: Tool = {
   name: 'codacy_list_repository_issues',
@@ -8,19 +8,8 @@ export const searchRepositoryIssuesTool: Tool = {
   inputSchema: {
     type: 'object',
     properties: {
-      provider: {
-        type: 'string',
-        description:
-          "Organization's git provider: GitHub (gh), GitLab (gl) or BitBucket (bb). Accepted values: gh, gl, bb.",
-      },
-      organization: {
-        type: 'string',
-        description: 'Organization name on the Git provider',
-      },
-      repository: {
-        type: 'string',
-        description: 'Repository name on the Git provider organization',
-      },
+      ...repositorySchema,
+      ...defaultPagination,
       body: {
         type: 'object',
         description: 'Search parameters to filter the list of issues in a repository',
@@ -52,15 +41,6 @@ export const searchRepositoryIssuesTool: Tool = {
             description: 'Set of commit author email addresses',
           },
         },
-      },
-      cursor: {
-        type: 'string',
-        description: 'Pagination cursor for next page of results',
-      },
-      limit: {
-        type: 'number',
-        description: 'Maximum number of results to return (default 100, max 100)',
-        default: 100,
       },
     },
   },

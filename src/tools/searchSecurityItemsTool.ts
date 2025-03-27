@@ -1,5 +1,11 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { securityCategories, securityScanTypes, securityStatuses } from './utils.js';
+import {
+  getPaginationWithSorting,
+  organizationSchema,
+  securityCategories,
+  securityScanTypes,
+  securityStatuses,
+} from './utils.js';
 
 export const searchSecurityItemsTool: Tool = {
   name: 'codacy_list_srm_items',
@@ -7,32 +13,8 @@ export const searchSecurityItemsTool: Tool = {
   inputSchema: {
     type: 'object',
     properties: {
-      provider: {
-        type: 'string',
-        description:
-          "Organization's git provider: GitHub (gh), GitLab (gl) or BitBucket (bb). Accepted values: gh, gl, bb.",
-      },
-      organization: {
-        type: 'string',
-        description: 'Organization name',
-      },
-      cursor: {
-        type: 'string',
-        description: 'Pagination cursor for next page of results',
-      },
-      limit: {
-        type: 'number',
-        description: 'Maximum number of results to return (default 100, max 100)',
-        default: 100,
-      },
-      sort: {
-        type: 'string',
-        description: 'Sort SRM items by. Accepted values: Status, DetectedAt',
-      },
-      direction: {
-        type: 'string',
-        description: 'Sort direction (ascending or descending). Accepted values: asc, desc',
-      },
+      ...organizationSchema,
+      ...getPaginationWithSorting('Sort SRM items by. Accepted values: Status, DetectedAt'),
       body: {
         type: 'object',
         description:

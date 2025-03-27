@@ -1,4 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { repositorySchema } from './utils.js';
 
 export const getRepositoryPullRequestFilesCoverageTool: Tool = {
   name: 'codacy_get_repository_pull_request_files_coverage',
@@ -6,19 +7,7 @@ export const getRepositoryPullRequestFilesCoverageTool: Tool = {
   inputSchema: {
     type: 'object',
     properties: {
-      provider: {
-        type: 'string',
-        description:
-          "Organization's git provider: GitHub (gh), GitLab (gl) or BitBucket (bb). Accepted values: gh, gl, bb.",
-      },
-      organization: {
-        type: 'string',
-        description: 'Organization name on the Git provider',
-      },
-      repository: {
-        type: 'string',
-        description: 'Repository name on the Git provider organization',
-      },
+      ...repositorySchema,
       pullRequestNumber: {
         type: 'number',
         description: 'Pull request number',

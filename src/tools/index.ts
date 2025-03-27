@@ -1,5 +1,5 @@
 export * from './getFileCoverageTool.js';
-export * from './getFileIssuesTool.js';
+export * from './listFileIssuesTool.js';
 export * from './getPullRequestGitDiffTool.js';
 export * from './getRepositoryPullRequestFilesCoverageTool.js';
 export * from './listFilesTool.js';
