@@ -3,7 +3,7 @@ import { getPaginationWithSorting, repositorySchema } from './utils.js';
 
 export const listRepositoryToolPatternsTool: Tool = {
   name: 'codacy_list_repository_tool_patterns',
-  description: 'List tool patterns for a repository',
+  description: 'List the patterns of a tool available for a repository in Codacy.',
   inputSchema: {
     type: 'object',
     properties: {
