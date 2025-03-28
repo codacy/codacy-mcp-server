@@ -1,0 +1,11 @@
+import { ToolsService } from '../api/client/index.js';
+
+export const listToolsHandler = async (args: any) => {
+  const { cursor, limit } = args;
+  return await ToolsService.listTools(cursor, limit);
+};
+
+export const getPatternHandler = async (args: any) => {
+  const { toolUuid, patternId } = args;
+  return await ToolsService.getPattern(toolUuid, patternId);
+};

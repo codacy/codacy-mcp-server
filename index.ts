@@ -18,6 +18,14 @@ import {
   listRepositoryPullRequestsTool,
   searchRepositoryIssuesTool,
   searchSecurityItemsTool,
+  getRepositoryWithAnalysisTool,
+  getFileWithAnalysisTool,
+  listRepositoryToolsTool,
+  listToolsTool,
+  listRepositoryToolPatternsTool,
+  getPatternTool,
+  getIssueTool,
+  getRepositoryPullRequestTool,
 } from './src/tools/index.js';
 import {
   getFileCoverageHandler,
@@ -32,9 +40,13 @@ import {
   listOrganizationRepositoriesHandler,
   getRepositoryWithAnalysisHandler,
   getFileWithAnalysisHandler,
+  getRepositoryPullRequestHandler,
+  getIssueHandler,
+  listRepositoryToolPatternsHandler,
+  listRepositoryToolsHandler,
+  listToolsHandler,
+  getPatternHandler,
 } from './src/handlers/index.js';
-import { getRepositoryWithAnalysisTool } from './src/tools/getRepositoryWithAnalysisTool.js';
-import { getFileWithAnalysisTool } from './src/tools/getFileWithAnalysisTool.js';
 
 OpenAPI.BASE = 'https://app.codacy.com/api/v3';
 OpenAPI.HEADERS = {
@@ -59,13 +71,19 @@ type toolKeys =
   | 'codacy_list_repository_issues'
   | 'codacy_list_repository_pull_requests'
   | 'codacy_list_files'
+  | 'codacy_list_repository_tool_patterns'
+  | 'codacy_list_repository_tools'
+  | 'codacy_list_tools'
   | 'codacy_get_file_issues'
   | 'codacy_get_file_coverage'
   | 'codacy_get_repository_pull_request_files_coverage'
   | 'codacy_get_pull_request_git_diff'
   | 'codacy_list_pull_request_issues'
   | 'codacy_get_repository_with_analysis'
-  | 'codacy_get_file_with_analysis';
+  | 'codacy_get_file_with_analysis'
+  | 'codacy_get_repository_pull_request'
+  | 'codacy_get_issue'
+  | 'codacy_get_pattern';
 interface ToolDefinition {
   tool: Tool;
   handler: (args: any) => Promise<any>;
@@ -107,6 +125,30 @@ const toolDefinitions: { [key in toolKeys]: ToolDefinition } = {
   codacy_get_file_with_analysis: {
     tool: getFileWithAnalysisTool,
     handler: getFileWithAnalysisHandler,
+  },
+  codacy_get_repository_pull_request: {
+    tool: getRepositoryPullRequestTool,
+    handler: getRepositoryPullRequestHandler,
+  },
+  codacy_get_issue: {
+    tool: getIssueTool,
+    handler: getIssueHandler,
+  },
+  codacy_get_pattern: {
+    tool: getPatternTool,
+    handler: getPatternHandler,
+  },
+  codacy_list_repository_tool_patterns: {
+    tool: listRepositoryToolPatternsTool,
+    handler: listRepositoryToolPatternsHandler,
+  },
+  codacy_list_tools: {
+    tool: listToolsTool,
+    handler: listToolsHandler,
+  },
+  codacy_list_repository_tools: {
+    tool: listRepositoryToolsTool,
+    handler: listRepositoryToolsHandler,
   },
 };
 
