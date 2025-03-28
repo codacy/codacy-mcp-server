@@ -39,6 +39,7 @@ import { getFileWithAnalysisTool } from './src/tools/getFileWithAnalysisTool.js'
 OpenAPI.BASE = 'https://app.codacy.com/api/v3';
 OpenAPI.HEADERS = {
   'api-token': process.env.CODACY_ACCOUNT_TOKEN || '',
+  'X-Codacy-Origin': 'mcp-server',
 };
 
 const server = new Server(
