@@ -48,9 +48,16 @@ import {
   getPatternHandler,
 } from './src/handlers/index.js';
 
+// Check for API key
+const CODACY_ACCOUNT_TOKEN = process.env.CODACY_ACCOUNT_TOKEN;
+if (!CODACY_ACCOUNT_TOKEN) {
+  console.error('Error: CODACY_ACCOUNT_TOKEN environment variable is required');
+  process.exit(1);
+}
+
 OpenAPI.BASE = 'https://app.codacy.com/api/v3';
 OpenAPI.HEADERS = {
-  'api-token': process.env.CODACY_ACCOUNT_TOKEN || '',
+  'api-token': CODACY_ACCOUNT_TOKEN || '',
   'X-Codacy-Origin': 'mcp-server',
 };
 
