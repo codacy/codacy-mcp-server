@@ -9,7 +9,7 @@ import {
 
 export const searchSecurityItemsTool: Tool = {
   name: 'codacy_list_srm_items',
-  description: `Primary tool to list security items/issues/vulnerabilities/findings, results are related to the organization security and risk management (SRM) dashboard on Codacy. This tool contains pagination. Returns comprehensive security analysis including ${Object.keys(securityScanTypes).join(', ')} security issues. Provides advanced filtering by security categories, priorities, and scan types. Use this as the first tool when investigating security or compliance concerns. Map the results statuses as open issues: ${securityStatuses.Open.join(', ')}; and closed issues: ${securityStatuses.Closed.join(', ')}. Prioritize the open issues as the most important ones in the results.`,
+  description: `Primary tool to list security items/issues/vulnerabilities/findings, results are related to the organization security and risk management (SRM) dashboard on Codacy. This tool contains pagination. Returns comprehensive security analysis including ${Object.keys(securityScanTypes).join(', ')} security issues. Provides advanced filtering by security categories, priorities, and scan types. Use this as the first tool when investigating security or compliance concerns. Map the results statuses as open issues: ${securityStatuses.Open.join(', ')}; and closed issues: ${securityStatuses.Closed.join(', ')}. Prioritize the open issues as the most important ones in the results. To get the SRM items for a specific repository, use the repository name in body object.`,
   inputSchema: {
     type: 'object',
     properties: {
@@ -22,7 +22,7 @@ export const searchSecurityItemsTool: Tool = {
         properties: {
           repositories: {
             type: 'array',
-            description: 'Repository names',
+            description: 'Use this to filter by repository name. ',
           },
           priorities: {
             description: 'Array of security issue priorities/severities to filter by.',
