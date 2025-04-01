@@ -62,6 +62,33 @@ const server = new Server(
   {
     capabilities: {
       tools: {},
+      triggers: {
+        patterns: [
+          'codacy',
+          'code quality',
+          'code analysis',
+          'security vulnerabilities',
+          'repository issues',
+          'pull request analysis',
+          'code coverage',
+          'issues',
+          'security',
+          'srm',
+          'analysis',
+          'tool',
+          'pattern',
+          'pull request',
+          'repository',
+          'file',
+          'coverage',
+          'git',
+          'diff',
+          'branch',
+          'commit',
+          'severity',
+          'organization',
+        ],
+      },
     },
   }
 );

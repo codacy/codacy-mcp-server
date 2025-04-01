@@ -97,12 +97,12 @@ export const organizationSchema = {
   provider: {
     type: 'string',
     description:
-      "Organization's git provider: GitHub (gh), GitLab (gl) or BitBucket (bb). Accepted values: gh, gl, bb. In case a repository is given, use that repository's Git provider.",
+      "Organization's git provider: GitHub (gh), GitLab (gl) or BitBucket (bb). Accepted values: gh, gl, bb. In case a repository is given, use that repository's Git provider. ",
   },
   organization: {
     type: 'string',
     description:
-      "Organization name on the Git provider. In case a repository is given, use that repository's owner (could be an organization name or username).",
+      "Organization name on the Git provider. In case a repository is given, use that repository's owner (could be an organization name or username), to find the repository's owner check the repository git url, it should be something like this for gh:'https://github.com/<owner>/<repository>.git' for gl:'https://gitlab.com/<owner>/<repository>.git' for bb:'https://bitbucket.org/<owner>/<repository>.git'.",
   },
 };
 
@@ -110,7 +110,8 @@ export const repositorySchema = {
   ...organizationSchema,
   repository: {
     type: 'string',
-    description: 'Repository name on the Git provider',
+    description:
+      "Repository name on the Git provider. To find the repository name check the repository git url, it should be something like this for gh:'https://github.com/<owner>/<repository>.git' for gl:'https://gitlab.com/<owner>/<repository>.git' for bb:'https://bitbucket.org/<owner>/<repository>.git'.",
   },
 };
 
