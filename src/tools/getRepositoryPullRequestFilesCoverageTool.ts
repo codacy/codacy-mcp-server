@@ -13,5 +13,6 @@ export const getRepositoryPullRequestFilesCoverageTool: Tool = {
         description: 'Pull request number',
       },
     },
+    required: ['provider', 'organization', 'repository'],
   },
 };

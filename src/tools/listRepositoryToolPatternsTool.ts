@@ -42,5 +42,6 @@ export const listRepositoryToolPatternsTool: Tool = {
         description: 'Returns only the recommended or non-recommended patterns.',
       },
     },
+    required: ['provider', 'organization', 'repository'],
   },
 };

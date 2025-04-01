@@ -22,7 +22,7 @@ export const searchSecurityItemsTool: Tool = {
         properties: {
           repositories: {
             type: 'array',
-            description: 'Use this to filter by repository name. ',
+            description: 'Use this to filter by repository name.',
           },
           priorities: {
             description: 'Array of security issue priorities/severities to filter by.',
@@ -67,5 +67,6 @@ export const searchSecurityItemsTool: Tool = {
         },
       },
     },
+    required: ['provider', 'organization'],
   },
 };

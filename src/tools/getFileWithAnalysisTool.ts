@@ -10,5 +10,6 @@ export const getFileWithAnalysisTool: Tool = {
     properties: {
       ...fileSchema,
     },
+    required: ['provider', 'organization', 'repository'],
   },
 };

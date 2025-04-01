@@ -45,5 +45,6 @@ export const searchRepositoryIssuesTool: Tool = {
         },
       },
     },
+    required: ['provider', 'organization', 'repository'],
   },
 };

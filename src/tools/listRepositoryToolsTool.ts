@@ -10,5 +10,6 @@ export const listRepositoryToolsTool: Tool = {
     properties: {
       ...repositorySchema,
     },
+    required: ['provider', 'organization', 'repository'],
   },
 };

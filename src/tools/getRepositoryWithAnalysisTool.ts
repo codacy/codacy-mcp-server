@@ -11,5 +11,6 @@ export const getRepositoryWithAnalysisTool: Tool = {
       ...repositorySchema,
       ...branchSchema,
     },
+    required: ['provider', 'organization', 'repository'],
   },
 };

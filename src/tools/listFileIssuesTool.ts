@@ -10,5 +10,6 @@ export const listFileIssuesTool: Tool = {
       ...fileSchema,
       ...defaultPagination,
     },
+    required: ['provider', 'organization', 'repository'],
   },
 };

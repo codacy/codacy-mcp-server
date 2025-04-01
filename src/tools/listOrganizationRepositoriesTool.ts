@@ -10,5 +10,6 @@ export const listOrganizationRepositoriesTool: Tool = {
       ...organizationSchema,
       ...defaultPagination,
     },
+    required: ['provider', 'organization'],
   },
 };

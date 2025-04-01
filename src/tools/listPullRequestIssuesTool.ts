@@ -23,5 +23,6 @@ export const listPullRequestIssuesTool: Tool = {
         description: 'If true, retrieves only potential issues',
       },
     },
+    required: ['provider', 'organization', 'repository'],
   },
 };

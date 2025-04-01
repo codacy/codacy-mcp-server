@@ -21,5 +21,6 @@ export const listFilesTool: Tool = {
         description: 'Filter files that include this string anywhere in their relative path',
       },
     },
+    required: ['provider', 'organization', 'repository'],
   },
 };
