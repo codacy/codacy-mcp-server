@@ -26,6 +26,7 @@ import {
   getPatternTool,
   getIssueTool,
   getRepositoryPullRequestTool,
+  listOrganizationsTool,
 } from './src/tools/index.js';
 import {
   getFileCoverageHandler,
@@ -46,6 +47,7 @@ import {
   listRepositoryToolsHandler,
   listToolsHandler,
   getPatternHandler,
+  listOrganizationsHandler,
 } from './src/handlers/index.js';
 
 OpenAPI.BASE = 'https://app.codacy.com/api/v3';
@@ -102,6 +104,7 @@ type toolKeys =
   | 'codacy_list_repository_tool_patterns'
   | 'codacy_list_repository_tools'
   | 'codacy_list_tools'
+  | 'codacy_list_organization'
   | 'codacy_get_file_issues'
   | 'codacy_get_file_coverage'
   | 'codacy_get_repository_pull_request_files_coverage'
@@ -177,6 +180,10 @@ const toolDefinitions: { [key in toolKeys]: ToolDefinition } = {
   codacy_list_repository_tools: {
     tool: listRepositoryToolsTool,
     handler: listRepositoryToolsHandler,
+  },
+  codacy_list_organization: {
+    tool: listOrganizationsTool,
+    handler: listOrganizationsHandler,
   },
 };
 
