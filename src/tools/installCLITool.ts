@@ -6,10 +6,10 @@ export const installCLITool: Tool = {
   inputSchema: {
     type: 'object',
     properties: {
-        token: {
+        path: {
             type: 'string',
-            description: 'The Codacy account token',
-        },
+            description: 'The path to install the CLI to. Usually it is in the root directory of a project.',
+        }
     },
   },
-}; 
+};
