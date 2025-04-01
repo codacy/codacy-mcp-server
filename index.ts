@@ -136,6 +136,14 @@ const toolDefinitions: { [key in ToolKeys]: ToolDefinition } = {
     tool: Tools.listOrganizationsTool,
     handler: Handlers.listOrganizationsHandler,
   },
+  codacy_cli_install: {
+    tool: Tools.cliInstallTool,
+    handler: Handlers.cliInstallHandler,
+  },
+  codacy_cli_analyze: {
+    tool: Tools.cliAnalyseTool,
+    handler: Handlers.cliAnalyseHandler,
+  },
 };
 
 // Register tools
