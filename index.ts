@@ -26,6 +26,7 @@ import {
   getPatternTool,
   getIssueTool,
   getRepositoryPullRequestTool,
+  installCLITool,
 } from './src/tools/index.js';
 import {
   getFileCoverageHandler,
@@ -46,6 +47,7 @@ import {
   listRepositoryToolsHandler,
   listToolsHandler,
   getPatternHandler,
+  installCLIHandler,
 } from './src/handlers/index.js';
 
 OpenAPI.BASE = 'https://app.codacy.com/api/v3';
@@ -84,7 +86,8 @@ type toolKeys =
   | 'codacy_get_file_with_analysis'
   | 'codacy_get_repository_pull_request'
   | 'codacy_get_issue'
-  | 'codacy_get_pattern';
+  | 'codacy_get_pattern'
+  | 'codacy_install_cli';
 interface ToolDefinition {
   tool: Tool;
   handler: (args: any) => Promise<any>;
@@ -150,6 +153,10 @@ const toolDefinitions: { [key in toolKeys]: ToolDefinition } = {
   codacy_list_repository_tools: {
     tool: listRepositoryToolsTool,
     handler: listRepositoryToolsHandler,
+  },
+  codacy_install_cli: {
+    tool: installCLITool,
+    handler: installCLIHandler,
   },
 };
 
