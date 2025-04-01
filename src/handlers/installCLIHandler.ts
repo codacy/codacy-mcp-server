@@ -1,15 +1,10 @@
 import { Command } from 'commander';
+import path from 'path';
 import { stderr, stdout } from 'process';
 
-export async function installCLIHandler(args: { token: string }): Promise<{ message: string }> {
+export async function installCLIHandler(args: { path: string }): Promise<{ message: string }> {
 
     const program = new Command();
-
-    // Check for CODACY_ACCOUNT_TOKEN
-    if (!process.env.CODACY_ACCOUNT_TOKEN) {
-        // Set CODACY_ACCOUNT_TOKEN from args
-        process.env.CODACY_ACCOUNT_TOKEN = args.token;
-    }
 
     // Add commands
     program
@@ -19,25 +14,43 @@ export async function installCLIHandler(args: { token: string }): Promise<{ mess
 
 
     // Add analyze command
-
     program
         .command('analyze')
         .description('Analyze code using ESLint')
-        .action(() => {
+        .option('-p, --path <dir>', 'Directory to execute in')
+        .action((args) => {
+            const path = require('path');
+            const executionPath = path.resolve(args.path);
+
             const { exec } = require('child_process');
-            exec('codacy-cli analyze --tool eslint --format sarif -o results.sarif', (error: any, stdout: any, stderr: any) => {
-                if (error) {
-                    console.error('Error:', error);
-                    return;
+            
+            exec(
+                'codacy-cli analyze --tool eslint --format sarif -o results.sarif',
+                { cwd: executionPath },
+                (error: any, stdout: any, stderr: any) => {
+                    console.error('ep', executionPath)
+                    if (error) {
+                        console.error(`Error: ${error.message}`);
+                        return;
+                    }
+                    if (stderr) {
+                        console.error(`Stderr: ${stderr}`);
+                        return;
+                    }
+                    console.log(`Output: ${stdout}`);
+
+                    console.log('Analysis completed:', stdout);
                 }
-                console.log('Analysis completed:', stdout);
-            });
+            );
         });
 
 
-    console.error("About to run analyze command")
+    console.error("About to run analyze command", args)
+
     // Parse command line arguments
-    program.parse(['codacy-cli', 'analyze --tool eslint --format sarif -o results.sarif']);
+    const result = await program.parseAsync([`analyze -p ${path}`]);
+
+    console.log("GOT RESULT", result);
 
     return {
         message: "! urhfgerhehehe"
