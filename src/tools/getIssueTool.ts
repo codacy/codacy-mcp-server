@@ -13,5 +13,6 @@ export const getIssueTool: Tool = {
         description: 'Issue ID',
       },
     },
+    required: ['provider', 'organization', 'repository'],
   },
 };

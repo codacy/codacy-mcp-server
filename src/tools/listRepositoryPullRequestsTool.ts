@@ -15,5 +15,6 @@ export const listRepositoryPullRequestsTool: Tool = {
         description: 'If true, includes pull requests that have not been analyzed',
       },
     },
+    required: ['provider', 'organization', 'repository'],
   },
 };

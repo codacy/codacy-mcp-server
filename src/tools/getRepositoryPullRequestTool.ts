@@ -14,5 +14,6 @@ export const getRepositoryPullRequestTool: Tool = {
         description: 'Pull request number',
       },
     },
+    required: ['provider', 'organization', 'repository'],
   },
 };

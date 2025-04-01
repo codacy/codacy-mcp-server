@@ -102,7 +102,7 @@ export const organizationSchema = {
   organization: {
     type: 'string',
     description:
-      "Organization name on the Git provider. In case a repository is given, use that repository's owner (could be an organization name or username), to find the repository's owner check the repository git url, it should be something like this for gh:'https://github.com/<owner>/<repository>.git' for gl:'https://gitlab.com/<owner>/<repository>.git' for bb:'https://bitbucket.org/<owner>/<repository>.git'.",
+      "Organization name on the Git provider. In case a repository is given, use that repository's owner (could be an organization name or username), to find the repository's owner check the repository git remote url, it should be something like this 'git@github.com:<owner>/<repository>.git' or for gh:'https://github.com/<owner>/<repository>.git' for gl:'https://gitlab.com/<owner>/<repository>.git' for bb:'https://bitbucket.org/<owner>/<repository>.git'.",
   },
 };
 

@@ -9,5 +9,6 @@ export const getFileCoverageTool: Tool = {
     properties: {
       ...fileSchema,
     },
+    required: ['provider', 'organization', 'repository'],
   },
 };
