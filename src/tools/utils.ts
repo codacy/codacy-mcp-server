@@ -94,6 +94,10 @@ export const securityScanTypes = {
 };
 
 export const organizationSchema = {
+  gitUrl: {
+    type: 'string',
+    description: "Git URL of the repository. Get the git url using 'git remote -v'",
+  },
   provider: {
     type: 'string',
     description:
@@ -102,7 +106,12 @@ export const organizationSchema = {
   organization: {
     type: 'string',
     description:
-      "Organization name on the Git provider. In case a repository is given, use that repository's owner (could be an organization name or username), to find the repository's owner check the repository git remote url, it should be something like this 'git@github.com:<owner>/<repository>.git' or for gh:'https://github.com/<owner>/<repository>.git' for gl:'https://gitlab.com/<owner>/<repository>.git' for bb:'https://bitbucket.org/<owner>/<repository>.git'.",
+      "Organization name or username that owns the repository on the Git provider. This should only be extracted from the repository's git remote URL using these patterns:\n" +
+      "- SSH format: 'git@github.com:{organization}/{repository}.git'\n" +
+      "- HTTPS GitHub: 'https://github.com/{organization}/{repository}.git'\n" +
+      "- HTTPS GitLab: 'https://gitlab.com/{organization}/{repository}.git'\n" +
+      "- HTTPS BitBucket: 'https://bitbucket.org/{organization}/{repository}.git'\n" +
+      'Do not use the README file to extract the organization name.',
   },
 };
 
@@ -154,4 +163,21 @@ export const fileSchema = {
     type: 'string',
     description: "Codacy's identifier of a file in a specific commit",
   },
+};
+
+export const extractOrganizationFromUrl = (url: string): string | null => {
+  const patterns = [
+    /git@github\.com:([^/]+)\/[^/]+\.git$/,
+    /https:\/\/github\.com\/([^/]+)\/[^/]+\.git$/,
+    /https:\/\/gitlab\.com\/([^/]+)\/[^/]+\.git$/,
+    /https:\/\/bitbucket\.org\/([^/]+)\/[^/]+\.git$/,
+  ];
+
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match && match[1]) {
+      return match[1];
+    }
+  }
+  return null;
 };
