@@ -17,4 +17,4 @@ export * from './listRepositoryToolPatternsTool.js';
 export * from './listRepositoryToolsTool.js';
 export * from './listToolsTool.js';
 export * from './installCLITool.js';
-export * from './CLIanalysisTool.js';
+export * from './CliAnalysisTool.js';

@@ -1,6 +1,6 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 
-export const CLIanalysisTool: Tool = {
+export const cliAnalysisTool: Tool = {
   name: 'codacy_cli_analysis',
   description: 'Run analysis using Codacy CLI',
   inputSchema: {

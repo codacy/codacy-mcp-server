@@ -27,7 +27,7 @@ import {
   getIssueTool,
   getRepositoryPullRequestTool,
   installCLITool,
-  CLIanalysisTool,
+  cliAnalysisTool,
 } from './src/tools/index.js';
 import {
   getFileCoverageHandler,
@@ -48,7 +48,7 @@ import {
   listRepositoryToolsHandler,
   listToolsHandler,
   getPatternHandler,
-  CLIanalysisHandler,
+  cliAnalysisHandler,
   installCliHandler,
 } from './src/handlers/index.js';
 
@@ -163,8 +163,8 @@ const toolDefinitions: { [key in toolKeys]: ToolDefinition } = {
     handler: installCliHandler,
   },
   codacy_cli_analysis: {
-    tool: CLIanalysisTool,
-    handler: CLIanalysisHandler,
+    tool: cliAnalysisTool,
+    handler: cliAnalysisHandler,
   },
 };
 
