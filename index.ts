@@ -49,6 +49,7 @@ import {
   getPatternHandler,
   listOrganizationsHandler,
 } from './src/handlers/index.js';
+import { validateOrganization } from './src/middleware/validation.js';
 
 OpenAPI.BASE = 'https://app.codacy.com/api/v3';
 OpenAPI.HEADERS = {
@@ -200,8 +201,12 @@ server.setRequestHandler(CallToolRequestSchema, async request => {
     }
 
     const toolDefinition = toolDefinitions[request.params.name as toolKeys];
-
     if (!toolDefinition) throw new Error(`Unknown tool: ${request.params.name}`);
+
+    // Validate organization if the tool requires it
+    if (request.params.arguments.organization) {
+      request.params.arguments = validateOrganization(request.params.arguments);
+    }
 
     const result = await toolDefinition.handler(request.params.arguments);
     return {
