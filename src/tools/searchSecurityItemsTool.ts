@@ -70,7 +70,7 @@ export const searchSecurityItemsTool: Tool = {
             items: {
               type: 'number',
               description: 'Segment id',
-            }
+            },
           },
         },
       },

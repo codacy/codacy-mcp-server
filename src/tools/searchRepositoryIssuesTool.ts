@@ -45,7 +45,7 @@ export const searchRepositoryIssuesTool: Tool = {
               type: 'string',
               enum: issueCategories,
               description: 'Issue category',
-            }
+            },
           },
           levels: {
             type: 'array',
