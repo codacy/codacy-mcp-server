@@ -27,7 +27,7 @@ import {
   getIssueTool,
   getRepositoryPullRequestTool,
   installCLITool,
-  CLIanalysisTool,
+  cliAnalysisTool,
   listOrganizationsTool,
 } from './src/tools/index.js';
 import {

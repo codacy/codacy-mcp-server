@@ -5,5 +5,5 @@ export * from './organization.js';
 export * from './security.js';
 export * from './tools.js';
 export * from './installCLI.js';
-export * from './CLIanalysis.js';
+export * from './cliAnalysis.js';
 export * from './account.js';
