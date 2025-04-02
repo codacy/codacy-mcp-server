@@ -19,32 +19,47 @@ export const installCliHandler = async (): Promise<{ message: string }> => {
   if (!isCliInstalled) {
     const downloadSuccessful = await downloadCliTool();
     if (!downloadSuccessful) {
-      console.error('Failed to download Codacy CLI');
-      throw new Error('Failed to download Codacy CLI');
+      return {
+        message: 'Failed to download Codacy CLI',
+      };
     }
   }
 
   const cliPath = await getCodacyCliPath();
 
-  if (!isConfigPresent) {
-    await execPromise(`${cliPath} init`);
-    await execPromise(`${cliPath} install`);
-  } else {
+  if (isConfigPresent) {
     return {
       message: 'Codacy CLI is already installed and configured',
     };
   }
 
-  const isConfigInstallationSuccessful = isCodacyConfigPresent();
+  const initSuccessful = await execPromise(`${cliPath} init`);
+  if (!initSuccessful) {
+    return {
+      message: 'Failed to initialize Codacy CLI',
+    };
+  }
 
-  if (isConfigInstallationSuccessful) {
+  const installSuccessful = await execPromise(`${cliPath} install`);
+  if (!installSuccessful) {
     return {
-      message: 'Codacy CLI installed successfully',
+      message: 'Failed to install Codacy CLI',
     };
+  }
+  return {
+    message: 'Codacy CLI installed successfully',
+  };
+};
+
+export const getCodacyCliPath: () => Promise<string> = async () => {
+  const latestReleaseTag = await getLatestReleaseTag();
+
+  if (os.platform() === 'darwin') {
+    return path.join(MAC_OS_PATH, latestReleaseTag, 'codacy-cli-v2');
+  } else if (os.platform() === 'linux') {
+    return path.join(LINUX_PATH, latestReleaseTag, 'codacy-cli-v2');
   } else {
-    return {
-      message: 'Codacy CLI downloaded, but installation has failed',
-    };
+    throw new Error('Unsupported OS');
   }
 };
 
@@ -82,54 +97,32 @@ const getLatestReleaseTag = (): Promise<string> => {
 
 const execAsync = promisify(exec);
 
-const execPromise = async (command: string): Promise<string> => {
+const execPromise = async (command: string): Promise<boolean> => {
   try {
-    const { stdout, stderr } = await execAsync(command);
-
-    if (stderr) return `Command "${command}" has failed, reason: ${stderr}`;
-
-    return stdout.trim();
+    await execAsync(command);
+    return true;
   } catch (error) {
-    return `Command failed: ${command}\n${error instanceof Error ? error.message : error}`;
+    console.error(`Error executing command: ${command}, reason: ${error}`);
+    return false;
   }
 };
 
-const downloadCliTool = () => {
-  return new Promise((resolve, reject) => {
+const downloadCliTool = (): Promise<boolean> => {
+  return new Promise((resolve, _reject) => {
     exec(
       `bash <(curl -Ls ${GITHUB_INSTALL_SCRIPT_URL})`,
       { shell: '/bin/bash' },
-      (error, stdout, stderr) => {
-        // if (error) {
-        //   reject(new Error('Error: ' + error.message));
-        //   return;
-        // }
-        // if (stderr) {
-        //   reject(new Error(stderr));
-        //   return;
-        // }
-        resolve(true);
+      (error, _stdout, _stderr) => {
+        if (error == null) {
+          resolve(true);
+          return;
+        } else {
+          resolve(false);
+          return;
+        }
       }
     );
-  }).then(() => true);
-  //TODO this catch always occurs for some reason
-  // .catch(error => {
-  //   console.error('Error downloading CLI tool: ', error);
-  //   return false;
-  // });
-};
-
-//TODO better error handling
-const getCodacyCliPath: () => Promise<string> = async () => {
-  const latestReleaseTag = await getLatestReleaseTag();
-
-  if (os.platform() === 'darwin') {
-    return path.join(MAC_OS_PATH, latestReleaseTag, 'codacy-cli-v2');
-  } else if (os.platform() === 'linux') {
-    return path.join(LINUX_PATH, latestReleaseTag, 'codacy-cli-v2');
-  } else {
-    throw new Error('Unsupported OS');
-  }
+  });
 };
 
 const isCodacyCliInstalled: () => Promise<boolean> = async () => {
