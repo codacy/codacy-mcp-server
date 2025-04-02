@@ -6,10 +6,10 @@ export const installCLITool: Tool = {
   inputSchema: {
     type: 'object',
     properties: {
-        token: {
-            type: 'string',
-            description: 'The Codacy account token',
-        },
+      token: {
+        type: 'string',
+        description: 'The Codacy account token',
+      },
     },
   },
-}; 
+};
