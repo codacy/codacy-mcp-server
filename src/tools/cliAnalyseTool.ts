@@ -24,6 +24,11 @@ export const cliAnalyseTool: Tool = {
             executionFolder: {
                 type: 'string',
                 description: 'Absolute path to the folder to execute the analysis'
+            },
+            file: {
+                type: 'string',
+                description: 'Absolute path to the file to analyse, if left empty, the analysis will be executed on the whole executionFolder',
+                default: ''
             }
         }
     }
