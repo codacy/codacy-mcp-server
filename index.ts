@@ -27,7 +27,7 @@ import {
   getIssueTool,
   getRepositoryPullRequestTool,
   listOrganizationsTool,
-  cliAnalyseTool,
+  cliAnalyzeTool,
 } from './src/tools/index.js';
 import {
   getFileCoverageHandler,
@@ -49,7 +49,7 @@ import {
   listToolsHandler,
   getPatternHandler,
   listOrganizationsHandler,
-  cliAnalyseHandler,
+  cliAnalyzeHandler,
 } from './src/handlers/index.js';
 import { validateOrganization } from './src/middleware/validation.js';
 
@@ -118,7 +118,7 @@ type toolKeys =
   | 'codacy_get_repository_pull_request'
   | 'codacy_get_issue'
   | 'codacy_get_pattern'
-  | 'codacy_cli_analyse';
+  | 'codacy_cli_analyze';
 interface ToolDefinition {
   tool: Tool;
   handler: (args: any) => Promise<any>;
@@ -189,9 +189,9 @@ const toolDefinitions: { [key in toolKeys]: ToolDefinition } = {
     tool: listOrganizationsTool,
     handler: listOrganizationsHandler,
   },
-  codacy_cli_analyse: {
-    tool: cliAnalyseTool,
-    handler: cliAnalyseHandler,
+  codacy_cli_analyze: {
+    tool: cliAnalyzeTool,
+    handler: cliAnalyzeHandler,
   },
 };
 

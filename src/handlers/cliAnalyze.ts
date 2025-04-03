@@ -24,7 +24,7 @@ function validateFormat(format: string): string {
   return format;
 }
 
-export async function cliAnalyseHandler(args: {
+export async function cliAnalyzeHandler(args: {
   tool: string;
   format: string;
   executionFolder: string;
@@ -43,8 +43,8 @@ export async function cliAnalyseHandler(args: {
   return new Promise((resolve, reject) => {
     exec(command, (err, stdout) => {
       if (err) {
-        console.error(`Analysis error: ${err}`);
-        reject({ message: `Analysis failed: ${err.message}` });
+        console.error(`Analysis error: ${err.message}`);
+        reject(new Error(`Analysis failed: ${err.message}`));
         return;
       }
 

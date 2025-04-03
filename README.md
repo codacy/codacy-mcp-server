@@ -59,7 +59,7 @@ The following tools are available through the Codacy MCP Server:
 
 ### CLI Analysis
 
-- `codacy_cli_analyse`: Uses Codacy's command-line tool to analyse code.
+- `codacy_cli_analyze`: Uses Codacy's command-line tool to analyze code.
 
 For detailed information about the parameters and filtering options available for each tool, please refer to the [Available Codacy API Actions](#available-codacy-api-actions) section below.
 
