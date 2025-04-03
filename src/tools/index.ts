@@ -17,7 +17,6 @@ export * from './listRepositoryToolPatternsTool.js';
 export * from './listRepositoryToolsTool.js';
 export * from './listToolsTool.js';
 export * from './listOrganizationsTool.js';
-export * from './cliInstallTool.js';
 export * from './cliAnalyseTool.js';
 
 export type ToolKeys =
@@ -40,5 +39,4 @@ export type ToolKeys =
   | 'codacy_get_repository_pull_request'
   | 'codacy_get_issue'
   | 'codacy_get_pattern'
-  | 'codacy_cli_install'
   | 'codacy_cli_analyze';

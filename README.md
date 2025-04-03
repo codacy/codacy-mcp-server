@@ -9,10 +9,13 @@ MCP Server for the Codacy API, enabling access to repositories, files, quality, 
 The following tools are available through the Codacy MCP Server:
 
 ### Repository Management
+
 - `codacy_list_repositories`: List repositories in an organization with pagination support.
 
 ### Code Quality and Analysis
+
 - `codacy_list_repository_issues`: Lists and filters code quality issues in a repository. This is the primary tool for investigating general code quality concerns (e.g. best practices, performance, complexity, style) but NOT security issues. For security-related issues, use the SRM items tool instead. Features include:
+
   - Pagination support for handling large result sets
   - Filtering by multiple criteria including severity, category, and language
   - Author-based filtering for accountability
@@ -20,6 +23,7 @@ The following tools are available through the Codacy MCP Server:
   - Pattern-based searching
 
   Common use cases:
+
   - Code quality audits
   - Technical debt assessment
   - Style guide compliance checks
@@ -27,12 +31,15 @@ The following tools are available through the Codacy MCP Server:
   - Complexity analysis
 
 ### File Management
+
 - `codacy_list_files`: List files in a repository with pagination support.
 - `codacy_get_file_issues`: Get the issue list for a file in a repository.
 - `codacy_get_file_coverage`: Get coverage information for a file in the head commit of a repository branch.
 
 ### Security Analysis
+
 - `codacy_list_srm_items`: Primary tool to list security items/issues/vulnerabilities/findings. Results are related to the organization security and risk management (SRM) dashboard on Codacy. Provides comprehensive security analysis including:
+
   - SAST (Code scanning)
   - Secrets (Secret scanning)
   - SCA (Dependency scanning)
@@ -40,14 +47,19 @@ The following tools are available through the Codacy MCP Server:
   - CICD (CI/CD scanning)
   - DAST (Dynamic Application Security Testing)
   - PenTesting (Penetration testing)
-  
+
   Use this as the first tool when investigating security or compliance concerns.
 
 ### Pull Request Analysis
+
 - `codacy_list_repository_pull_requests`: List pull requests from a repository that the user has access to. You can search this endpoint for either last-updated (default), impact or merged.
 - `codacy_list_pull_request_issues`: Returns a list of issues found in a pull request. We can request either new or fixed issues.
 - `codacy_get_repository_pull_request_files_coverage`: Get coverage information for all files in a pull request.
 - `codacy_get_pull_request_git_diff`: Returns the human-readable Git diff of a pull request.
+
+### CLI Analysis
+
+- `codacy_cli_analyse`: Uses Codacy's command-line tool to analyse code.
 
 For detailed information about the parameters and filtering options available for each tool, please refer to the [Available Codacy API Actions](#available-codacy-api-actions) section below.
 
@@ -60,8 +72,9 @@ Get your Codacy's Account API Token from your [Codacy Account](https://app.codac
 ### Usage
 
 Depending on what are you connecting the MCP Server to, you can use the following methods:
--  Cursor: edit the `.cursor/mcp.json` file to add the following
--  Claude Desktop: edit the `claude_desktop_config.json` file to add the following
+
+- Cursor: edit the `.cursor/mcp.json` file to add the following
+- Claude Desktop: edit the `claude_desktop_config.json` file to add the following
 
 ### NPX
 
@@ -110,6 +123,10 @@ npm install
 npm run update-api
 npm run build
 ```
+
+## Codacy-CLI Support (WIP)
+
+In order to use the [Codacy-CLI](https://github.com/codacy/codacy-cli-v2), it needs to be installed.
 
 ## License
 
