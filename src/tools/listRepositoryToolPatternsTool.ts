@@ -1,5 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { getPaginationWithSorting, repositorySchema } from './utils.js';
+import { getPaginationWithSorting, repositorySchema } from '../utils.js';
 
 export const listRepositoryToolPatternsTool: Tool = {
   name: 'codacy_list_repository_tool_patterns',

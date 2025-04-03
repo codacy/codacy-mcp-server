@@ -181,3 +181,31 @@ export const extractOrganizationFromUrl = (url: string): string | null => {
   }
   return null;
 };
+
+// Helper function to parse URI based on template
+export const parseUri = (uri: string, template: string): Record<string, string> | null => {
+  const templateParts = template.split('/');
+  const uriParts = uri.split('/');
+
+  if (templateParts.length !== uriParts.length) {
+    return null;
+  }
+
+  const params: Record<string, string> = {};
+
+  for (let i = 0; i < templateParts.length; i++) {
+    const templatePart = templateParts[i];
+    const uriPart = uriParts[i];
+
+    if (templatePart.startsWith('{') && templatePart.endsWith('}')) {
+      // This is a parameter
+      const paramName = templatePart.slice(1, -1);
+      params[paramName] = uriPart;
+    } else if (templatePart !== uriPart) {
+      // Static parts must match exactly
+      return null;
+    }
+  }
+
+  return params;
+};

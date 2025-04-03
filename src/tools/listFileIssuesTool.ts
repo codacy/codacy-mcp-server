@@ -1,5 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { defaultPagination, fileSchema } from './utils.js';
+import { defaultPagination, fileSchema } from '../utils.js';
 
 export const listFileIssuesTool: Tool = {
   name: 'codacy_get_file_issues',

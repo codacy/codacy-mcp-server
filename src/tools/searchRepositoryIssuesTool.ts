@@ -5,7 +5,7 @@ import {
   defaultPagination,
   issueCategories,
   repositorySchema,
-} from './utils.js';
+} from '../utils.js';
 
 export const searchRepositoryIssuesTool: Tool = {
   name: 'codacy_list_repository_issues',

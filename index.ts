@@ -4,6 +4,8 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
+  ReadResourceRequestSchema,
+  ListResourceTemplatesRequestSchema,
   Tool,
 } from '@modelcontextprotocol/sdk/types.js';
 import { OpenAPI } from './src/api/client/index.js';
@@ -50,6 +52,8 @@ import {
   listOrganizationsHandler,
 } from './src/handlers/index.js';
 import { validateOrganization } from './src/middleware/validation.js';
+import { resourceTemplates } from './src/resources/resourceTemplates.js';
+import { parseUri } from './src/utils.js';
 
 OpenAPI.BASE = 'https://app.codacy.com/api/v3';
 OpenAPI.HEADERS = {
@@ -65,6 +69,7 @@ const server = new Server(
   {
     capabilities: {
       tools: {},
+      resources: {},
       triggers: {
         patterns: [
           'codacy',
@@ -192,6 +197,75 @@ const toolDefinitions: { [key in toolKeys]: ToolDefinition } = {
 server.setRequestHandler(ListToolsRequestSchema, async () => ({
   tools: Object.values(toolDefinitions).map(({ tool }) => tool),
 }));
+
+// Register resources
+server.setRequestHandler(ListResourceTemplatesRequestSchema, async () => ({
+  resourceTemplates: resourceTemplates.map(({ name, description, uriTemplate }) => ({
+    name,
+    description,
+    uriTemplate,
+  })),
+}));
+
+// Register resource handlers
+server.setRequestHandler(ReadResourceRequestSchema, async (request, _extra) => {
+  try {
+    const uri = request.params.uri;
+
+    // Find matching resource template
+    const template = resourceTemplates.find((t: { name: string; uriTemplate: string }) =>
+      uri.startsWith(t.name)
+    );
+
+    if (!template) {
+      throw new Error(`No matching resource template found for URI: ${uri}`);
+    }
+
+    // Parse URI parameters
+    const params = parseUri(uri, template.uriTemplate);
+    if (!params) {
+      throw new Error(`Invalid resource URI format. Expected format: ${template.uriTemplate}`);
+    }
+
+    // Validate organization
+    const validatedArgs = validateOrganization({
+      provider: params.provider,
+      organization: params.organization,
+      repository: params.repository,
+    });
+
+    // Handle different resource types
+    let result;
+    switch (template.type) {
+      case 'codacy/organizations':
+        result = await listOrganizationsHandler(validatedArgs);
+        break;
+      case 'codacy/repositories':
+        result = await listOrganizationRepositoriesHandler(validatedArgs);
+        break;
+      case 'codacy/files':
+        result = await listFilesHandler(validatedArgs);
+        break;
+      case 'codacy/tools':
+        result = await listToolsHandler(validatedArgs);
+        break;
+      case 'codacy/pattern':
+        result = await getPatternHandler(validatedArgs);
+        break;
+
+      default:
+        throw new Error(`Unsupported resource type: ${template.type}`);
+    }
+
+    return {
+      content: result,
+      _meta: {},
+    };
+  } catch (error) {
+    console.error('Error reading resource:', error);
+    throw error;
+  }
+});
 
 // Register request handlers
 server.setRequestHandler(CallToolRequestSchema, async request => {

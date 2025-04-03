@@ -5,7 +5,7 @@ import {
   securityCategories,
   securityScanTypes,
   securityStatuses,
-} from './utils.js';
+} from '../utils.js';
 
 export const searchSecurityItemsTool: Tool = {
   name: 'codacy_list_srm_items',

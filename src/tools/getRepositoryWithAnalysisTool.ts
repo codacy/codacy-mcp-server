@@ -1,5 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { branchSchema, repositorySchema } from './utils.js';
+import { branchSchema, repositorySchema } from '../utils.js';
 
 export const getRepositoryWithAnalysisTool: Tool = {
   name: 'codacy_get_repository_with_analysis',

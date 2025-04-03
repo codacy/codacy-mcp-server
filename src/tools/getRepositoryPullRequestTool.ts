@@ -1,5 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { repositorySchema } from './utils.js';
+import { repositorySchema } from '../utils.js';
 
 export const getRepositoryPullRequestTool: Tool = {
   name: 'codacy_get_repository_pull_request',

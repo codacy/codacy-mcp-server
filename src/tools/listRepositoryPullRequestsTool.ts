@@ -1,5 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { defaultPagination, repositorySchema } from './utils.js';
+import { defaultPagination, repositorySchema } from '../utils.js';
 
 export const listRepositoryPullRequestsTool: Tool = {
   name: 'codacy_list_repository_pull_requests',
