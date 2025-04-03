@@ -55,7 +55,7 @@ export const searchRepositoryIssuesTool: Tool = {
               type: 'string',
               enum: ['Info', 'Warning', 'Error'],
               description: 'Issue severity level',
-            }
+            },
           },
           authorEmails: {
             type: 'array',

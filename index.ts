@@ -7,48 +7,9 @@ import {
   Tool,
 } from '@modelcontextprotocol/sdk/types.js';
 import { OpenAPI } from './src/api/client/index.js';
-import {
-  getFileCoverageTool,
-  listFileIssuesTool,
-  getPullRequestGitDiffTool,
-  getRepositoryPullRequestFilesCoverageTool,
-  listFilesTool,
-  listOrganizationRepositoriesTool,
-  listPullRequestIssuesTool,
-  listRepositoryPullRequestsTool,
-  searchRepositoryIssuesTool,
-  searchSecurityItemsTool,
-  getRepositoryWithAnalysisTool,
-  getFileWithAnalysisTool,
-  listRepositoryToolsTool,
-  listToolsTool,
-  listRepositoryToolPatternsTool,
-  getPatternTool,
-  getIssueTool,
-  getRepositoryPullRequestTool,
-  listOrganizationsTool,
-} from './src/tools/index.js';
-import {
-  getFileCoverageHandler,
-  getFileIssuesHandler,
-  getPullRequestGitDiffHandler,
-  getRepositoryPullRequestFilesCoverageHandler,
-  listFilesHandler,
-  listPullRequestIssuesHandler,
-  listRepositoryPullRequestsHandler,
-  searchRepositoryIssuesHandler,
-  searchSecurityItemsHandler,
-  listOrganizationRepositoriesHandler,
-  getRepositoryWithAnalysisHandler,
-  getFileWithAnalysisHandler,
-  getRepositoryPullRequestHandler,
-  getIssueHandler,
-  listRepositoryToolPatternsHandler,
-  listRepositoryToolsHandler,
-  listToolsHandler,
-  getPatternHandler,
-  listOrganizationsHandler,
-} from './src/handlers/index.js';
+import * as Tools from './src/tools/index.js';
+import type { ToolKeys } from './src/tools/index.js';
+import * as Handlers from './src/handlers/index.js';
 import { validateOrganization } from './src/middleware/validation.js';
 
 OpenAPI.BASE = 'https://app.codacy.com/api/v3';
@@ -96,95 +57,84 @@ const server = new Server(
   }
 );
 
-type toolKeys =
-  | 'codacy_list_organization_repositories'
-  | 'codacy_list_srm_items'
-  | 'codacy_list_repository_issues'
-  | 'codacy_list_repository_pull_requests'
-  | 'codacy_list_files'
-  | 'codacy_list_repository_tool_patterns'
-  | 'codacy_list_repository_tools'
-  | 'codacy_list_tools'
-  | 'codacy_list_organization'
-  | 'codacy_get_file_issues'
-  | 'codacy_get_file_coverage'
-  | 'codacy_get_repository_pull_request_files_coverage'
-  | 'codacy_get_pull_request_git_diff'
-  | 'codacy_list_pull_request_issues'
-  | 'codacy_get_repository_with_analysis'
-  | 'codacy_get_file_with_analysis'
-  | 'codacy_get_repository_pull_request'
-  | 'codacy_get_issue'
-  | 'codacy_get_pattern';
 interface ToolDefinition {
   tool: Tool;
   handler: (args: any) => Promise<any>;
 }
 
-const toolDefinitions: { [key in toolKeys]: ToolDefinition } = {
+const toolDefinitions: { [key in ToolKeys]: ToolDefinition } = {
   codacy_list_organization_repositories: {
-    tool: listOrganizationRepositoriesTool,
-    handler: listOrganizationRepositoriesHandler,
+    tool: Tools.listOrganizationRepositoriesTool,
+    handler: Handlers.listOrganizationRepositoriesHandler,
   },
-  codacy_list_srm_items: { tool: searchSecurityItemsTool, handler: searchSecurityItemsHandler },
+  codacy_list_srm_items: {
+    tool: Tools.searchSecurityItemsTool,
+    handler: Handlers.searchSecurityItemsHandler,
+  },
   codacy_list_repository_issues: {
-    tool: searchRepositoryIssuesTool,
-    handler: searchRepositoryIssuesHandler,
+    tool: Tools.searchRepositoryIssuesTool,
+    handler: Handlers.searchRepositoryIssuesHandler,
   },
   codacy_list_repository_pull_requests: {
-    tool: listRepositoryPullRequestsTool,
-    handler: listRepositoryPullRequestsHandler,
+    tool: Tools.listRepositoryPullRequestsTool,
+    handler: Handlers.listRepositoryPullRequestsHandler,
   },
-  codacy_list_files: { tool: listFilesTool, handler: listFilesHandler },
-  codacy_get_file_issues: { tool: listFileIssuesTool, handler: getFileIssuesHandler },
-  codacy_get_file_coverage: { tool: getFileCoverageTool, handler: getFileCoverageHandler },
+  codacy_list_files: { tool: Tools.listFilesTool, handler: Handlers.listFilesHandler },
+  codacy_get_file_issues: {
+    tool: Tools.listFileIssuesTool,
+    handler: Handlers.getFileIssuesHandler,
+  },
+  codacy_get_file_coverage: {
+    tool: Tools.getFileCoverageTool,
+    handler: Handlers.getFileCoverageHandler,
+  },
   codacy_get_repository_pull_request_files_coverage: {
-    tool: getRepositoryPullRequestFilesCoverageTool,
-    handler: getRepositoryPullRequestFilesCoverageHandler,
+    tool: Tools.getRepositoryPullRequestFilesCoverageTool,
+    handler: Handlers.getRepositoryPullRequestFilesCoverageHandler,
   },
   codacy_get_pull_request_git_diff: {
-    tool: getPullRequestGitDiffTool,
-    handler: getPullRequestGitDiffHandler,
+    tool: Tools.getPullRequestGitDiffTool,
+    handler: Handlers.getPullRequestGitDiffHandler,
   },
   codacy_list_pull_request_issues: {
-    tool: listPullRequestIssuesTool,
-    handler: listPullRequestIssuesHandler,
+    tool: Tools.listPullRequestIssuesTool,
+    handler: Handlers.listPullRequestIssuesHandler,
   },
   codacy_get_repository_with_analysis: {
-    tool: getRepositoryWithAnalysisTool,
-    handler: getRepositoryWithAnalysisHandler,
+    tool: Tools.getRepositoryWithAnalysisTool,
+    handler: Handlers.getRepositoryWithAnalysisHandler,
   },
   codacy_get_file_with_analysis: {
-    tool: getFileWithAnalysisTool,
-    handler: getFileWithAnalysisHandler,
+    tool: Tools.getFileWithAnalysisTool,
+    handler: Handlers.getFileWithAnalysisHandler,
   },
   codacy_get_repository_pull_request: {
-    tool: getRepositoryPullRequestTool,
-    handler: getRepositoryPullRequestHandler,
+    tool: Tools.getRepositoryPullRequestTool,
+    handler: Handlers.getRepositoryPullRequestHandler,
   },
   codacy_get_issue: {
-    tool: getIssueTool,
-    handler: getIssueHandler,
+    tool: Tools.getIssueTool,
+    handler: Handlers.getIssueHandler,
   },
   codacy_get_pattern: {
-    tool: getPatternTool,
-    handler: getPatternHandler,
+    tool: Tools.getPatternTool,
+    handler: Handlers.getPatternHandler,
   },
   codacy_list_repository_tool_patterns: {
-    tool: listRepositoryToolPatternsTool,
-    handler: listRepositoryToolPatternsHandler,
+    tool: Tools.listRepositoryToolPatternsTool,
+    handler: Handlers.listRepositoryToolPatternsHandler,
   },
   codacy_list_tools: {
-    tool: listToolsTool,
-    handler: listToolsHandler,
+    tool: Tools.listToolsTool,
+    handler: Handlers.listToolsHandler,
   },
   codacy_list_repository_tools: {
-    tool: listRepositoryToolsTool,
-    handler: listRepositoryToolsHandler,
+    tool: Tools.listRepositoryToolsTool,
+    handler: Handlers.listRepositoryToolsHandler,
   },
   codacy_list_organization: {
-    tool: listOrganizationsTool,
-    handler: listOrganizationsHandler,
+    tool: Tools.listOrganizationsTool,
+    handler: Handlers.listOrganizationsHandler,
   },
 };
 
@@ -200,7 +150,7 @@ server.setRequestHandler(CallToolRequestSchema, async request => {
       throw new Error('Arguments are required');
     }
 
-    const toolDefinition = toolDefinitions[request.params.name as toolKeys];
+    const toolDefinition = toolDefinitions[request.params.name as ToolKeys];
     if (!toolDefinition) throw new Error(`Unknown tool: ${request.params.name}`);
 
     // Validate organization if the tool requires it
