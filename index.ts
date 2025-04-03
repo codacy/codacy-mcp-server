@@ -137,8 +137,8 @@ const toolDefinitions: { [key in ToolKeys]: ToolDefinition } = {
     handler: Handlers.listOrganizationsHandler,
   },
   codacy_cli_analyze: {
-    tool: Tools.cliAnalyseTool,
-    handler: Handlers.cliAnalyseHandler,
+    tool: Tools.cliAnalyzeTool,
+    handler: Handlers.cliAnalyzeHandler,
   },
 };
 

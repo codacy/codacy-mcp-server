@@ -1,7 +1,7 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 
-export const cliAnalyseTool: Tool = {
-  name: 'codacy_cli_analyse',
+export const cliAnalyzeTool: Tool = {
+  name: 'codacy_cli_analyze',
   description: 'Run analysis using Codacy CLI',
   inputSchema: {
     type: 'object',
@@ -28,7 +28,7 @@ export const cliAnalyseTool: Tool = {
       file: {
         type: 'string',
         description:
-          'Absolute path to the file to analyse, if left empty, the analysis will be executed on the whole executionFolder',
+          'Absolute path to the file to analyze, if left empty, the analysis will be executed on the whole executionFolder',
         default: '',
       },
     },

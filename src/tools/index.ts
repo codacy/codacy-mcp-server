@@ -17,7 +17,7 @@ export * from './listRepositoryToolPatternsTool.js';
 export * from './listRepositoryToolsTool.js';
 export * from './listToolsTool.js';
 export * from './listOrganizationsTool.js';
-export * from './cliAnalyseTool.js';
+export * from './cliAnalyzeTool.js';
 
 export type ToolKeys =
   | 'codacy_list_organization_repositories'
