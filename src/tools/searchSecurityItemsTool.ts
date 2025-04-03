@@ -23,6 +23,10 @@ export const searchSecurityItemsTool: Tool = {
           repositories: {
             type: 'array',
             description: 'Use this to filter by repository name.',
+            items: {
+              type: 'string',
+              description: 'Repository name',
+            },
           },
           priorities: {
             description: 'Array of security issue priorities/severities to filter by.',
@@ -63,6 +67,10 @@ export const searchSecurityItemsTool: Tool = {
             type: 'array',
             description:
               'Set of segments ids (type number). Segment is a Codacy concept that groups repositories by different criteria',
+            items: {
+              type: 'number',
+              description: 'Segment id',
+            },
           },
         },
       },

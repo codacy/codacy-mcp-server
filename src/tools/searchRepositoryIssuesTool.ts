@@ -24,23 +24,46 @@ export const searchRepositoryIssuesTool: Tool = {
           patternIds: {
             type: 'array',
             description: 'Set of code pattern identifiers',
+            items: {
+              type: 'string',
+              description: 'Code pattern identifier',
+            },
           },
           languages: {
             type: 'array',
             description: `Set of language names, without spaces. Accepted values: ${codacyLanguages.join(', ')}`,
+            items: {
+              type: 'string',
+              enum: codacyLanguages,
+              description: 'Language name',
+            },
           },
           categories: {
             type: 'array',
             description: `Set of issue categories. Accepted values: ${issueCategories.join(', ')}`,
+            items: {
+              type: 'string',
+              enum: issueCategories,
+              description: 'Issue category',
+            },
           },
           levels: {
             type: 'array',
             description:
               'Set of issue severity levels. Accepted values: Info, Warning and Error. Codacy maps these values as follows: Info->Minor, Warning->Medium, Error->Critical',
+            items: {
+              type: 'string',
+              enum: ['Info', 'Warning', 'Error'],
+              description: 'Issue severity level',
+            }
           },
           authorEmails: {
             type: 'array',
             description: 'Set of commit author email addresses',
+            items: {
+              type: 'string',
+              description: 'Commit author email address',
+            },
           },
         },
       },
