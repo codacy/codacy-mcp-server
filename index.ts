@@ -26,7 +26,6 @@ import {
   getPatternTool,
   getIssueTool,
   getRepositoryPullRequestTool,
-  cliInstallTool,
   cliAnalyseTool,
 } from './src/tools/index.js';
 import {
@@ -48,7 +47,6 @@ import {
   listRepositoryToolsHandler,
   listToolsHandler,
   getPatternHandler,
-  cliInstallHandler,
   cliAnalyseHandler,
 } from './src/handlers/index.js';
 
@@ -89,8 +87,7 @@ type toolKeys =
   | 'codacy_get_repository_pull_request'
   | 'codacy_get_issue'
   | 'codacy_get_pattern'
-  | 'codacy_cli_install'
-  | 'codacy_cli_analyse'
+  | 'codacy_cli_analyse';
 interface ToolDefinition {
   tool: Tool;
   handler: (args: any) => Promise<any>;
@@ -156,10 +153,6 @@ const toolDefinitions: { [key in toolKeys]: ToolDefinition } = {
   codacy_list_repository_tools: {
     tool: listRepositoryToolsTool,
     handler: listRepositoryToolsHandler,
-  },
-  codacy_cli_install: {
-    tool: cliInstallTool,
-    handler: cliInstallHandler,
   },
   codacy_cli_analyse: {
     tool: cliAnalyseTool,
