@@ -151,21 +151,13 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
 
 //Register resources
 server.setRequestHandler(ListResourcesRequestSchema, async () => ({
-  resources: [
-    {
-      uri: 'hello://world',
-      name: 'Hello World Message',
-      description: 'A simple greeting message',
-      mimeType: 'text/plain',
-    },
-    ...resourceTemplates
-      .filter(template => !template.parameters)
-      .map(({ name, description, uriTemplate }) => ({
-        name,
-        description,
-        uri: uriTemplate,
-      })),
-  ],
+  resources: resourceTemplates
+    .filter(template => !template.parameters)
+    .map(({ name, description, uriTemplate }) => ({
+      name,
+      description,
+      uri: uriTemplate,
+    })),
 }));
 
 // Register resource templates
@@ -227,16 +219,6 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request, _extra) => {
 // Register request handlers
 server.setRequestHandler(CallToolRequestSchema, async request => {
   try {
-    if (request.params.uri === 'hello://world') {
-      return {
-        contents: [
-          {
-            uri: 'hello://world',
-            text: 'Hello, World! This is my first MCP resource.',
-          },
-        ],
-      };
-    }
     if (!request.params.arguments) {
       throw new Error('Arguments are required');
     }
