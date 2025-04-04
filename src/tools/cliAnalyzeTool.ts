@@ -1,10 +1,11 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 
-export const allowedTools = ['eslint', 'trivy'];
+export const allowedTools = ['eslint'];
 
 export const cliAnalyzeTool: Tool = {
   name: 'codacy_cli_analyze',
-  description: 'Run analysis using Codacy CLI',
+  description:
+    'Run quality analysis using Codacy CLI. Requires the Codacy CLI to be installed and configured.',
   inputSchema: {
     type: 'object',
     properties: {
