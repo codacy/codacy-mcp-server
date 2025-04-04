@@ -117,8 +117,8 @@ export const extractOrganizationFromUrl = (url: string): string | null => {
   ];
 
   for (const pattern of patterns) {
-    const match = url.match(pattern);
-    if (match && match[1]) {
+    const match = pattern.exec(url);
+    if (match?.[1]) {
       return match[1];
     }
   }
