@@ -1,98 +1,3 @@
-export const codacyLanguages = [
-  'C',
-  'CPP',
-  'CSharp',
-  'Java',
-  'Go',
-  'Kotlin',
-  'Ruby',
-  'Scala',
-  'Dart',
-  'Python',
-  'TypeScript',
-  'Javascript',
-  'CoffeeScript',
-  'Swift',
-  'JSP',
-  'VisualBasic',
-  'PHP',
-  'PLSQL',
-  'SQL',
-  'TSQL',
-  'Crystal',
-  'Haskell',
-  'Elixir',
-  'Groovy',
-  'Apex',
-  'VisualForce',
-  'Velocity',
-  'CSS',
-  'HTML',
-  'LESS',
-  'SASS',
-  'Dockerfile',
-  'Terraform',
-  'Shell',
-  'Powershell',
-  'JSON',
-  'XML',
-  'YAML',
-  'Markdown',
-  'Cobol',
-  'ABAP',
-  'ObjectiveC',
-  'Rust',
-];
-
-export const issueCategories = [
-  'security',
-  'errorprone',
-  'performance',
-  'complexity',
-  'unusedcode',
-  'comprehensibility',
-  'compatibility',
-  'bestpractice',
-  'codestyle',
-  'documentation',
-];
-
-export const securityStatuses = {
-  Open: ['OnTrack', 'DueSoon', 'Overdue'],
-  Closed: ['ClosedOnTime', 'ClosedLate', 'Ignored'],
-};
-
-export const securityCategories = [
-  'Auth',
-  'CommandInjection',
-  'Cookies',
-  'Cryptography',
-  'CSRF',
-  'DoS',
-  'FileAccess',
-  'HTTP',
-  'InputValidation',
-  'InsecureModulesLibraries',
-  'InsecureStorage',
-  'Other',
-  'Regex',
-  'SQLInjection',
-  'UnexpectedBehaviour',
-  'Visibility',
-  'XSS',
-  '_other_',
-];
-
-export const securityScanTypes = {
-  SAST: 'Code scanning',
-  Secrets: 'Secret scanning',
-  SCA: 'Dependency scanning',
-  IaC: 'Infrastructure-as-code scanning',
-  CICD: 'CI/CD scanning',
-  DAST: 'Dynamic Application Security Testing',
-  PenTesting: 'Penetration testing',
-};
-
 export const organizationSchema = {
   gitUrl: {
     type: 'string',
@@ -165,19 +70,62 @@ export const fileSchema = {
   },
 };
 
-export const extractOrganizationFromUrl = (url: string): string | null => {
-  const patterns = [
-    /git@github\.com:([^/]+)\/[^/]+\.git$/,
-    /https:\/\/github\.com\/([^/]+)\/[^/]+\.git$/,
-    /https:\/\/gitlab\.com\/([^/]+)\/[^/]+\.git$/,
-    /https:\/\/bitbucket\.org\/([^/]+)\/[^/]+\.git$/,
-  ];
+// Specific schemas for tools
 
-  for (const pattern of patterns) {
-    const match = pattern.exec(url);
-    if (match?.[1]) {
-      return match[1];
-    }
-  }
-  return null;
+export const listToolsSchema = {
+  type: 'object' as const,
+  properties: {
+    ...defaultPagination,
+  },
+};
+
+export const listOrganizationsSchema = {
+  type: 'object' as const,
+  properties: {
+    provider: organizationSchema.provider,
+    ...defaultPagination,
+  },
+};
+
+export const listOrganizationRepositoriesSchema = {
+  type: 'object' as const,
+  properties: {
+    ...organizationSchema,
+    ...defaultPagination,
+  },
+  required: ['provider', 'organization'],
+};
+
+export const listFilesSchema = {
+  type: 'object' as const,
+  properties: {
+    ...repositorySchema,
+    ...getPaginationWithSorting(
+      "Field used to sort the list of files. The allowed values are 'filename', 'issues', 'grade', 'duplication', 'complexity', and 'coverage'."
+    ),
+    branch: {
+      type: 'string',
+      description: 'Name of a repository branch enabled on Codacy',
+    },
+    search: {
+      type: 'string',
+      description: 'Filter files that include this string anywhere in their relative path',
+    },
+  },
+  required: ['provider', 'organization', 'repository'],
+};
+
+export const getPatternSchema = {
+  type: 'object' as const,
+  properties: {
+    toolUuid: {
+      type: 'string',
+      description: 'The identifier of the tool that the pattern belongs to.',
+    },
+    patternId: {
+      type: 'string',
+      description: 'Pattern identifier',
+    },
+  },
+  required: ['toolUuid', 'patternId'],
 };

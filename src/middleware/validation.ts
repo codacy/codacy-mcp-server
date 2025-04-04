@@ -1,4 +1,4 @@
-import { extractOrganizationFromUrl } from '../tools/utils.js';
+import { extractOrganizationFromUrl } from '../utils.js';
 
 export class ValidationError extends Error {
   constructor(message: string) {
