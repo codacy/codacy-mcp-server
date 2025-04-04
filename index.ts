@@ -213,8 +213,8 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request, _extra) => {
     const uri = request.params.uri;
 
     // Find matching resource template
-    const template = resourceTemplates.find((t: { name: string; uriTemplate: string }) =>
-      uri.startsWith(t.name)
+    const template = resourceTemplates.find((t: { type: string; uriTemplate: string }) =>
+      uri.startsWith(t.type)
     );
 
     if (!template) {
@@ -222,40 +222,20 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request, _extra) => {
     }
 
     // Parse URI parameters
-    const params = parseUri(uri, template.uriTemplate);
+    let params = parseUri(uri, template.uriTemplate);
     if (!params) {
       throw new Error(`Invalid resource URI format. Expected format: ${template.uriTemplate}`);
     }
 
     // Validate organization
-    const validatedArgs = validateOrganization({
-      provider: params.provider,
-      organization: params.organization,
-      repository: params.repository,
-    });
+    const validatedArgs = validateOrganization(params);
 
-    // Handle different resource types
-    let result;
-    switch (template.type) {
-      case 'codacy/organizations':
-        result = await listOrganizationsHandler(validatedArgs);
-        break;
-      case 'codacy/repositories':
-        result = await listOrganizationRepositoriesHandler(validatedArgs);
-        break;
-      case 'codacy/files':
-        result = await listFilesHandler(validatedArgs);
-        break;
-      case 'codacy/tools':
-        result = await listToolsHandler(validatedArgs);
-        break;
-      case 'codacy/pattern':
-        result = await getPatternHandler(validatedArgs);
-        break;
-
-      default:
-        throw new Error(`Unsupported resource type: ${template.type}`);
+    // Validate organization if the tool requires it
+    if (params.organization) {
+      params = validateOrganization(request.params.arguments);
     }
+
+    const result = await template.handler(validatedArgs);
 
     return {
       content: result,
