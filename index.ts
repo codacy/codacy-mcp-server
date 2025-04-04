@@ -111,7 +111,7 @@ type toolKeys =
   | 'codacy_list_repository_tool_patterns'
   | 'codacy_list_repository_tools'
   | 'codacy_list_tools'
-  | 'codacy_list_organization'
+  | 'codacy_list_organizations'
   | 'codacy_get_file_issues'
   | 'codacy_get_file_coverage'
   | 'codacy_get_repository_pull_request_files_coverage'
@@ -188,7 +188,7 @@ const toolDefinitions: { [key in toolKeys]: ToolDefinition } = {
     tool: listRepositoryToolsTool,
     handler: listRepositoryToolsHandler,
   },
-  codacy_list_organization: {
+  codacy_list_organizations: {
     tool: listOrganizationsTool,
     handler: listOrganizationsHandler,
   },
@@ -201,13 +201,21 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
 
 //Register resources
 server.setRequestHandler(ListResourcesRequestSchema, async () => ({
-  resources: resourceTemplates
-    .filter(template => !template.parameters)
-    .map(({ name, description, uriTemplate }) => ({
-      name,
-      description,
-      uri: uriTemplate,
-    })),
+  resources: [
+    {
+      uri: 'hello://world',
+      name: 'Hello World Message',
+      description: 'A simple greeting message',
+      mimeType: 'text/plain',
+    },
+    ...resourceTemplates
+      .filter(template => !template.parameters)
+      .map(({ name, description, uriTemplate }) => ({
+        name,
+        description,
+        uri: uriTemplate,
+      })),
+  ],
 }));
 
 // Register resource templates
@@ -269,6 +277,16 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request, _extra) => {
 // Register request handlers
 server.setRequestHandler(CallToolRequestSchema, async request => {
   try {
+    if (request.params.uri === 'hello://world') {
+      return {
+        contents: [
+          {
+            uri: 'hello://world',
+            text: 'Hello, World! This is my first MCP resource.',
+          },
+        ],
+      };
+    }
     if (!request.params.arguments) {
       throw new Error('Arguments are required');
     }
