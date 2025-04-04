@@ -1,5 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { repositorySchema } from '../utils.js';
+import { repositorySchema } from '../schemas.js';
 
 export const getIssueTool: Tool = {
   name: 'codacy_get_issue',

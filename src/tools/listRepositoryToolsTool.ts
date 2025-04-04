@@ -1,5 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { repositorySchema } from '../utils.js';
+import { repositorySchema } from '../schemas.js';
 
 export const listRepositoryToolsTool: Tool = {
   name: 'codacy_list_repository_tools',

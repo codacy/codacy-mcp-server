@@ -1,5 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { listFilesSchema } from '../resources/listFilesSchema.js';
+import { listFilesSchema } from '../schemas.js';
 
 export const listFilesTool: Tool = {
   name: 'codacy_list_files',

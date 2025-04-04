@@ -1,10 +1,6 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import {
-  defaultPagination,
-  generalOrganizationMistakes,
-  generalRepositoryMistakes,
-  repositorySchema,
-} from '../utils.js';
+import { generalOrganizationMistakes, generalRepositoryMistakes } from '../utils.js';
+import { defaultPagination, repositorySchema } from '../schemas.js';
 
 const rules = `
 Use this tool to list the issues for specific pull requests. 

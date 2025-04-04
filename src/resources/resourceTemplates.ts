@@ -1,15 +1,17 @@
 import { ResourceTemplate } from '@modelcontextprotocol/sdk/types.js';
-import { getPatternSchema } from './getPatternSchema.js';
-import { listFilesSchema } from './listFilesSchema.js';
-import { listOrganizationRepositoriesSchema } from './listOrganizationRepositoriesSchema.js';
-import { listOrganizationsSchema } from './listOrganizationsSchema.js';
-import { listToolsSchema } from './listToolsSchema.js';
-import { organizationSchema, repositorySchema } from '../utils.js';
 import { getPatternHandler, listToolsHandler } from '../handlers/tools.js';
 import { listOrganizationsHandler } from '../handlers/account.js';
 import { listOrganizationRepositoriesHandler } from '../handlers/organization.js';
 import { listFilesHandler } from '../handlers/repository.js';
-
+import {
+  organizationSchema,
+  repositorySchema,
+  getPatternSchema,
+  listFilesSchema,
+  listOrganizationRepositoriesSchema,
+  listOrganizationsSchema,
+  listToolsSchema,
+} from '../schemas.js';
 export type CodacyResourceType =
   | 'codacy/pattern'
   | 'codacy/tools'

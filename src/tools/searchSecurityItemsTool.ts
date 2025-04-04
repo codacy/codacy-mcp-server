@@ -2,12 +2,11 @@ import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import {
   generalOrganizationMistakes,
   generalRepositoryMistakes,
-  getPaginationWithSorting,
-  organizationSchema,
   securityCategories,
   securityScanTypes,
   securityStatuses,
 } from '../utils.js';
+import { getPaginationWithSorting, organizationSchema } from '../schemas.js';
 
 const rules = `
   This tool provides advanced filtering by security categories, priorities, and scan types. Use this as the first tool when investigating security or compliance concerns. 

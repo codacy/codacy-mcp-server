@@ -238,7 +238,7 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request, _extra) => {
     const result = await template.handler(validatedArgs);
 
     return {
-      content: result,
+      contents: [result],
       _meta: {},
     };
   } catch (error) {

@@ -1,11 +1,7 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import {
-  defaultPagination,
-  fileSchema,
-  generalOrganizationMistakes,
-  generalRepositoryMistakes,
-} from '../utils.js';
+import { generalOrganizationMistakes, generalRepositoryMistakes } from '../utils.js';
 import { listFilesTool } from './listFilesTool.js';
+import { defaultPagination, fileSchema } from '../schemas.js';
 
 const rules = `
   Use this tool to list the issues for specific files in a repository. 

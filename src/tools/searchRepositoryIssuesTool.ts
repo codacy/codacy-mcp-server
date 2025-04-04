@@ -1,16 +1,14 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import {
-  branchSchema,
   codacyLanguages,
-  defaultPagination,
   generalOrganizationMistakes,
   generalRepositoryMistakes,
   issueCategories,
-  repositorySchema,
 } from '../utils.js';
 import { searchSecurityItemsTool } from './searchSecurityItemsTool.js';
 import { listFileIssuesTool } from './listFileIssuesTool.js';
 import { listPullRequestIssuesTool } from './listPullRequestIssuesTool.js';
+import { repositorySchema, branchSchema, defaultPagination } from '../schemas.js';
 
 const rules = `
   This is the primary tool for investigating general code quality concerns (e.g. best practices, performance, complexity, style) but NOT security issues. 
