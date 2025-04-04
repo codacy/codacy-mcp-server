@@ -222,23 +222,28 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request, _extra) => {
     }
 
     // Parse URI parameters
-    let params = parseUri(uri, template.uriTemplate);
+    const params = parseUri(uri, template.uriTemplate);
     if (!params) {
       throw new Error(`Invalid resource URI format. Expected format: ${template.uriTemplate}`);
     }
 
-    // Validate organization
-    const validatedArgs = validateOrganization(params);
+    // // Validate organization
+    let validatedArgs = params;
 
     // Validate organization if the tool requires it
     if (params.organization) {
-      params = validateOrganization(request.params.arguments);
+      validatedArgs = validateOrganization(params);
     }
 
     const result = await template.handler(validatedArgs);
 
     return {
-      contents: [result],
+      contents: [
+        {
+          uri: request.params.uri,
+          text: JSON.stringify(result, null, 2),
+        },
+      ],
       _meta: {},
     };
   } catch (error) {
