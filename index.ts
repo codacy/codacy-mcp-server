@@ -7,6 +7,7 @@ import {
   ReadResourceRequestSchema,
   ListResourceTemplatesRequestSchema,
   Tool,
+  ListResourcesRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { OpenAPI } from './src/api/client/index.js';
 import {
@@ -198,13 +199,26 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
   tools: Object.values(toolDefinitions).map(({ tool }) => tool),
 }));
 
-// Register resources
+//Register resources
+server.setRequestHandler(ListResourcesRequestSchema, async () => ({
+  resources: resourceTemplates
+    .filter(template => !template.parameters)
+    .map(({ name, description, uriTemplate }) => ({
+      name,
+      description,
+      uri: uriTemplate,
+    })),
+}));
+
+// Register resource templates
 server.setRequestHandler(ListResourceTemplatesRequestSchema, async () => ({
-  resourceTemplates: resourceTemplates.map(({ name, description, uriTemplate }) => ({
-    name,
-    description,
-    uriTemplate,
-  })),
+  resourceTemplates: resourceTemplates
+    .filter(template => template.parameters)
+    .map(({ name, description, uriTemplate }) => ({
+      name,
+      description,
+      uriTemplate,
+    })),
 }));
 
 // Register resource handlers

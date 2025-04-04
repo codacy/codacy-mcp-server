@@ -54,10 +54,6 @@ export const resourceTemplates: CodacyResourceTemplate[] = [
     type: 'codacy/tools',
     description: 'Code analysis tools available in Codacy.',
     uriTemplate: 'codacy/tools',
-    parameters: {
-      type: 'object',
-      properties: {},
-    },
     schema: listToolsSchema,
     operations: ['read'],
     handler: listToolsHandler,
