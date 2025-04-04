@@ -73,6 +73,7 @@ Get your Codacy's Account API Token from your [Codacy Account](https://app.codac
 Depending on what are you connecting the MCP Server to, you can use the following methods:
 
 - Cursor: edit the `.cursor/mcp.json` file to add the following
+- Windsurf: edit the `.codeium/windsurf/mcp_config.json` file to add the following
 - Claude Desktop: edit the `claude_desktop_config.json` file to add the following
 
 ### NPX
@@ -93,7 +94,7 @@ Depending on what are you connecting the MCP Server to, you can use the followin
 
 ### Node (when using NVM)
 
-When using NVM with Claude Desktop, NPX won't work. You should first install the MCP Server globally, and thenuse Node directly:
+When using NVM with Claude Desktop, NPX won't work. You should first install the MCP Server globally, and then use Node directly:
 
 ```bash
 npm install -g @codacy/codacy-mcp
