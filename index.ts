@@ -139,7 +139,7 @@ const toolDefinitions: { [key in ToolKeys]: ToolDefinition } = {
     tool: Tools.listRepositoryToolsTool,
     handler: Handlers.listRepositoryToolsHandler,
   },
-  codacy_list_organization: {
+  codacy_list_organizations: {
     tool: Tools.listOrganizationsTool,
     handler: Handlers.listOrganizationsHandler,
   },

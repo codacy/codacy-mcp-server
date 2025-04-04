@@ -28,7 +28,7 @@ export type ToolKeys =
   | 'codacy_list_repository_tool_patterns'
   | 'codacy_list_repository_tools'
   | 'codacy_list_tools'
-  | 'codacy_list_organization'
+  | 'codacy_list_organizations'
   | 'codacy_get_file_issues'
   | 'codacy_get_file_coverage'
   | 'codacy_get_repository_pull_request_files_coverage'
