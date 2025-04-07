@@ -4,18 +4,13 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
-  ReadResourceRequestSchema,
-  ListResourceTemplatesRequestSchema,
   Tool,
-  ListResourcesRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { OpenAPI } from './src/api/client/index.js';
 import * as Tools from './src/tools/index.js';
 import type { ToolKeys } from './src/tools/index.js';
 import * as Handlers from './src/handlers/index.js';
 import { validateOrganization } from './src/middleware/validation.js';
-import { resourceTemplates } from './src/resources/resourceTemplates.js';
-import { parseUri } from './src/utils.js';
 
 OpenAPI.BASE = 'https://app.codacy.com/api/v3';
 OpenAPI.HEADERS = {
@@ -148,73 +143,6 @@ const toolDefinitions: { [key in ToolKeys]: ToolDefinition } = {
 server.setRequestHandler(ListToolsRequestSchema, async () => ({
   tools: Object.values(toolDefinitions).map(({ tool }) => tool),
 }));
-
-//Register resources
-server.setRequestHandler(ListResourcesRequestSchema, async () => ({
-  resources: resourceTemplates
-    .filter(template => !template.parameters)
-    .map(({ name, description, uriTemplate }) => ({
-      name,
-      description,
-      uri: uriTemplate,
-    })),
-}));
-
-// Register resource templates
-server.setRequestHandler(ListResourceTemplatesRequestSchema, async () => ({
-  resourceTemplates: resourceTemplates
-    .filter(template => template.parameters)
-    .map(({ name, description, uriTemplate }) => ({
-      name,
-      description,
-      uriTemplate,
-    })),
-}));
-
-// Register resource handlers
-server.setRequestHandler(ReadResourceRequestSchema, async (request, _extra) => {
-  try {
-    const uri = request.params.uri;
-
-    // Find matching resource template
-    const template = resourceTemplates.find((t: { type: string; uriTemplate: string }) =>
-      uri.startsWith(t.type)
-    );
-
-    if (!template) {
-      throw new Error(`No matching resource template found for URI: ${uri}`);
-    }
-
-    // Parse URI parameters
-    const params = parseUri(uri, template.uriTemplate);
-    if (!params) {
-      throw new Error(`Invalid resource URI format. Expected format: ${template.uriTemplate}`);
-    }
-
-    // // Validate organization
-    let validatedArgs = params;
-
-    // Validate organization if the tool requires it
-    if (params.organization) {
-      validatedArgs = validateOrganization(params);
-    }
-
-    const result = await template.handler(validatedArgs);
-
-    return {
-      contents: [
-        {
-          uri: request.params.uri,
-          text: JSON.stringify(result, null, 2),
-        },
-      ],
-      _meta: {},
-    };
-  } catch (error) {
-    console.error('Error reading resource:', error);
-    throw error;
-  }
-});
 
 // Register request handlers
 server.setRequestHandler(CallToolRequestSchema, async request => {

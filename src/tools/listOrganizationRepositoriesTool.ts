@@ -1,5 +1,5 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { listOrganizationRepositoriesSchema } from '../schemas.js';
+import { defaultPagination, organizationSchema } from '../schemas.js';
 import { generalOrganizationMistakes } from '../utils.js';
 
 const rules = `
@@ -12,5 +12,12 @@ export const listOrganizationRepositoriesTool: Tool = {
   name: 'codacy_list_organization_repositories',
   description: `List repositories in an organization with pagination.
   ${rules}`,
-  inputSchema: listOrganizationRepositoriesSchema,
+  inputSchema: {
+    type: 'object',
+    properties: {
+      ...organizationSchema,
+      ...defaultPagination,
+    },
+    required: ['provider', 'organization'],
+  },
 };
