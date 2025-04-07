@@ -1,6 +1,5 @@
-import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { generalOrganizationMistakes, generalRepositoryMistakes } from '../utils.js';
-import { defaultPagination, repositorySchema } from '../schemas.js';
+import { generalOrganizationMistakes, generalRepositoryMistakes } from '../rules.js';
+import { CodacyTool, defaultPagination, repositorySchema, toolNames } from '../schemas.js';
 
 const rules = `
 Use this tool to list the issues for specific pull requests. 
@@ -16,8 +15,8 @@ ${generalOrganizationMistakes}
 ${generalRepositoryMistakes}
 `;
 
-export const listPullRequestIssuesTool: Tool = {
-  name: 'codacy_list_pull_request_issues',
+export const listPullRequestIssuesTool: CodacyTool = {
+  name: toolNames.CODACY_LIST_PULL_REQUEST_ISSUES,
   description: `Returns a list of issues found in a pull request. We can request either new or fixed issues. \n ${rules}`,
   inputSchema: {
     type: 'object',

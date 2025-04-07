@@ -18,25 +18,3 @@ export * from './listRepositoryToolsTool.js';
 export * from './listToolsTool.js';
 export * from './listOrganizationsTool.js';
 export * from './cliAnalyzeTool.js';
-
-export type ToolKeys =
-  | 'codacy_list_organization_repositories'
-  | 'codacy_list_srm_items'
-  | 'codacy_list_repository_issues'
-  | 'codacy_list_repository_pull_requests'
-  | 'codacy_list_files'
-  | 'codacy_list_repository_tool_patterns'
-  | 'codacy_list_repository_tools'
-  | 'codacy_list_tools'
-  | 'codacy_list_organizations'
-  | 'codacy_get_file_issues'
-  | 'codacy_get_file_coverage'
-  | 'codacy_get_repository_pull_request_files_coverage'
-  | 'codacy_get_pull_request_git_diff'
-  | 'codacy_list_pull_request_issues'
-  | 'codacy_get_repository_with_analysis'
-  | 'codacy_get_file_with_analysis'
-  | 'codacy_get_repository_pull_request'
-  | 'codacy_get_issue'
-  | 'codacy_get_pattern'
-  | 'codacy_cli_analyze';

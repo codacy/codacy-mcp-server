@@ -1,7 +1,6 @@
-import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { generalOrganizationMistakes, generalRepositoryMistakes } from '../utils.js';
+import { generalOrganizationMistakes, generalRepositoryMistakes } from '../rules.js';
 import { listFilesTool } from './listFilesTool.js';
-import { defaultPagination, fileSchema } from '../schemas.js';
+import { CodacyTool, defaultPagination, fileSchema, toolNames } from '../schemas.js';
 
 const rules = `
   Use this tool to list the issues for specific files in a repository. 
@@ -18,8 +17,8 @@ const rules = `
   ${generalRepositoryMistakes}
 `;
 
-export const listFileIssuesTool: Tool = {
-  name: 'codacy_get_file_issues',
+export const listFileIssuesTool: CodacyTool = {
+  name: toolNames.CODACY_GET_FILE_ISSUES,
   description: `Get the issue list for a file in a repository. \n ${rules}`,
   inputSchema: {
     type: 'object',

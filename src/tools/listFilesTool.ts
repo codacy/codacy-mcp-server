@@ -1,8 +1,7 @@
-import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { getPaginationWithSorting, repositorySchema } from '../schemas.js';
+import { CodacyTool, getPaginationWithSorting, repositorySchema, toolNames } from '../schemas.js';
 
-export const listFilesTool: Tool = {
-  name: 'codacy_list_files',
+export const listFilesTool: CodacyTool = {
+  name: toolNames.CODACY_LIST_FILES,
   description:
     "List files in a repository with pagination. Supports sorting by various metrics (coverage, grade, issues, etc.) and filtering. Use sort='coverage' and direction='desc' to efficiently find files with high coverage, or sort='grade' for code quality analysis. Use search to filter files by name. ",
   inputSchema: {

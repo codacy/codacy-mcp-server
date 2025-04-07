@@ -1,3 +1,35 @@
+import { Tool } from '@modelcontextprotocol/sdk/types.js';
+
+export const toolNames = {
+  CODACY_LIST_ORGANIZATION_REPOSITORIES: 'codacy_list_organization_repositories',
+  CODACY_LIST_SRM_ITEMS: 'codacy_list_srm_items',
+  CODACY_LIST_REPOSITORY_ISSUES: 'codacy_list_repository_issues',
+  CODACY_LIST_REPOSITORY_PULL_REQUESTS: 'codacy_list_repository_pull_requests',
+  CODACY_LIST_FILES: 'codacy_list_files',
+  CODACY_LIST_REPOSITORY_TOOL_PATTERNS: 'codacy_list_repository_tool_patterns',
+  CODACY_LIST_REPOSITORY_TOOLS: 'codacy_list_repository_tools',
+  CODACY_LIST_TOOLS: 'codacy_list_tools',
+  CODACY_LIST_ORGANIZATIONS: 'codacy_list_organizations',
+  CODACY_GET_FILE_ISSUES: 'codacy_get_file_issues',
+  CODACY_GET_FILE_COVERAGE: 'codacy_get_file_coverage',
+  CODACY_GET_REPOSITORY_PULL_REQUEST_FILES_COVERAGE:
+    'codacy_get_repository_pull_request_files_coverage',
+  CODACY_GET_PULL_REQUEST_GIT_DIFF: 'codacy_get_pull_request_git_diff',
+  CODACY_LIST_PULL_REQUEST_ISSUES: 'codacy_list_pull_request_issues',
+  CODACY_GET_REPOSITORY_WITH_ANALYSIS: 'codacy_get_repository_with_analysis',
+  CODACY_GET_FILE_WITH_ANALYSIS: 'codacy_get_file_with_analysis',
+  CODACY_GET_REPOSITORY_PULL_REQUEST: 'codacy_get_repository_pull_request',
+  CODACY_GET_ISSUE: 'codacy_get_issue',
+  CODACY_GET_PATTERN: 'codacy_get_pattern',
+  CODACY_CLI_ANALYZE: 'codacy_cli_analyze',
+} as const;
+
+export type ToolKeys = (typeof toolNames)[keyof typeof toolNames];
+
+export interface CodacyTool extends Tool {
+  name: ToolKeys;
+}
+
 export const organizationSchema = {
   gitUrl: {
     type: 'string',

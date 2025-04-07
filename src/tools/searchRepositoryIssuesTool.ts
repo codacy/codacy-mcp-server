@@ -1,14 +1,15 @@
-import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import {
-  codacyLanguages,
-  generalOrganizationMistakes,
-  generalRepositoryMistakes,
-  issueCategories,
-} from '../utils.js';
+import { codacyLanguages, issueCategories } from '../utils.js';
 import { searchSecurityItemsTool } from './searchSecurityItemsTool.js';
 import { listFileIssuesTool } from './listFileIssuesTool.js';
 import { listPullRequestIssuesTool } from './listPullRequestIssuesTool.js';
-import { repositorySchema, branchSchema, defaultPagination } from '../schemas.js';
+import {
+  repositorySchema,
+  branchSchema,
+  defaultPagination,
+  toolNames,
+  CodacyTool,
+} from '../schemas.js';
+import { generalOrganizationMistakes, generalRepositoryMistakes } from '../rules.js';
 
 const rules = `
   This is the primary tool for investigating general code quality concerns (e.g. best practices, performance, complexity, style) but NOT security issues. 
@@ -38,8 +39,8 @@ const rules = `
   ${generalRepositoryMistakes}
 `;
 
-export const searchRepositoryIssuesTool: Tool = {
-  name: 'codacy_list_repository_issues',
+export const searchRepositoryIssuesTool: CodacyTool = {
+  name: toolNames.CODACY_LIST_REPOSITORY_ISSUES,
   description: `Lists and filters code quality issues in a repository.
     \n ${rules}`,
   inputSchema: {

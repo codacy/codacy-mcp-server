@@ -1,6 +1,3 @@
-import { listOrganizationRepositoriesTool } from './tools/listOrganizationRepositoriesTool.js';
-import { listOrganizationsTool } from './tools/listOrganizationsTool.js';
-
 export const codacyLanguages = [
   'C',
   'CPP',
@@ -95,18 +92,6 @@ export const securityScanTypes = {
   DAST: 'Dynamic Application Security Testing',
   PenTesting: 'Penetration testing',
 };
-
-// General rules pertaining to the accuracy of the arguments passed to the tools
-export const generalOrganizationMistakes = `
-  - Using this tool for a organization other than the current one
-  - Using this tool with the wrong organization name (if you are not sure, use the ${listOrganizationsTool.name} tool to validate the organization name)
-`;
-
-export const generalRepositoryMistakes = `
-  - Using this tool without specifying the repository name 
-  - Using this tool for a repository other than the current one
-  - Using this tool with the wrong repository name (if you are not sure, use the ${listOrganizationRepositoriesTool.name} tool to validate the repository name)
-`;
 
 export const extractOrganizationFromUrl = (url: string): string | null => {
   const patterns = [

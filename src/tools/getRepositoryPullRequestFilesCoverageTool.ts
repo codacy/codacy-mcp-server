@@ -1,8 +1,7 @@
-import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { repositorySchema } from '../schemas.js';
+import { CodacyTool, repositorySchema, toolNames } from '../schemas.js';
 
-export const getRepositoryPullRequestFilesCoverageTool: Tool = {
-  name: 'codacy_get_repository_pull_request_files_coverage',
+export const getRepositoryPullRequestFilesCoverageTool: CodacyTool = {
+  name: toolNames.CODACY_GET_REPOSITORY_PULL_REQUEST_FILES_COVERAGE,
   description: 'Get coverage information for all files in a pull request.',
   inputSchema: {
     type: 'object',

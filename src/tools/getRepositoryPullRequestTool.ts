@@ -1,8 +1,7 @@
-import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { repositorySchema } from '../schemas.js';
+import { CodacyTool, repositorySchema, toolNames } from '../schemas.js';
 
-export const getRepositoryPullRequestTool: Tool = {
-  name: 'codacy_get_repository_pull_request',
+export const getRepositoryPullRequestTool: CodacyTool = {
+  name: toolNames.CODACY_GET_REPOSITORY_PULL_REQUEST,
   description:
     'Get the pull request information for a repository. The response contains the analysis of the pull request.',
   inputSchema: {

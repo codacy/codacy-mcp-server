@@ -1,6 +1,5 @@
-import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { defaultPagination, organizationSchema } from '../schemas.js';
-import { generalOrganizationMistakes } from '../utils.js';
+import { CodacyTool, defaultPagination, organizationSchema, toolNames } from '../schemas.js';
+import { generalOrganizationMistakes } from '../rules.js';
 
 const rules = `
 Common mistakes:
@@ -8,8 +7,8 @@ Common mistakes:
 ${generalOrganizationMistakes}
 `;
 
-export const listOrganizationRepositoriesTool: Tool = {
-  name: 'codacy_list_organization_repositories',
+export const listOrganizationRepositoriesTool: CodacyTool = {
+  name: toolNames.CODACY_LIST_ORGANIZATION_REPOSITORIES,
   description: `List repositories in an organization with pagination.
   ${rules}`,
   inputSchema: {

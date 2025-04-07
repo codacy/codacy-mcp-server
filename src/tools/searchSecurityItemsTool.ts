@@ -1,12 +1,6 @@
-import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import {
-  generalOrganizationMistakes,
-  generalRepositoryMistakes,
-  securityCategories,
-  securityScanTypes,
-  securityStatuses,
-} from '../utils.js';
-import { getPaginationWithSorting, organizationSchema } from '../schemas.js';
+import { securityCategories, securityScanTypes, securityStatuses } from '../utils.js';
+import { CodacyTool, getPaginationWithSorting, organizationSchema, toolNames } from '../schemas.js';
+import { generalOrganizationMistakes, generalRepositoryMistakes } from '../rules.js';
 
 const rules = `
   This tool provides advanced filtering by security categories, priorities, and scan types. Use this as the first tool when investigating security or compliance concerns. 
@@ -26,8 +20,8 @@ const rules = `
   ${generalRepositoryMistakes}
 `;
 
-export const searchSecurityItemsTool: Tool = {
-  name: 'codacy_list_srm_items',
+export const searchSecurityItemsTool: CodacyTool = {
+  name: toolNames.CODACY_LIST_SRM_ITEMS,
   description: `Primary tool to list security items/issues/vulnerabilities/findings, results are related to the organization security and risk management (SRM) dashboard on Codacy. This tool contains pagination. Returns comprehensive security analysis including ${Object.keys(securityScanTypes).join(', ')} security issues.
   \n ${rules}`,
   inputSchema: {

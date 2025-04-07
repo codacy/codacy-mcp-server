@@ -1,8 +1,7 @@
-import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { repositorySchema } from '../schemas.js';
+import { CodacyTool, repositorySchema, toolNames } from '../schemas.js';
 
-export const getIssueTool: Tool = {
-  name: 'codacy_get_issue',
+export const getIssueTool: CodacyTool = {
+  name: toolNames.CODACY_GET_ISSUE,
   description: 'Returns information about an open issue that Codacy found in a repository.',
   inputSchema: {
     type: 'object',
