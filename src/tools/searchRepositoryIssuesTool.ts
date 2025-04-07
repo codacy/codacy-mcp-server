@@ -1,16 +1,48 @@
-import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { codacyLanguages, issueCategories } from '../utils.js';
+import { searchSecurityItemsTool } from './searchSecurityItemsTool.js';
+import { listFileIssuesTool } from './listFileIssuesTool.js';
+import { listPullRequestIssuesTool } from './listPullRequestIssuesTool.js';
 import {
-  branchSchema,
-  codacyLanguages,
-  defaultPagination,
-  issueCategories,
   repositorySchema,
-} from './utils.js';
+  branchSchema,
+  defaultPagination,
+  toolNames,
+  CodacyTool,
+} from '../schemas.js';
+import { generalOrganizationMistakes, generalRepositoryMistakes } from '../rules.js';
 
-export const searchRepositoryIssuesTool: Tool = {
-  name: 'codacy_list_repository_issues',
-  description:
-    'Lists and filters code quality issues in a repository. This is the primary tool for investigating general code quality concerns (e.g. best practices, performance, complexity, style) but NOT security issues. For security-related issues, use the SRM items tool instead. Features include:\n\n- Pagination support for handling large result sets\n- Filtering by multiple criteria including severity, category, and language\n- Author-based filtering for accountability\n- Branch-specific analysis\n- Pattern-based searching\n\nCommon use cases:\n- Code quality audits\n- Technical debt assessment\n- Style guide compliance checks\n- Performance issue investigation\n- Complexity analysis',
+const rules = `
+  This is the primary tool for investigating general code quality concerns (e.g. best practices, performance, complexity, style) but NOT security issues. 
+  For security-related issues, use the ${searchSecurityItemsTool.name} tool instead. 
+  For listing the issues for specific files, use the ${listFileIssuesTool.name} tool instead.
+  For listing the issues for specific pull requests, use the ${listPullRequestIssuesTool.name} tool instead.
+  
+  Features include: 
+  - Pagination support for handling large result sets
+  - Filtering by multiple criteria including severity, category, and language
+  - Author-based filtering for accountability
+  - Branch-specific analysis
+  - Pattern-based searching
+  
+  Common use cases: 
+  - When the user asks for code quality audits 
+  - When the user asks for technical debt assessment
+  - When the user asks for style guide compliance checks
+  - When the user asks for performance issue investigation
+  - When the user asks for complexity analysis
+  - When the user asks for code quality issues
+
+  Common mistakes: 
+  - Using this tool for security-related issues
+  - Using this tool for listing the issues for specific files
+  ${generalOrganizationMistakes}
+  ${generalRepositoryMistakes}
+`;
+
+export const searchRepositoryIssuesTool: CodacyTool = {
+  name: toolNames.CODACY_LIST_REPOSITORY_ISSUES,
+  description: `Lists and filters code quality issues in a repository.
+    \n ${rules}`,
   inputSchema: {
     type: 'object',
     properties: {

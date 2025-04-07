@@ -1,10 +1,10 @@
-import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { CodacyTool, toolNames } from '../schemas.js';
 
-export const getPatternTool: Tool = {
-  name: 'codacy_get_pattern',
+export const getPatternTool: CodacyTool = {
+  name: toolNames.CODACY_GET_PATTERN,
   description: 'Get the definition of a specific pattern.',
   inputSchema: {
-    type: 'object',
+    type: 'object' as const,
     properties: {
       toolUuid: {
         type: 'string',
@@ -15,5 +15,6 @@ export const getPatternTool: Tool = {
         description: 'Pattern identifier',
       },
     },
+    required: ['toolUuid', 'patternId'],
   },
 };

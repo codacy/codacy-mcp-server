@@ -1,8 +1,7 @@
-import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { fileSchema } from './utils.js';
+import { CodacyTool, fileSchema, toolNames } from '../schemas.js';
 
-export const getFileCoverageTool: Tool = {
-  name: 'codacy_get_file_coverage',
+export const getFileCoverageTool: CodacyTool = {
+  name: toolNames.CODACY_GET_FILE_COVERAGE,
   description: 'Get coverage information for a file in the head commit of a repository branch.',
   inputSchema: {
     type: 'object',

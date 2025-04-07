@@ -1,97 +1,34 @@
-export const codacyLanguages = [
-  'C',
-  'CPP',
-  'CSharp',
-  'Java',
-  'Go',
-  'Kotlin',
-  'Ruby',
-  'Scala',
-  'Dart',
-  'Python',
-  'TypeScript',
-  'Javascript',
-  'CoffeeScript',
-  'Swift',
-  'JSP',
-  'VisualBasic',
-  'PHP',
-  'PLSQL',
-  'SQL',
-  'TSQL',
-  'Crystal',
-  'Haskell',
-  'Elixir',
-  'Groovy',
-  'Apex',
-  'VisualForce',
-  'Velocity',
-  'CSS',
-  'HTML',
-  'LESS',
-  'SASS',
-  'Dockerfile',
-  'Terraform',
-  'Shell',
-  'Powershell',
-  'JSON',
-  'XML',
-  'YAML',
-  'Markdown',
-  'Cobol',
-  'ABAP',
-  'ObjectiveC',
-  'Rust',
-];
+import { Tool } from '@modelcontextprotocol/sdk/types.js';
 
-export const issueCategories = [
-  'security',
-  'errorprone',
-  'performance',
-  'complexity',
-  'unusedcode',
-  'comprehensibility',
-  'compatibility',
-  'bestpractice',
-  'codestyle',
-  'documentation',
-];
+export const toolNames = {
+  CODACY_LIST_ORGANIZATION_REPOSITORIES: 'codacy_list_organization_repositories',
+  CODACY_LIST_SRM_ITEMS: 'codacy_list_srm_items',
+  CODACY_LIST_REPOSITORY_ISSUES: 'codacy_list_repository_issues',
+  CODACY_LIST_REPOSITORY_PULL_REQUESTS: 'codacy_list_repository_pull_requests',
+  CODACY_LIST_FILES: 'codacy_list_files',
+  CODACY_LIST_REPOSITORY_TOOL_PATTERNS: 'codacy_list_repository_tool_patterns',
+  CODACY_LIST_REPOSITORY_TOOLS: 'codacy_list_repository_tools',
+  CODACY_LIST_TOOLS: 'codacy_list_tools',
+  CODACY_LIST_ORGANIZATIONS: 'codacy_list_organizations',
+  CODACY_GET_FILE_ISSUES: 'codacy_get_file_issues',
+  CODACY_GET_FILE_COVERAGE: 'codacy_get_file_coverage',
+  CODACY_GET_REPOSITORY_PULL_REQUEST_FILES_COVERAGE:
+    'codacy_get_repository_pull_request_files_coverage',
+  CODACY_GET_PULL_REQUEST_GIT_DIFF: 'codacy_get_pull_request_git_diff',
+  CODACY_LIST_PULL_REQUEST_ISSUES: 'codacy_list_pull_request_issues',
+  CODACY_GET_REPOSITORY_WITH_ANALYSIS: 'codacy_get_repository_with_analysis',
+  CODACY_GET_FILE_WITH_ANALYSIS: 'codacy_get_file_with_analysis',
+  CODACY_GET_REPOSITORY_PULL_REQUEST: 'codacy_get_repository_pull_request',
+  CODACY_GET_ISSUE: 'codacy_get_issue',
+  CODACY_GET_PATTERN: 'codacy_get_pattern',
+  CODACY_CLI_ANALYZE: 'codacy_cli_analyze',
+} as const;
 
-export const securityStatuses = {
-  Open: ['OnTrack', 'DueSoon', 'Overdue'],
-  Closed: ['ClosedOnTime', 'ClosedLate', 'Ignored'],
-};
+export type ToolKeys = (typeof toolNames)[keyof typeof toolNames];
 
-export const securityCategories = [
-  'Auth',
-  'CommandInjection',
-  'Cookies',
-  'Cryptography',
-  'CSRF',
-  'DoS',
-  'FileAccess',
-  'HTTP',
-  'InputValidation',
-  'InsecureModulesLibraries',
-  'InsecureStorage',
-  'Other',
-  'Regex',
-  'SQLInjection',
-  'UnexpectedBehaviour',
-  'Visibility',
-  'XSS',
-  '_other_',
-];
-
-export const securityScanTypes = {
-  SAST: 'Code scanning',
-  Secrets: 'Secret scanning',
-  SCA: 'Dependency scanning',
-  IaC: 'Infrastructure-as-code scanning',
-  CICD: 'CI/CD scanning',
-  DAST: 'Dynamic Application Security Testing',
-  PenTesting: 'Penetration testing',
-};
+export interface CodacyTool extends Tool {
+  name: ToolKeys;
+}
 
 export const organizationSchema = {
   gitUrl: {
@@ -163,21 +100,4 @@ export const fileSchema = {
     type: 'string',
     description: "Codacy's identifier of a file in a specific commit",
   },
-};
-
-export const extractOrganizationFromUrl = (url: string): string | null => {
-  const patterns = [
-    /git@github\.com:([^/]+)\/[^/]+\.git$/,
-    /https:\/\/github\.com\/([^/]+)\/[^/]+\.git$/,
-    /https:\/\/gitlab\.com\/([^/]+)\/[^/]+\.git$/,
-    /https:\/\/bitbucket\.org\/([^/]+)\/[^/]+\.git$/,
-  ];
-
-  for (const pattern of patterns) {
-    const match = pattern.exec(url);
-    if (match?.[1]) {
-      return match[1];
-    }
-  }
-  return null;
 };

@@ -1,9 +1,16 @@
-import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { defaultPagination, organizationSchema } from './utils.js';
+import { CodacyTool, defaultPagination, organizationSchema, toolNames } from '../schemas.js';
+import { generalOrganizationMistakes } from '../rules.js';
 
-export const listOrganizationRepositoriesTool: Tool = {
-  name: 'codacy_list_organization_repositories',
-  description: 'List repositories in an organization with pagination',
+const rules = `
+Common mistakes:
+- Using this tool without the provider
+${generalOrganizationMistakes}
+`;
+
+export const listOrganizationRepositoriesTool: CodacyTool = {
+  name: toolNames.CODACY_LIST_ORGANIZATION_REPOSITORIES,
+  description: `List repositories in an organization with pagination.
+  ${rules}`,
   inputSchema: {
     type: 'object',
     properties: {

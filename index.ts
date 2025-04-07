@@ -8,7 +8,7 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import { OpenAPI } from './src/api/client/index.js';
 import * as Tools from './src/tools/index.js';
-import type { ToolKeys } from './src/tools/index.js';
+import type { ToolKeys } from './src/schemas.js';
 import * as Handlers from './src/handlers/index.js';
 import { validateOrganization } from './src/middleware/validation.js';
 
@@ -33,6 +33,7 @@ const server = new Server(
   {
     capabilities: {
       tools: {},
+      resources: {},
       triggers: {
         patterns: [
           'codacy',

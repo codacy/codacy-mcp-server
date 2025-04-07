@@ -1,8 +1,7 @@
-import { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { defaultPagination } from './utils.js';
+import { CodacyTool, defaultPagination, toolNames } from '../schemas.js';
 
-export const listToolsTool: Tool = {
-  name: 'codacy_list_tools',
+export const listToolsTool: CodacyTool = {
+  name: toolNames.CODACY_LIST_TOOLS,
   description: 'List all code analysis tools available in Codacy.',
   inputSchema: {
     type: 'object',
