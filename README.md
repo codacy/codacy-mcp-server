@@ -92,6 +92,37 @@ Depending on what are you connecting the MCP Server to, you can use the followin
 }
 ```
 
+### VSCode with Copilot
+
+For connecting the MCP Server to Copilot in VS Code, add the following to the global config of the IDE:
+
+```json
+{
+    "mcp": {
+        "inputs": [],
+        "servers": {
+            "codacy": {
+                "command": "npx",
+                "args": [
+                  "-y",
+                  "@codacy/codacy-mcp"
+                ],
+                "env": {
+                  "CODACY_ACCOUNT_TOKEN": "<YOUR_TOKEN>"
+                }
+              }
+        }
+    }
+}
+```
+You can find the global settings.json file in the following places, according to your OS:
+
+- for macOS: `~/Library/Application Support/Code/User/settings.json`
+- for Windows: `%APPDATA%\Code\User\settings.json`
+- for Linux: `~/.config/Code/User/settings.json`
+
+Make sure you have Agent mode enabled: (vscode://settings/chat.agent.enabled)[vscode://settings/chat.agent.enabled]
+
 ### Node (when using NVM)
 
 When using NVM with Claude Desktop, NPX won't work. You should first install the MCP Server globally, and then use Node directly:
