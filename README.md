@@ -70,7 +70,7 @@ Get your Codacy's Account API Token from your [Codacy Account](https://app.codac
 
 ### Usage
 
-In supported IDEs like VSCode, Cursor, and Windsurf, the easiest way to install Codacy's MCP Server is to do it from the Codacy extension. If you haven't yet, install the extension from within your IDE, or from any of the available marketplaces ([Microsoft](https://marketplace.visualstudio.com/items?itemName=codacy-app.codacy), [OpenVSX](https://open-vsx.org/extension/codacy-app/codacy)). From the extension panel, just click on Add Codacy MCP Server. Restart your IDE afterwards.
+In supported IDEs like VS Code, Cursor, and Windsurf, the easiest way to install Codacy's MCP Server is to do it from the Codacy extension. If you haven't yet, install the extension from within your IDE, or from any of the available marketplaces ([Microsoft](https://marketplace.visualstudio.com/items?itemName=codacy-app.codacy), [OpenVSX](https://open-vsx.org/extension/codacy-app/codacy)). From the extension panel, just click on Add Codacy MCP Server. Restart your IDE afterwards.
 
 Without the extension, you can still use and install the MCP Server:
 
@@ -96,9 +96,9 @@ Depending on what you are connecting the MCP Server to, you can use the followin
 }
 ```
 
-### VSCode with Copilot
+### VS Code with Copilot
 
-For connecting the MCP Server to Copilot in VisualStudio Code, add the following to the global config of the IDE:
+For connecting the MCP Server to Copilot in VS Code, add the following to the global config of the IDE:
 
 ```json
 {
