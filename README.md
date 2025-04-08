@@ -121,7 +121,7 @@ You can find the global settings.json file in the following places, according to
 - for Windows: `%APPDATA%\Code\User\settings.json`
 - for Linux: `~/.config/Code/User/settings.json`
 
-Make sure you have Agent mode enabled: (vscode://settings/chat.agent.enabled)[vscode://settings/chat.agent.enabled]
+Make sure you have Agent mode enabled: [vscode://settings/chat.agent.enabled](vscode://settings/chat.agent.enabled)
 
 ### Node (when using NVM)
 
