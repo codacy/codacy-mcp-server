@@ -70,14 +70,18 @@ Get your Codacy's Account API Token from your [Codacy Account](https://app.codac
 
 ### Usage
 
-Depending on what are you connecting the MCP Server to, you can use the following methods:
+In supported IDEs like VSCode, Cursor, and Windsurf, the easiest way to install Codacy's MCP Server is to do it from the Codacy extension. If you haven't yet, install the extension from within your IDE, or from any of the available marketplaces ([Microsoft](https://marketplace.visualstudio.com/items?itemName=codacy-app.codacy), [OpenVSX](https://open-vsx.org/extension/codacy-app/codacy)). From the extension panel, just click on Install MCP Server. Restart your IDE afterwards.
+
+Without the extension, you can still use and install the MCP Server:
+
+### Cursor, Windsurf, and others
+
+Depending on what you are connecting the MCP Server to, you can use the following methods:
 
 - Cursor: edit the `.cursor/mcp.json` file to add the following
 - Windsurf: edit the `.codeium/windsurf/mcp_config.json` file to add the following
 - Claude Desktop: edit the `claude_desktop_config.json` file to add the following
-
-### NPX
-
+  
 ```json
 {
   "mcpServers": {
@@ -94,7 +98,7 @@ Depending on what are you connecting the MCP Server to, you can use the followin
 
 ### VSCode with Copilot
 
-For connecting the MCP Server to Copilot in VS Code, add the following to the global config of the IDE:
+For connecting the MCP Server to Copilot in VisualStudio Code, add the following to the global config of the IDE:
 
 ```json
 {
@@ -115,6 +119,7 @@ For connecting the MCP Server to Copilot in VS Code, add the following to the gl
     }
 }
 ```
+
 You can find the global settings.json file in the following places, according to your OS:
 
 - for macOS: `~/Library/Application Support/Code/User/settings.json`
@@ -123,9 +128,10 @@ You can find the global settings.json file in the following places, according to
 
 Make sure you have Agent mode enabled: [vscode://settings/chat.agent.enabled](vscode://settings/chat.agent.enabled)
 
-### Node (when using NVM)
 
-When using NVM with Claude Desktop, NPX won't work. You should first install the MCP Server globally, and then use Node directly:
+### Node Troubleshooting
+
+When using NVM with Claude Desktop, NPX may not work. You should first install the MCP Server globally, and then use Node directly:
 
 ```bash
 npm install -g @codacy/codacy-mcp
