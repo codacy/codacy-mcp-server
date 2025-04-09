@@ -2,7 +2,8 @@ import { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 export const toolNames = {
   CODACY_LIST_ORGANIZATION_REPOSITORIES: 'codacy_list_organization_repositories',
-  CODACY_LIST_SRM_ITEMS: 'codacy_list_srm_items',
+  CODACY_LIST_ORGANIZATION_SRM_ITEMS: 'codacy_search_organization_srm_items',
+  CODACY_LIST_REPOSITORY_SRM_ITEMS: 'codacy_search_repository_srm_items',
   CODACY_LIST_REPOSITORY_ISSUES: 'codacy_list_repository_issues',
   CODACY_LIST_REPOSITORY_PULL_REQUESTS: 'codacy_list_repository_pull_requests',
   CODACY_LIST_FILES: 'codacy_list_files',
@@ -31,19 +32,15 @@ export interface CodacyTool extends Tool {
 }
 
 export const organizationSchema = {
-  gitUrl: {
-    type: 'string',
-    description: "Git URL of the repository. Get the git url using 'git remote -v'",
-  },
   provider: {
     type: 'string',
     description:
-      "Organization's git provider: GitHub (gh), GitLab (gl) or BitBucket (bb). Accepted values: gh, gl, bb. In case a repository is given, use that repository's Git provider. ",
+      "Organization's git provider: GitHub (gh), GitLab (gl) or BitBucket (bb). Accepted values: gh, gl, bb. Try to extract it from the repository's git remote URL using 'git remote -v'.",
   },
   organization: {
     type: 'string',
     description:
-      "Organization name or username that owns the repository on the Git provider. This should only be extracted from the repository's git remote URL using these patterns:\n" +
+      "Organization name or username that owns the repository on the Git provider.  Try to extract it from the repository's git remote URL using 'git remote -v' following these patterns:\n" +
       "- SSH format: 'git@github.com:{organization}/{repository}.git'\n" +
       "- HTTPS GitHub: 'https://github.com/{organization}/{repository}.git'\n" +
       "- HTTPS GitLab: 'https://gitlab.com/{organization}/{repository}.git'\n" +
@@ -57,7 +54,7 @@ export const repositorySchema = {
   repository: {
     type: 'string',
     description:
-      "Repository name on the Git provider. To find the repository name check the repository git url, it should be something like this for gh:'https://github.com/<owner>/<repository>.git' for gl:'https://gitlab.com/<owner>/<repository>.git' for bb:'https://bitbucket.org/<owner>/<repository>.git'.",
+      "Repository name on the Git provider.  Try to extract it from the repository's git remote URL using 'git remote -v', it should be something like this for gh:'https://github.com/<owner>/<repository>.git' for gl:'https://gitlab.com/<owner>/<repository>.git' for bb:'https://bitbucket.org/<owner>/<repository>.git'.",
   },
 };
 

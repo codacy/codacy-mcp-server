@@ -75,9 +75,13 @@ const toolDefinitions: { [key in ToolKeys]: ToolDefinition } = {
     tool: Tools.listOrganizationRepositoriesTool,
     handler: Handlers.listOrganizationRepositoriesHandler,
   },
-  codacy_list_srm_items: {
+  codacy_search_organization_srm_items: {
     tool: Tools.searchSecurityItemsTool,
     handler: Handlers.searchSecurityItemsHandler,
+  },
+  codacy_search_repository_srm_items: {
+    tool: Tools.searchRepositorySecurityItemsTool,
+    handler: Handlers.searchRepositorySecurityItemsHandler,
   },
   codacy_list_repository_issues: {
     tool: Tools.searchRepositoryIssuesTool,

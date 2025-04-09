@@ -38,7 +38,7 @@ export const listRepositoryPullRequestsHandler = async (args: any) => {
 };
 
 export const searchRepositoryIssuesHandler = async (args: any) => {
-  const { provider, organization, repository, limit, cursor, body } = args;
+  const { provider, organization, repository, limit, cursor, options } = args;
 
   return await AnalysisService.searchRepositoryIssues(
     provider,
@@ -46,7 +46,7 @@ export const searchRepositoryIssuesHandler = async (args: any) => {
     repository,
     cursor,
     limit,
-    body
+    options
   );
 };
 

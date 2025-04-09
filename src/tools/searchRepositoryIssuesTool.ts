@@ -48,7 +48,7 @@ export const searchRepositoryIssuesTool: CodacyTool = {
     properties: {
       ...repositorySchema,
       ...defaultPagination,
-      body: {
+      options: {
         type: 'object',
         description: 'Search parameters to filter the list of issues in a repository',
         properties: {
