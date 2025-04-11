@@ -1,6 +1,5 @@
 import util from 'util';
 import { exec as execChildProcess } from 'child_process';
-import { allowedTools } from '../tools/cliAnalyzeTool.js';
 
 const exec = util.promisify(execChildProcess);
 
@@ -10,20 +9,11 @@ const sanitizeCommand = (command?: string): string => {
   return command?.replace(/[;&|`$]/g, '') || '';
 };
 
-// Safeguard: Validate tool name
-const validateTool = (tool: string): string => {
-  if (!allowedTools.includes(tool)) {
-    throw new Error(`Invalid tool: ${tool}. Allowed tools are: ${allowedTools.join(', ')}`);
-  }
-  return tool;
-};
-
 export const cliAnalyzeHandler = async (args: any) => {
   try {
-    const safeTool = validateTool(args.tool);
     const safeFile = sanitizeCommand(args.file);
 
-    const command = `codacy-cli analyze --tool ${safeTool} --format sarif ${safeFile}`;
+    const command = `codacy-cli analyze --format sarif ${safeFile}`;
 
     // Add options object with cwd and increased maxBuffer
     const options = {

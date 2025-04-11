@@ -61,3 +61,6 @@ coverage/
 # Temporary folders
 tmp/
 temp/
+
+#Ignore vscode AI rules
+.github/copilot-instructions.md

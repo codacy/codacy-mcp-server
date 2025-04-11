@@ -1,7 +1,5 @@
 import { CodacyTool, toolNames } from '../schemas.js';
 
-export const allowedTools = ['eslint'];
-
 export const cliAnalyzeTool: CodacyTool = {
   name: toolNames.CODACY_CLI_ANALYZE,
   description:
@@ -13,10 +11,6 @@ export const cliAnalyzeTool: CodacyTool = {
         type: 'string',
         description:
           'Required. Root path to the project or repository in the local filesystem. This must be filled to ensure permissions are met for the tool to run.',
-      },
-      tool: {
-        type: 'string',
-        description: `Required. Tool to use for analysis (e.g., eslint). Possible values: ${allowedTools.join(', ')}.`,
       },
       file: {
         type: 'string',
