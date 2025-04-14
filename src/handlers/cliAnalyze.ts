@@ -1,7 +1,10 @@
 import util from 'util';
 import { exec as execChildProcess } from 'child_process';
+import fs from 'fs';
+import path from 'path';
 
 const exec = util.promisify(execChildProcess);
+const CODACY_ACCOUNT_TOKEN = process.env.CODACY_ACCOUNT_TOKEN;
 
 // Safeguard: Validate and sanitize command inputs
 const sanitizeCommand = (command?: string): string => {
@@ -9,19 +12,99 @@ const sanitizeCommand = (command?: string): string => {
   return command?.replace(/[;&|`$]/g, '') || '';
 };
 
+// Check if codacy-cli is installed and install if needed
+const ensureCodacyCLI = async (): Promise<boolean> => {
+  try {
+    await exec('which codacy-cli');
+    return true;
+  } catch {
+    try {
+      // Install codacy-cli using brew
+      await exec('brew install codacy/codacy-cli-v2/codacy-cli-v2');
+
+      return true;
+    } catch (error) {
+      console.error('Failed to install codacy-cli:', error);
+      return false;
+    }
+  }
+};
+
+// Check if .codacy/codacy.yaml exists and initialize if needed
+const ensureCodacyConfig = async (
+  rootPath: string,
+  provider: string,
+  organization: string,
+  repository: string
+): Promise<boolean> => {
+  const configPath = path.join(rootPath, '.codacy', 'codacy.yaml');
+
+  if (fs.existsSync(configPath)) {
+    return true;
+  }
+
+  try {
+    const command = `codacy-cli init --api-token ${CODACY_ACCOUNT_TOKEN} --provider ${provider} --organization ${organization} --repository ${repository}`;
+    const options = { cwd: rootPath };
+
+    await exec(command, options);
+    await exec('codacy-cli install', options);
+    return true;
+  } catch (error) {
+    console.error('Failed to initialize Codacy configuration:', error);
+    return false;
+  }
+};
+
+// Run analysis with potential retry after installation
+const runAnalysis = async (args: any): Promise<{ stdout: string; stderr: string }> => {
+  const safeFile = sanitizeCommand(args.file);
+  const command = `codacy-cli analyze --format sarif ${safeFile}`;
+
+  // Add options object with cwd and increased maxBuffer
+  const options = {
+    cwd: args.rootPath,
+    maxBuffer: 1024 * 1024 * 10, // 10MB buffer size
+  };
+
+  try {
+    return await exec(command, options);
+  } catch (error) {
+    // If first attempt fails, try installing and retry
+    await exec('codacy-cli install', options);
+    return await exec(command, options);
+  }
+};
+
 export const cliAnalyzeHandler = async (args: any) => {
   try {
-    const safeFile = sanitizeCommand(args.file);
+    // Ensure codacy-cli is installed
+    const isCLIAvailable = await ensureCodacyCLI();
+    if (!isCLIAvailable) {
+      return {
+        success: false,
+        errorType: 'cli-missing',
+        output: 'Failed to install codacy-cli. Please install it manually.',
+      };
+    }
 
-    const command = `codacy-cli analyze --format sarif ${safeFile}`;
+    // Check for mandatory configuration file and initialize if needed
+    const configExists = await ensureCodacyConfig(
+      args.rootPath,
+      args.provider,
+      args.organization,
+      args.repository
+    );
 
-    // Add options object with cwd and increased maxBuffer
-    const options = {
-      cwd: args.rootPath,
-      maxBuffer: 1024 * 1024 * 10, // 10MB buffer size
-    };
+    if (!configExists) {
+      return {
+        success: false,
+        errorType: 'cli-config-missing',
+        output: 'Failed to find Codacy CLI configuration.',
+      };
+    }
 
-    const { stdout, stderr } = await exec(command, options);
+    const { stdout, stderr } = await runAnalysis(args);
 
     // Only treat stderr as an error if:
     // 1. There's no stdout (meaning only errors occurred)
