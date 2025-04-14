@@ -6,6 +6,12 @@ export const getFileWithAnalysisHandler = async (args: any) => {
   return await RepositoryService.getFileWithAnalysis(provider, organization, repository, fileId);
 };
 
+export const getFileClonesHandler = async (args: any) => {
+  const { provider, organization, repository, fileId } = args;
+
+  return await RepositoryService.getFileClones(provider, organization, repository, fileId);
+};
+
 export const listFilesHandler = async (args: any) => {
   const { provider, organization, repository, branch, search, sort, direction, cursor, limit } =
     args;

@@ -120,6 +120,10 @@ const toolDefinitions: { [key in ToolKeys]: ToolDefinition } = {
     tool: Tools.getFileWithAnalysisTool,
     handler: Handlers.getFileWithAnalysisHandler,
   },
+  codacy_get_file_clones: {
+    tool: Tools.getFileClonesTool,
+    handler: Handlers.getFileClonesHandler,
+  },
   codacy_get_repository_pull_request: {
     tool: Tools.getRepositoryPullRequestTool,
     handler: Handlers.getRepositoryPullRequestHandler,
