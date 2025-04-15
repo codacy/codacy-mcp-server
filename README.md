@@ -35,6 +35,7 @@ The following tools are available through the Codacy MCP Server:
 - `codacy_list_files`: List files in a repository with pagination support.
 - `codacy_get_file_issues`: Get the issue list for a file in a repository.
 - `codacy_get_file_coverage`: Get coverage information for a file in the head commit of a repository branch.
+- `codacy_get_file_clones`: Get the list of duplication clones (identical or very similar code segments) for a file in a repository. Use this tool to identify potential refactoring opportunities and reduce code duplication.
 
 ### Security Analysis
 

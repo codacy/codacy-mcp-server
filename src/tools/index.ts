@@ -18,3 +18,4 @@ export * from './listRepositoryToolsTool.js';
 export * from './listToolsTool.js';
 export * from './listOrganizationsTool.js';
 export * from './cliAnalyzeTool.js';
+export * from './getFileClonesTool.js';
