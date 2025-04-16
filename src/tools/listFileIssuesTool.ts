@@ -8,6 +8,8 @@ const rules = `
   Common use cases: 
   - When the user asks for the issues for a specific file
   - When the user is in a file context and asks for the issues
+  - When the user asks for the quality analysis of a specific file
+  - When the user asks if a specific file has issues
 
   Common mistakes: 
   - Using this tool for listing the issues for specific pull requests
