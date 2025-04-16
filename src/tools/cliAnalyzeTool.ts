@@ -6,7 +6,7 @@ const rules = `
 
   Common use cases: 
   - When the user asks for an analysis of a repository
-  - When the user wants to analyze base on Codacy configuratioon
+  - When the user wants to analyze based on Codacy configuration
   - When the user wants to apply fixes based on Codacy configuration and analysis
   - When the user wants Codacy results immediately without waiting for the next scheduled analysis
 
