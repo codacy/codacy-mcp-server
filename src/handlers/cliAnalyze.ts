@@ -5,6 +5,7 @@ import path from 'path';
 
 const exec = util.promisify(execChildProcess);
 const CODACY_ACCOUNT_TOKEN = process.env.CODACY_ACCOUNT_TOKEN;
+const CODACY_CLI_COMMAND = 'CODACY_CLI_V2_VERSION=1.0.0-main.232.a6a6368 codacy-cli';
 
 // Safeguard: Validate and sanitize command inputs
 const sanitizeCommand = (command?: string): string => {
@@ -44,11 +45,11 @@ const ensureCodacyConfig = async (
   }
 
   try {
-    const command = `codacy-cli init --api-token ${CODACY_ACCOUNT_TOKEN} --provider ${provider} --organization ${organization} --repository ${repository}`;
+    const command = `${CODACY_CLI_COMMAND} init --api-token ${CODACY_ACCOUNT_TOKEN} --provider ${provider} --organization ${organization} --repository ${repository}`;
     const options = { cwd: rootPath };
 
     await exec(command, options);
-    await exec('codacy-cli install', options);
+    await exec(`${CODACY_CLI_COMMAND} install`, options);
     return true;
   } catch (error) {
     console.error('Failed to initialize Codacy configuration:', error);
@@ -65,7 +66,8 @@ const falseSuccess = (stdout: string, stderr?: string) =>
 // Run analysis with potential retry after installation
 const runAnalysis = async (args: any): Promise<{ stdout: string; stderr: string }> => {
   const safeFile = sanitizeCommand(args.file);
-  const command = `codacy-cli analyze --format sarif ${safeFile}`;
+  const tool = args.tool ? `--tool ${args.tool}` : '';
+  const command = `${CODACY_CLI_COMMAND} analyze ${tool} --format sarif ${safeFile}`;
 
   // Add options object with cwd and increased maxBuffer
   const options = {
@@ -81,7 +83,7 @@ const runAnalysis = async (args: any): Promise<{ stdout: string; stderr: string 
     return { stdout, stderr };
   } catch (error) {
     // If first attempt fails, try installing and retry
-    await exec('codacy-cli install', options);
+    await exec(`${CODACY_CLI_COMMAND} install`, options);
     return await exec(command, options);
   }
 };

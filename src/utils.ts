@@ -83,12 +83,16 @@ export const securityCategories = [
   '_other_',
 ];
 
-export const securityScanTypes = {
+export const repositorySecurityScanTypes = {
   SAST: 'Code scanning',
   Secrets: 'Secret scanning',
   SCA: 'Dependency scanning',
   IaC: 'Infrastructure-as-code scanning',
   CICD: 'CI/CD scanning',
+};
+
+export const organizationSecurityScanTypes = {
+  ...repositorySecurityScanTypes,
   DAST: 'Dynamic Application Security Testing',
   PenTesting: 'Penetration testing',
 };

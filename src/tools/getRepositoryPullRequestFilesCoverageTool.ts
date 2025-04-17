@@ -12,8 +12,8 @@ const rules = `
 `;
 
 export const getRepositoryPullRequestFilesCoverageTool: CodacyTool = {
-  name: toolNames.CODACY_GET_REPOSITORY_PULL_REQUEST_FILES_COVERAGE,
-  description: `Use this tool to get coverage information for all files in a pull request. \n ${rules}`,
+  name: toolNames.CODACY_GET_PULL_REQUEST_FILES_COVERAGE,
+  description: `Use this tool to get the diff coverage information for all files in a pull request. \n ${rules}`,
   inputSchema: {
     type: 'object',
     properties: {

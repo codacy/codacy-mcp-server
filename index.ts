@@ -76,7 +76,7 @@ const toolDefinitions: { [key in ToolKeys]: ToolDefinition } = {
     handler: Handlers.listOrganizationRepositoriesHandler,
   },
   codacy_search_organization_srm_items: {
-    tool: Tools.searchSecurityItemsTool,
+    tool: Tools.searchOrganizationSecurityItemsTool,
     handler: Handlers.searchSecurityItemsHandler,
   },
   codacy_search_repository_srm_items: {
@@ -100,7 +100,7 @@ const toolDefinitions: { [key in ToolKeys]: ToolDefinition } = {
     tool: Tools.getFileCoverageTool,
     handler: Handlers.getFileCoverageHandler,
   },
-  codacy_get_repository_pull_request_files_coverage: {
+  codacy_get_pull_request_files_coverage: {
     tool: Tools.getRepositoryPullRequestFilesCoverageTool,
     handler: Handlers.getRepositoryPullRequestFilesCoverageHandler,
   },

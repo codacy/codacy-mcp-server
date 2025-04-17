@@ -13,8 +13,7 @@ export const toolNames = {
   CODACY_LIST_ORGANIZATIONS: 'codacy_list_organizations',
   CODACY_GET_FILE_ISSUES: 'codacy_get_file_issues',
   CODACY_GET_FILE_COVERAGE: 'codacy_get_file_coverage',
-  CODACY_GET_REPOSITORY_PULL_REQUEST_FILES_COVERAGE:
-    'codacy_get_repository_pull_request_files_coverage',
+  CODACY_GET_PULL_REQUEST_FILES_COVERAGE: 'codacy_get_pull_request_files_coverage',
   CODACY_GET_PULL_REQUEST_GIT_DIFF: 'codacy_get_pull_request_git_diff',
   CODACY_LIST_PULL_REQUEST_ISSUES: 'codacy_list_pull_request_issues',
   CODACY_GET_REPOSITORY_WITH_ANALYSIS: 'codacy_get_repository_with_analysis',
