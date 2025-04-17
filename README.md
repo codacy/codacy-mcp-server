@@ -2,9 +2,7 @@
 
 MCP Server for the Codacy API, enabling access to repositories, files, quality, coverage, security and more.
 
-### Features
-
-## Tools
+## Features / Tools
 
 The following tools are available through the Codacy MCP Server:
 
@@ -65,9 +63,18 @@ The following tools are available through the Codacy MCP Server:
 
 ## Setup
 
+### Requirements
+
+Ensure your machine has the following tools installed:
+* git
+* node.js
+  * ensure that the `npx` command runs without issues.
+
 ### Personal API Access Token
 
 Get your Codacy's Account API Token from your [Codacy Account](https://app.codacy.com/account/access-management).
+
+You'll need it later in the setup.
 
 ### Usage
 
@@ -99,7 +106,7 @@ Depending on what you are connecting the MCP Server to, you can use the followin
 
 ### VS Code with Copilot
 
-For connecting the MCP Server to Copilot in VS Code, add the following to the global config of the IDE:
+1. For connecting the MCP Server to Copilot in VS Code, add the following to the global config of the IDE:
 
 ```json
 {
@@ -120,17 +127,27 @@ For connecting the MCP Server to Copilot in VS Code, add the following to the gl
     }
 }
 ```
+You can open the user settings.json file in:
 
-You can find the global settings.json file in the following places, according to your OS:
+`View > Command Palette > Preferences: Open User Settings (JSON)`
+
+Or open the general settings.json file directly, which according to your OS should be located in:
 
 - for macOS: `~/Library/Application Support/Code/User/settings.json`
-- for Windows: `%APPDATA%\Code\User\settings.json`
+- for Windows: `%APPDATA%\Code\User\settings.json` or `%APPDATA%\Roaming\Code\User\settings.json`
 - for Linux: `~/.config/Code/User/settings.json`
 
-Make sure you have Agent mode enabled: [vscode://settings/chat.agent.enabled](vscode://settings/chat.agent.enabled)
+Don't forget to update the value of `CODACY_ACCOUNT_TOKEN` with your token. 
 
+2. Make sure you have Agent mode enabled: [vscode://settings/chat.agent.enabled](vscode://settings/chat.agent.enabled)
+
+3. Open the Copilot chat and switch the mode to `Agent`. You can check that the MCP server was enabled correctly by clicking on the `Select tools` icon, which should list all the available Codacy tools.
+
+![Copilot Agent with Codacy tools](docs/copilot_agent.png)
 
 ### Node Troubleshooting
+
+#### Claude Desktop
 
 When using NVM with Claude Desktop, NPX may not work. You should first install the MCP Server globally, and then use Node directly:
 
