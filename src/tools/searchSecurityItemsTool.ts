@@ -1,4 +1,9 @@
-import { securityCategories, securityScanTypes, securityStatuses } from '../utils.js';
+import {
+  organizationSecurityScanTypes,
+  repositorySecurityScanTypes,
+  securityCategories,
+  securityStatuses,
+} from '../utils.js';
 import {
   CodacyTool,
   getPaginationWithSorting,
@@ -22,6 +27,7 @@ const rules = `
 
   Common mistakes: 
   - Using this tool for quality issues
+  - Calling this tool after editing files to check for new results; changes need to be committed to the repository first.
   ${generalOrganizationMistakes}
   ${generalRepositoryMistakes}
 `;
@@ -53,29 +59,11 @@ const commonSrmProperties = {
     },
     note: "_other_ can be used to search for issues that don't have a security category",
   },
-  scanTypes: {
-    description: 'Array of security scan types to filter by.',
-    type: 'array',
-    items: {
-      type: 'string',
-      enum: Object.keys(securityScanTypes),
-    },
-    mapping: securityScanTypes,
-  },
-  segments: {
-    type: 'array',
-    description:
-      'Set of segments ids (type number). Segment is a Codacy concept that groups repositories by different criteria',
-    items: {
-      type: 'number',
-      description: 'Segment id',
-    },
-  },
 };
 
-export const searchSecurityItemsTool: CodacyTool = {
+export const searchOrganizationSecurityItemsTool: CodacyTool = {
   name: toolNames.CODACY_LIST_ORGANIZATION_SRM_ITEMS,
-  description: `Primary tool to list security items/issues/vulnerabilities/findings, results are related to the organization's security and risk management (SRM) dashboard on Codacy. This tool contains pagination. Returns comprehensive security analysis including ${Object.keys(securityScanTypes).join(', ')} security issues.
+  description: `Primary tool to list security items/issues/vulnerabilities/findings, results are related to the organization's security and risk management (SRM) dashboard on Codacy. This tool contains pagination. Returns comprehensive security analysis including ${Object.keys(organizationSecurityScanTypes).join(', ')} security issues.
   \n ${rules}`,
   inputSchema: {
     type: 'object',
@@ -87,15 +75,15 @@ export const searchSecurityItemsTool: CodacyTool = {
         description:
           'Search parameters to filter the metrics of the security issues dashboard of an organization',
         properties: {
-          repositories: {
+          ...commonSrmProperties,
+          scanTypes: {
+            description: 'Array of security scan types to filter by.',
             type: 'array',
-            description: 'Use this to filter by repository name.',
             items: {
               type: 'string',
-              description: 'Repository name',
+              enum: Object.keys(organizationSecurityScanTypes),
             },
           },
-          ...commonSrmProperties,
         },
       },
     },
@@ -105,8 +93,9 @@ export const searchSecurityItemsTool: CodacyTool = {
 
 export const searchRepositorySecurityItemsTool: CodacyTool = {
   name: toolNames.CODACY_LIST_REPOSITORY_SRM_ITEMS,
-  description: `Tool to list security items/issues/vulnerabilities/findings, results are related to a repository's security and risk management (SRM) dashboard on Codacy. This tool contains pagination. Returns comprehensive security analysis including ${Object.keys(securityScanTypes).join(', ')} security issues.
-  \n ${rules}`,
+  description: `Tool to list security items/issues/vulnerabilities/findings, results are related to a repository's security and risk management (SRM) dashboard on Codacy. This tool contains pagination. Returns comprehensive security analysis including ${Object.keys(repositorySecurityScanTypes).join(', ')} security issues.
+  \n ${rules}
+  - Using this tool for DAST and PenTesting scan types; use the codacy_search_organization_srm_items tool instead.`,
   inputSchema: {
     type: 'object',
     properties: {
@@ -118,6 +107,14 @@ export const searchRepositorySecurityItemsTool: CodacyTool = {
           'Search parameters to filter the metrics of the security issues dashboard of an organization',
         properties: {
           ...commonSrmProperties,
+          scanTypes: {
+            description: 'Array of security scan types to filter by.',
+            type: 'array',
+            items: {
+              type: 'string',
+              enum: Object.keys(repositorySecurityScanTypes),
+            },
+          },
         },
       },
     },

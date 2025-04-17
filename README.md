@@ -55,7 +55,7 @@ The following tools are available through the Codacy MCP Server:
 
 - `codacy_list_repository_pull_requests`: List pull requests from a repository that the user has access to. You can search this endpoint for either last-updated (default), impact or merged.
 - `codacy_list_pull_request_issues`: Returns a list of issues found in a pull request. We can request either new or fixed issues.
-- `codacy_get_repository_pull_request_files_coverage`: Get coverage information for all files in a pull request.
+- `codacy_get_pull_request_files_coverage`: Get diff coverage information for all files in a pull request.
 - `codacy_get_pull_request_git_diff`: Returns the human-readable Git diff of a pull request.
 
 ### CLI Analysis
