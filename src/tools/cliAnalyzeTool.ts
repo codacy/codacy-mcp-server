@@ -1,6 +1,8 @@
 import { generalOrganizationMistakes, generalRepositoryMistakes } from '../rules.js';
 import { CodacyTool, repositorySchema, toolNames } from '../schemas.js';
 
+const availableCliTools = ['eslint', 'pmd', 'trivy', 'pylint', 'dartanalyzer'];
+
 const rules = `
   Use this tool to analyze the quality of a repository using Codacy command line.
 
@@ -35,13 +37,12 @@ export const cliAnalyzeTool: CodacyTool = {
       file: {
         type: 'string',
         description:
-          'Optional. Absolute path to the file to analyze, or pattern to match files (e.g., "src/**/*.js"). If left empty, the analysis will be executed for the whole project.',
+          'Optional. Absolute path to the file to analyze, or directory to analyze (e.g., "src/"). If left empty, the analysis will be executed for the whole project.',
         default: '',
       },
       tool: {
         type: 'string',
-        description:
-          'Optional. Tool to use for the analysis. If left empty, it will use all available tools.',
+        description: `Optional. Tool to use for the analysis. If left empty, it will use all available tools. Possible values: ${availableCliTools.join(', ')}`,
         default: '',
       },
     },

@@ -1,5 +1,4 @@
 import { codacyLanguages, issueCategories } from '../utils.js';
-import { searchSecurityItemsTool } from './searchSecurityItemsTool.js';
 import { listFileIssuesTool } from './listFileIssuesTool.js';
 import { listPullRequestIssuesTool } from './listPullRequestIssuesTool.js';
 import {
@@ -13,7 +12,7 @@ import { generalOrganizationMistakes, generalRepositoryMistakes } from '../rules
 
 const rules = `
   This is the primary tool for investigating general code quality concerns (e.g. best practices, performance, complexity, style) but NOT security issues. 
-  For security-related issues, use the ${searchSecurityItemsTool.name} tool instead. 
+  For security-related issues, use the SRM tools instead. 
   For listing the issues for specific files, use the ${listFileIssuesTool.name} tool instead.
   For listing the issues for specific pull requests, use the ${listPullRequestIssuesTool.name} tool instead.
   
