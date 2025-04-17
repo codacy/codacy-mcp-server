@@ -29,7 +29,6 @@ const rules = `
   - Using this tool for quality issues
   - Calling this tool after editing files to check for new results; changes need to be committed to the repository first.
   ${generalOrganizationMistakes}
-  ${generalRepositoryMistakes}
 `;
 
 const commonSrmProperties = {
@@ -95,6 +94,7 @@ export const searchRepositorySecurityItemsTool: CodacyTool = {
   name: toolNames.CODACY_LIST_REPOSITORY_SRM_ITEMS,
   description: `Tool to list security items/issues/vulnerabilities/findings, results are related to a repository's security and risk management (SRM) dashboard on Codacy. This tool contains pagination. Returns comprehensive security analysis including ${Object.keys(repositorySecurityScanTypes).join(', ')} security issues.
   \n ${rules}
+  \n ${generalRepositoryMistakes}
   - Using this tool for DAST and PenTesting scan types; use the codacy_search_organization_srm_items tool instead.`,
   inputSchema: {
     type: 'object',
