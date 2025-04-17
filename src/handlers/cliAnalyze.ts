@@ -38,9 +38,12 @@ const ensureCodacyConfig = async (
   organization: string,
   repository: string
 ): Promise<boolean> => {
-  const configPath = path.join(rootPath, '.codacy', 'codacy.yaml');
+  const extensions = ['yaml', 'yml'];
+  const configExists = extensions.some(ext =>
+    fs.existsSync(path.join(rootPath, '.codacy', `codacy.${ext}`))
+  );
 
-  if (fs.existsSync(configPath)) {
+  if (configExists) {
     return true;
   }
 
