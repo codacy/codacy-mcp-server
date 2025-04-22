@@ -1,11 +1,49 @@
-import util from 'util';
-import { exec as execChildProcess } from 'child_process';
 import fs from 'fs';
 import path from 'path';
+import { exec } from 'child_process';
 
-const exec = util.promisify(execChildProcess);
 const CODACY_ACCOUNT_TOKEN = process.env.CODACY_ACCOUNT_TOKEN;
-const CODACY_CLI_COMMAND = 'CODACY_CLI_V2_VERSION=1.0.0-main.232.a6a6368 codacy-cli';
+
+const CLI_FILE_NAME = 'cli.sh';
+const CLI_FOLDER_NAME = '.codacy';
+const CLI_LOCAL_COMMAND = `${CLI_FOLDER_NAME}/${CLI_FILE_NAME}`;
+const CLI_GLOBAL_COMMAND = 'codacy-cli';
+
+// Set a larger buffer size (10MB)
+const MAX_BUFFER_SIZE = 1024 * 1024 * 10;
+
+const execAsync: (
+  command: string,
+  options: { rootPath: string }
+) => Promise<{ stdout: string; stderr: string }> = (
+  command: string,
+  options: { rootPath: string }
+) => {
+  //const workspacePath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || ''
+
+  return new Promise((resolve, reject) => {
+    exec(
+      `CODACY_CLI_V2_VERSION=1.0.0-main.232.a6a6368 ${command}`,
+      {
+        cwd: options.rootPath,
+        maxBuffer: MAX_BUFFER_SIZE, // To solve: stdout maxBuffer exceeded
+      },
+      (error, stdout, stderr) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+
+        if (stderr && (!stdout || /error|fail|exception/i.test(stderr))) {
+          reject(new Error(stderr));
+          return;
+        }
+
+        resolve({ stdout, stderr });
+      }
+    );
+  });
+};
 
 // Safeguard: Validate and sanitize command inputs
 const sanitizeCommand = (command?: string): string => {
@@ -13,89 +51,104 @@ const sanitizeCommand = (command?: string): string => {
   return command?.replace(/[;&|`$]/g, '') || '';
 };
 
-// Check if codacy-cli is installed and install if needed
-const ensureCodacyCLI = async (): Promise<boolean> => {
-  try {
-    await exec('which codacy-cli');
-    return true;
-  } catch {
-    try {
-      // Install codacy-cli using brew
-      await exec('brew install codacy/codacy-cli-v2/codacy-cli-v2');
-
-      return true;
-    } catch (error) {
-      console.error('Failed to install codacy-cli:', error);
-      return false;
-    }
-  }
-};
-
-// Check if .codacy/codacy.yaml exists and initialize if needed
-const ensureCodacyConfig = async (
-  rootPath: string,
-  provider: string,
-  organization: string,
-  repository: string
-): Promise<boolean> => {
-  const extensions = ['yaml', 'yml'];
-  const configExists = extensions.some(ext =>
-    fs.existsSync(path.join(rootPath, '.codacy', `codacy.${ext}`))
-  );
-
-  if (configExists) {
-    return true;
-  }
-
-  try {
-    const command = `${CODACY_CLI_COMMAND} init --api-token ${CODACY_ACCOUNT_TOKEN} --provider ${provider} --organization ${organization} --repository ${repository}`;
-    const options = { cwd: rootPath };
-
-    await exec(command, options);
-    await exec(`${CODACY_CLI_COMMAND} install`, options);
-    return true;
-  } catch (error) {
-    console.error('Failed to initialize Codacy configuration:', error);
-    return false;
-  }
-};
-
-// Only treat stderr as an error if:
-// 1. There's no stdout (meaning only errors occurred)
-// 2. stderr contains actual error messages (not just progress logs)
-const falseSuccess = (stdout: string, stderr?: string) =>
-  stderr && (!stdout || /error|fail|exception/i.test(stderr));
-
 // Run analysis with potential retry after installation
-const runAnalysis = async (args: any): Promise<{ stdout: string; stderr: string }> => {
+const runAnalysis = async (
+  cliCommand: string,
+  args: any
+): Promise<{ stdout: string; stderr: string }> => {
   const safeFile = sanitizeCommand(args.file);
   const tool = args.tool ? `--tool ${args.tool}` : '';
-  const command = `${CODACY_CLI_COMMAND} analyze ${tool} --format sarif ${safeFile}`;
+  const command = `${cliCommand} analyze ${tool} --format sarif ${safeFile}`;
 
-  // Add options object with cwd and increased maxBuffer
   const options = {
-    cwd: args.rootPath,
-    maxBuffer: 1024 * 1024 * 10, // 10MB buffer size
+    rootPath: args.rootPath,
   };
 
+  return await execAsync(command, options);
+};
+
+const ensureCodacyCLIExists = async (
+  rootPath: string,
+  provider?: string,
+  organization?: string,
+  repository?: string
+) => {
+  let isCLIAvailable = false;
+
   try {
-    const { stdout, stderr } = await exec(command, options);
-    if (falseSuccess(stdout, stderr)) {
-      throw new Error('Failed to run analysis. Trying to install codacy-cli...');
-    }
-    return { stdout, stderr };
-  } catch (error) {
-    // If first attempt fails, try installing and retry
-    await exec(`${CODACY_CLI_COMMAND} install`, options);
-    return await exec(command, options);
+    await execAsync(`${CLI_LOCAL_COMMAND} --help`, { rootPath });
+    return CLI_LOCAL_COMMAND;
+  } catch {
+    isCLIAvailable = false;
   }
+
+  if (!isCLIAvailable) {
+    try {
+      await execAsync(`${CLI_GLOBAL_COMMAND} --help`, { rootPath });
+      return CLI_GLOBAL_COMMAND;
+    } catch {
+      isCLIAvailable = false;
+    }
+  }
+
+  // install locally if not available
+  const codacyFolder = path.join(rootPath, CLI_FOLDER_NAME);
+  if (!fs.existsSync(codacyFolder)) {
+    fs.mkdirSync(codacyFolder, { recursive: true });
+  }
+
+  // Download cli.sh if it doesn't exist
+  const codacyCliPath = path.join(codacyFolder, CLI_FILE_NAME);
+  if (!fs.existsSync(codacyCliPath)) {
+    await execAsync(
+      `curl -Ls -o "${CLI_LOCAL_COMMAND}" https://raw.githubusercontent.com/codacy/codacy-cli-v2/main/codacy-cli.sh`,
+      { rootPath }
+    );
+
+    await execAsync(`chmod +x "${CLI_LOCAL_COMMAND}"`, { rootPath });
+  }
+
+  // initialize codacy-cli
+  await ensureCodacyConfig(CLI_LOCAL_COMMAND, rootPath, provider, organization, repository);
+
+  return CLI_LOCAL_COMMAND;
+};
+
+const ensureCodacyConfig = async (
+  cliCommand: string,
+  rootPath: string,
+  provider?: string,
+  organization?: string,
+  repository?: string
+) => {
+  const codacyConfigPath = path.join(rootPath, CLI_FOLDER_NAME, 'codacy.yaml');
+  if (!fs.existsSync(codacyConfigPath)) {
+    const apiToken = CODACY_ACCOUNT_TOKEN ? `--api-token ${CODACY_ACCOUNT_TOKEN}` : '';
+    const repositoryAccess =
+      repository && provider && organization
+        ? `--provider ${provider} --organization ${organization} --repository ${repository}`
+        : '';
+
+    // initialize codacy-cli
+    await execAsync(`${CLI_LOCAL_COMMAND} init ${apiToken} ${repositoryAccess}`, { rootPath });
+
+    // install dependencies
+    await execAsync(`${CLI_LOCAL_COMMAND} install`, { rootPath });
+  }
+
+  return true;
 };
 
 export const cliAnalyzeHandler = async (args: any) => {
   try {
     // Ensure codacy-cli is installed
-    const isCLIAvailable = await ensureCodacyCLI();
-    if (!isCLIAvailable) {
+    const cliCommand = await ensureCodacyCLIExists(
+      args.rootPath,
+      args.provider,
+      args.organization,
+      args.repository
+    );
+    if (!cliCommand) {
       return {
         success: false,
         errorType: 'cli-missing',
@@ -105,6 +158,7 @@ export const cliAnalyzeHandler = async (args: any) => {
 
     // Check for mandatory configuration file and initialize if needed
     const configExists = await ensureCodacyConfig(
+      cliCommand,
       args.rootPath,
       args.provider,
       args.organization,
@@ -119,23 +173,15 @@ export const cliAnalyzeHandler = async (args: any) => {
       };
     }
 
-    const { stdout, stderr } = await runAnalysis(args);
-
-    if (falseSuccess(stdout, stderr)) {
-      return {
-        success: false,
-        errorType: 'stderr',
-        output: stderr,
-      };
-    }
+    const { stdout, stderr } = await runAnalysis(cliCommand, args);
 
     // Try to extract JSON from the output if it's embedded in other text
     const jsonMatch = /(\{[\s\S]*\}|\[[\s\S]*\])/.exec(stdout);
 
     return {
       success: true,
-      output: stdout,
       result: jsonMatch ? JSON.parse(jsonMatch[0]) : null,
+      warnings: stderr,
     };
   } catch (error) {
     return {
