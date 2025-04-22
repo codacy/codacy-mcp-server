@@ -19,8 +19,6 @@ const execAsync: (
   command: string,
   options: { rootPath: string }
 ) => {
-  //const workspacePath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || ''
-
   return new Promise((resolve, reject) => {
     exec(
       `CODACY_CLI_V2_VERSION=1.0.0-main.232.a6a6368 ${command}`,
