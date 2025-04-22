@@ -65,6 +65,31 @@ const runAnalysis = async (
   return await execAsync(command, options);
 };
 
+const ensureCodacyConfig = async (
+  cliCommand: string,
+  rootPath: string,
+  provider?: string,
+  organization?: string,
+  repository?: string
+) => {
+  const codacyConfigPath = path.join(rootPath, CLI_FOLDER_NAME, 'codacy.yaml');
+  if (!fs.existsSync(codacyConfigPath)) {
+    const apiToken = CODACY_ACCOUNT_TOKEN ? `--api-token ${CODACY_ACCOUNT_TOKEN}` : '';
+    const repositoryAccess =
+      repository && provider && organization
+        ? `--provider ${provider} --organization ${organization} --repository ${repository}`
+        : '';
+
+    // initialize codacy-cli
+    await execAsync(`${cliCommand} init ${apiToken} ${repositoryAccess}`, { rootPath });
+
+    // install dependencies
+    await execAsync(`${cliCommand} install`, { rootPath });
+  }
+
+  return true;
+};
+
 const ensureCodacyCLIExists = async (
   rootPath: string,
   provider?: string,
@@ -110,31 +135,6 @@ const ensureCodacyCLIExists = async (
   await ensureCodacyConfig(CLI_LOCAL_COMMAND, rootPath, provider, organization, repository);
 
   return CLI_LOCAL_COMMAND;
-};
-
-const ensureCodacyConfig = async (
-  cliCommand: string,
-  rootPath: string,
-  provider?: string,
-  organization?: string,
-  repository?: string
-) => {
-  const codacyConfigPath = path.join(rootPath, CLI_FOLDER_NAME, 'codacy.yaml');
-  if (!fs.existsSync(codacyConfigPath)) {
-    const apiToken = CODACY_ACCOUNT_TOKEN ? `--api-token ${CODACY_ACCOUNT_TOKEN}` : '';
-    const repositoryAccess =
-      repository && provider && organization
-        ? `--provider ${provider} --organization ${organization} --repository ${repository}`
-        : '';
-
-    // initialize codacy-cli
-    await execAsync(`${CLI_LOCAL_COMMAND} init ${apiToken} ${repositoryAccess}`, { rootPath });
-
-    // install dependencies
-    await execAsync(`${CLI_LOCAL_COMMAND} install`, { rootPath });
-  }
-
-  return true;
 };
 
 export const cliAnalyzeHandler = async (args: any) => {
