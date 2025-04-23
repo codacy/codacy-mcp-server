@@ -10,3 +10,9 @@ export const listOrganizationRepositoriesHandler = async (args: any) => {
     limit
   );
 };
+
+export const addOrganizationHandler = async (args: any) => {
+  const { provider, remoteIdentifier, name, type } = args;
+
+  return await OrganizationService.addOrganization({ provider, remoteIdentifier, name, type });
+};

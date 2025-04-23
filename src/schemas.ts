@@ -23,6 +23,8 @@ export const toolNames = {
   CODACY_GET_PATTERN: 'codacy_get_pattern',
   CODACY_CLI_ANALYZE: 'codacy_cli_analyze',
   CODACY_GET_FILE_CLONES: 'codacy_get_file_clones',
+  CODACY_ADD_REPOSITORY: 'codacy_add_repository',
+  CODACY_ADD_ORGANIZATION: 'codacy_add_organization',
 } as const;
 
 export type ToolKeys = (typeof toolNames)[keyof typeof toolNames];
