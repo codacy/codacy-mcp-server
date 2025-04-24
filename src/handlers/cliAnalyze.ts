@@ -21,7 +21,7 @@ const execAsync: (
 ) => {
   return new Promise((resolve, reject) => {
     exec(
-      `CODACY_CLI_V2_VERSION=1.0.0-main.232.a6a6368 ${command}`,
+      command,
       {
         cwd: options.rootPath,
         maxBuffer: MAX_BUFFER_SIZE, // To solve: stdout maxBuffer exceeded
