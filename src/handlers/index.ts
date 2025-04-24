@@ -6,4 +6,4 @@ export * from './security.js';
 export * from './tools.js';
 export * from './account.js';
 export * from './cliAnalyze.js';
-export * from './addRepository.js';
+export * from './setupRepository.js';
