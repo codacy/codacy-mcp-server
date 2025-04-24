@@ -134,7 +134,7 @@ You can open the user settings.json file in:
 Or open the general settings.json file directly, which according to your OS should be located in:
 
 - for macOS: `~/Library/Application Support/Code/User/settings.json`
-- for Windows: `%APPDATA%\Code\User\settings.json` or `%APPDATA%\Roaming\Code\User\settings.json`
+- for Windows: `%APPDATA%\Code\User\settings.json`
 - for Linux: `~/.config/Code/User/settings.json`
 
 Don't forget to update the value of `CODACY_ACCOUNT_TOKEN` with your token. 
