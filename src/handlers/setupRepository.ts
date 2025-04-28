@@ -1,15 +1,42 @@
 import { AccountService, OrganizationService, RepositoryService } from '../api/client/index.js';
 
-const addOrganization = async (args: any) => {
-  const { provider, organization } = args;
-  const { data: orgs } = await AccountService.listOrganizations(provider, undefined, 100);
-  const existingOrg = orgs.find(org => org.name === organization && org.provider === provider);
-  if (!existingOrg) {
+const findOrganization = async (provider: string, organization: string, cursor?: string) => {
+  try {
+    const { data: orgs, pagination } = await AccountService.listOrganizations(
+      provider,
+      cursor,
+      100
+    );
+    const existingOrg = orgs.find(org => org.name === organization && org.provider === provider);
+    if (!existingOrg) {
+      if (pagination?.cursor === null) {
+        return {
+          success: false,
+          message: 'Organization not found',
+        };
+      }
+      return findOrganization(provider, organization, pagination?.cursor);
+    }
+    return {
+      success: true,
+      organization: existingOrg,
+    };
+  } catch (error) {
     return {
       success: false,
-      message: 'Organization not found',
+      message: `Failed to find organization: ${error instanceof Error ? error.message : 'Unknown error'}`,
     };
   }
+};
+
+const addOrganization = async (args: any) => {
+  const { provider, organization } = args;
+  const findOrgResult = await findOrganization(provider, organization);
+  if (!findOrgResult.success) {
+    return findOrgResult;
+  }
+  const { organization: existingOrg } = findOrgResult;
+
   if (existingOrg?.joinStatus === 'member') {
     return {
       success: true,
