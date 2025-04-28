@@ -6,9 +6,11 @@ MCP Server for the Codacy API, enabling access to repositories, files, quality, 
 
 The following tools are available through the Codacy MCP Server:
 
-### Repository Management
+### Organization and Repository Management
 
-- `codacy_list_repositories`: List repositories in an organization with pagination support.
+- `codacy_list_organizations`: List organizations with pagination support.
+- `codacy_list_organization_repositories`: List repositories in an organization with pagination support.
+- `codacy_get_repository_with_analysis`: Get repository with analysis information, including metrics for Grade, Issues, Duplication, Complexity, and Coverage.
 
 ### Code Quality and Analysis
 
@@ -28,16 +30,20 @@ The following tools are available through the Codacy MCP Server:
   - Performance issue investigation
   - Complexity analysis
 
-### File Management
+### File Management and Analysis
 
 - `codacy_list_files`: List files in a repository with pagination support.
 - `codacy_get_file_issues`: Get the issue list for a file in a repository.
 - `codacy_get_file_coverage`: Get coverage information for a file in the head commit of a repository branch.
-- `codacy_get_file_clones`: Get the list of duplication clones (identical or very similar code segments) for a file in a repository. Use this tool to identify potential refactoring opportunities and reduce code duplication.
+- `codacy_get_file_clones`: Get the list of duplication clones (identical or very similar code segments) for a file in a repository.
+- `codacy_get_file_with_analysis`: Get detailed analysis information for a file, including metrics for Grade, Issues, Duplication, Complexity, and Coverage.
 
 ### Security Analysis
 
-- `codacy_list_srm_items`: Primary tool to list security items/issues/vulnerabilities/findings. Results are related to the organization security and risk management (SRM) dashboard on Codacy. Provides comprehensive security analysis including:
+- `codacy_search_organization_srm_items`: Primary tool to list security items/issues/vulnerabilities/findings across an organization. Results are related to the organization's security and risk management (SRM) dashboard on Codacy.
+- `codacy_search_repository_srm_items`: List security items/issues/vulnerabilities/findings for a specific repository.
+
+Both tools provide comprehensive security analysis including:
 
   - SAST (Code scanning)
   - Secrets (Secret scanning)
@@ -47,19 +53,29 @@ The following tools are available through the Codacy MCP Server:
   - DAST (Dynamic Application Security Testing)
   - PenTesting (Penetration testing)
 
-  Use this as the first tool when investigating security or compliance concerns.
-
 ### Pull Request Analysis
 
-- `codacy_list_repository_pull_requests`: List pull requests from a repository that the user has access to. You can search this endpoint for either last-updated (default), impact or merged.
-- `codacy_list_pull_request_issues`: Returns a list of issues found in a pull request. We can request either new or fixed issues.
+- `codacy_list_repository_pull_requests`: List pull requests from a repository that the user has access to.
+- `codacy_get_repository_pull_request`: Get detailed information about a specific pull request.
+- `codacy_list_pull_request_issues`: Returns a list of issues found in a pull request (new or fixed issues).
 - `codacy_get_pull_request_files_coverage`: Get diff coverage information for all files in a pull request.
 - `codacy_get_pull_request_git_diff`: Returns the human-readable Git diff of a pull request.
 
+### Tool and Pattern Management
+
+- `codacy_list_tools`: List all code analysis tools available in Codacy.
+- `codacy_list_repository_tools`: Get analysis tools settings and available tools for a repository.
+- `codacy_get_pattern`: Get the definition of a specific pattern.
+- `codacy_list_repository_tool_patterns`: List the patterns of a tool available for a repository.
+- `codacy_get_issue`: Get detailed information about a specific issue.
+
 ### CLI Analysis
 
-- `codacy_cli_analyze`: Uses Codacy's command-line tool to analyze code.
-
+- `codacy_cli_analyze`: Run quality analysis locally using Codacy CLI. Features include:
+  - Analyze specific files or entire directories
+  - Use specific tools or all available tools
+  - Get immediate results without waiting for scheduled analysis
+  - Apply fixes based on Codacy configuration
 
 ## Setup
 
