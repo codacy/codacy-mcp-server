@@ -156,6 +156,10 @@ const toolDefinitions: { [key in ToolKeys]: ToolDefinition } = {
     tool: Tools.cliAnalyzeTool,
     handler: Handlers.cliAnalyzeHandler,
   },
+  codacy_setup_repository: {
+    tool: Tools.setupRepositoryTool,
+    handler: Handlers.setupRepositoryHandler,
+  },
 };
 
 // Register tools
