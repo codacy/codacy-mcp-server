@@ -14,10 +14,6 @@ import { validateOrganization } from './src/middleware/validation.js';
 
 // Check for API key
 const CODACY_ACCOUNT_TOKEN = process.env.CODACY_ACCOUNT_TOKEN;
-if (!CODACY_ACCOUNT_TOKEN) {
-  console.error('Error: CODACY_ACCOUNT_TOKEN environment variable is required');
-  process.exit(1);
-}
 
 OpenAPI.BASE = 'https://app.codacy.com/api/v3';
 OpenAPI.HEADERS = {
@@ -68,103 +64,132 @@ const server = new Server(
 interface ToolDefinition {
   tool: Tool;
   handler: (args: any) => Promise<any>;
+  requiresAuth?: boolean;
 }
 
 const toolDefinitions: { [key in ToolKeys]: ToolDefinition } = {
   codacy_list_organization_repositories: {
     tool: Tools.listOrganizationRepositoriesTool,
     handler: Handlers.listOrganizationRepositoriesHandler,
+    requiresAuth: true,
   },
   codacy_search_organization_srm_items: {
     tool: Tools.searchOrganizationSecurityItemsTool,
     handler: Handlers.searchSecurityItemsHandler,
+    requiresAuth: true,
   },
   codacy_search_repository_srm_items: {
     tool: Tools.searchRepositorySecurityItemsTool,
     handler: Handlers.searchRepositorySecurityItemsHandler,
+    requiresAuth: true,
   },
   codacy_list_repository_issues: {
     tool: Tools.searchRepositoryIssuesTool,
     handler: Handlers.searchRepositoryIssuesHandler,
+    requiresAuth: true,
   },
   codacy_list_repository_pull_requests: {
     tool: Tools.listRepositoryPullRequestsTool,
     handler: Handlers.listRepositoryPullRequestsHandler,
+    requiresAuth: true,
   },
-  codacy_list_files: { tool: Tools.listFilesTool, handler: Handlers.listFilesHandler },
+  codacy_list_files: {
+    tool: Tools.listFilesTool,
+    handler: Handlers.listFilesHandler,
+    requiresAuth: true,
+  },
   codacy_get_file_issues: {
     tool: Tools.listFileIssuesTool,
     handler: Handlers.getFileIssuesHandler,
+    requiresAuth: true,
   },
   codacy_get_file_coverage: {
     tool: Tools.getFileCoverageTool,
     handler: Handlers.getFileCoverageHandler,
+    requiresAuth: true,
   },
   codacy_get_pull_request_files_coverage: {
     tool: Tools.getRepositoryPullRequestFilesCoverageTool,
     handler: Handlers.getRepositoryPullRequestFilesCoverageHandler,
+    requiresAuth: true,
   },
   codacy_get_pull_request_git_diff: {
     tool: Tools.getPullRequestGitDiffTool,
     handler: Handlers.getPullRequestGitDiffHandler,
+    requiresAuth: true,
   },
   codacy_list_pull_request_issues: {
     tool: Tools.listPullRequestIssuesTool,
     handler: Handlers.listPullRequestIssuesHandler,
+    requiresAuth: true,
   },
   codacy_get_repository_with_analysis: {
     tool: Tools.getRepositoryWithAnalysisTool,
     handler: Handlers.getRepositoryWithAnalysisHandler,
+    requiresAuth: true,
   },
   codacy_get_file_with_analysis: {
     tool: Tools.getFileWithAnalysisTool,
     handler: Handlers.getFileWithAnalysisHandler,
+    requiresAuth: true,
   },
   codacy_get_file_clones: {
     tool: Tools.getFileClonesTool,
     handler: Handlers.getFileClonesHandler,
+    requiresAuth: true,
   },
   codacy_get_repository_pull_request: {
     tool: Tools.getRepositoryPullRequestTool,
     handler: Handlers.getRepositoryPullRequestHandler,
+    requiresAuth: true,
   },
   codacy_get_issue: {
     tool: Tools.getIssueTool,
     handler: Handlers.getIssueHandler,
+    requiresAuth: true,
   },
   codacy_get_pattern: {
     tool: Tools.getPatternTool,
     handler: Handlers.getPatternHandler,
+    requiresAuth: false,
   },
   codacy_list_repository_tool_patterns: {
     tool: Tools.listRepositoryToolPatternsTool,
     handler: Handlers.listRepositoryToolPatternsHandler,
+    requiresAuth: true,
   },
   codacy_list_tools: {
     tool: Tools.listToolsTool,
     handler: Handlers.listToolsHandler,
+    requiresAuth: false,
   },
   codacy_list_repository_tools: {
     tool: Tools.listRepositoryToolsTool,
     handler: Handlers.listRepositoryToolsHandler,
+    requiresAuth: true,
   },
   codacy_list_organizations: {
     tool: Tools.listOrganizationsTool,
     handler: Handlers.listOrganizationsHandler,
+    requiresAuth: true,
   },
   codacy_cli_analyze: {
     tool: Tools.cliAnalyzeTool,
     handler: Handlers.cliAnalyzeHandler,
+    requiresAuth: false,
   },
   codacy_setup_repository: {
     tool: Tools.setupRepositoryTool,
     handler: Handlers.setupRepositoryHandler,
+    requiresAuth: true,
   },
 };
 
 // Register tools
 server.setRequestHandler(ListToolsRequestSchema, async () => ({
-  tools: Object.values(toolDefinitions).map(({ tool }) => tool),
+  tools: Object.values(toolDefinitions)
+    .filter(({ requiresAuth }) => CODACY_ACCOUNT_TOKEN || !requiresAuth)
+    .map(({ tool }) => tool),
 }));
 
 // Register request handlers
