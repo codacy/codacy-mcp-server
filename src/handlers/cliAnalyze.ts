@@ -3,6 +3,7 @@ import path from 'path';
 import { exec } from 'child_process';
 
 const CODACY_ACCOUNT_TOKEN = process.env.CODACY_ACCOUNT_TOKEN;
+const CODACY_CLI_VERSION = process.env.CODACY_CLI_VERSION;
 
 const CLI_FILE_NAME = 'cli.sh';
 const CLI_FOLDER_NAME = '.codacy';
@@ -21,7 +22,7 @@ const execAsync: (
 ) => {
   return new Promise((resolve, reject) => {
     exec(
-      command,
+      `${CODACY_CLI_VERSION ? `CODACY_CLI_V2_VERSION=${CODACY_CLI_VERSION} ` : ''}${command}`,
       {
         cwd: options.rootPath,
         maxBuffer: MAX_BUFFER_SIZE, // To solve: stdout maxBuffer exceeded
