@@ -45,13 +45,13 @@ The following tools are available through the Codacy MCP Server:
 
 Both tools provide comprehensive security analysis including:
 
-  - SAST (Code scanning)
-  - Secrets (Secret scanning)
-  - SCA (Dependency scanning)
-  - IaC (Infrastructure-as-code scanning)
-  - CICD (CI/CD scanning)
-  - DAST (Dynamic Application Security Testing)
-  - PenTesting (Penetration testing)
+- SAST (Code scanning)
+- Secrets (Secret scanning)
+- SCA (Dependency scanning)
+- IaC (Infrastructure-as-code scanning)
+- CICD (CI/CD scanning)
+- DAST (Dynamic Application Security Testing)
+- PenTesting (Penetration testing)
 
 ### Pull Request Analysis
 
@@ -82,9 +82,10 @@ Both tools provide comprehensive security analysis including:
 ### Requirements
 
 Ensure your machine has the following tools installed:
-* git
-* node.js
-  * ensure that the `npx` command runs without issues.
+
+- git
+- node.js
+  - ensure that the `npx` command runs without issues.
 
 ### Personal API Access Token
 
@@ -105,7 +106,7 @@ Depending on what you are connecting the MCP Server to, you can use the followin
 - Cursor: edit the `.cursor/mcp.json` file to add the following
 - Windsurf: edit the `.codeium/windsurf/mcp_config.json` file to add the following
 - Claude Desktop: edit the `claude_desktop_config.json` file to add the following
-  
+
 ```json
 {
   "mcpServers": {
@@ -113,7 +114,8 @@ Depending on what you are connecting the MCP Server to, you can use the followin
       "command": "npx",
       "args": ["-y", "@codacy/codacy-mcp"],
       "env": {
-        "CODACY_ACCOUNT_TOKEN": "<YOUR_TOKEN>"
+        "CODACY_ACCOUNT_TOKEN": "<YOUR_TOKEN>",
+        "CODACY_CLI_VERSION": "<VERSION>"
       }
     }
   }
@@ -126,23 +128,22 @@ Depending on what you are connecting the MCP Server to, you can use the followin
 
 ```json
 {
-    "mcp": {
-        "inputs": [],
-        "servers": {
-            "codacy": {
-                "command": "npx",
-                "args": [
-                  "-y",
-                  "@codacy/codacy-mcp"
-                ],
-                "env": {
-                  "CODACY_ACCOUNT_TOKEN": "<YOUR_TOKEN>"
-                }
-              }
+  "mcp": {
+    "inputs": [],
+    "servers": {
+      "codacy": {
+        "command": "npx",
+        "args": ["-y", "@codacy/codacy-mcp"],
+        "env": {
+          "CODACY_ACCOUNT_TOKEN": "<YOUR_TOKEN>",
+          "CODACY_CLI_VERSION": "<VERSION>"
         }
+      }
     }
+  }
 }
 ```
+
 You can open the user settings.json file in:
 
 `View > Command Palette > Preferences: Open User Settings (JSON)`
@@ -153,7 +154,7 @@ Or open the general settings.json file directly, which according to your OS shou
 - for Windows: `%APPDATA%\Code\User\settings.json`
 - for Linux: `~/.config/Code/User/settings.json`
 
-Don't forget to update the value of `CODACY_ACCOUNT_TOKEN` with your token. 
+Don't forget to update the value of `CODACY_ACCOUNT_TOKEN` with your token.
 
 2. Make sure you have Agent mode enabled: [vscode://settings/chat.agent.enabled](vscode://settings/chat.agent.enabled)
 
@@ -178,7 +179,8 @@ npm install -g @codacy/codacy-mcp
       "command": "/Users/yourusername/.nvm/versions/node/vXX.X.X/bin/node",
       "args": ["/path-to/codacy-mcp/dist/index.js"],
       "env": {
-        "CODACY_ACCOUNT_TOKEN": "<YOUR_TOKEN>"
+        "CODACY_ACCOUNT_TOKEN": "<YOUR_TOKEN>",
+        "CODACY_CLI_VERSION": "<VERSION>"
       }
     }
   }
@@ -197,7 +199,7 @@ npm run build
 
 ## Codacy-CLI Support (WIP)
 
-In order to use the [Codacy-CLI](https://github.com/codacy/codacy-cli-v2), it needs to be installed.
+In order to use the [Codacy-CLI](https://github.com/codacy/codacy-cli-v2), it needs to be installed. Note that the `CODACY_CLI_VERSION` variable is optional, in case you want to use a specific version of our CLI.
 
 ## License
 
