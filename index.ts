@@ -14,10 +14,6 @@ import { validateOrganization } from './src/middleware/validation.js';
 
 // Check for API key
 const CODACY_ACCOUNT_TOKEN = process.env.CODACY_ACCOUNT_TOKEN;
-if (!CODACY_ACCOUNT_TOKEN) {
-  console.error('Error: CODACY_ACCOUNT_TOKEN environment variable is required');
-  process.exit(1);
-}
 
 OpenAPI.BASE = 'https://app.codacy.com/api/v3';
 OpenAPI.HEADERS = {
@@ -68,6 +64,7 @@ const server = new Server(
 interface ToolDefinition {
   tool: Tool;
   handler: (args: any) => Promise<any>;
+  noAuth?: boolean;
 }
 
 const toolDefinitions: { [key in ToolKeys]: ToolDefinition } = {
@@ -91,7 +88,10 @@ const toolDefinitions: { [key in ToolKeys]: ToolDefinition } = {
     tool: Tools.listRepositoryPullRequestsTool,
     handler: Handlers.listRepositoryPullRequestsHandler,
   },
-  codacy_list_files: { tool: Tools.listFilesTool, handler: Handlers.listFilesHandler },
+  codacy_list_files: {
+    tool: Tools.listFilesTool,
+    handler: Handlers.listFilesHandler,
+  },
   codacy_get_file_issues: {
     tool: Tools.listFileIssuesTool,
     handler: Handlers.getFileIssuesHandler,
@@ -135,6 +135,7 @@ const toolDefinitions: { [key in ToolKeys]: ToolDefinition } = {
   codacy_get_pattern: {
     tool: Tools.getPatternTool,
     handler: Handlers.getPatternHandler,
+    noAuth: true,
   },
   codacy_list_repository_tool_patterns: {
     tool: Tools.listRepositoryToolPatternsTool,
@@ -143,6 +144,7 @@ const toolDefinitions: { [key in ToolKeys]: ToolDefinition } = {
   codacy_list_tools: {
     tool: Tools.listToolsTool,
     handler: Handlers.listToolsHandler,
+    noAuth: true,
   },
   codacy_list_repository_tools: {
     tool: Tools.listRepositoryToolsTool,
@@ -155,6 +157,7 @@ const toolDefinitions: { [key in ToolKeys]: ToolDefinition } = {
   codacy_cli_analyze: {
     tool: Tools.cliAnalyzeTool,
     handler: Handlers.cliAnalyzeHandler,
+    noAuth: true,
   },
   codacy_setup_repository: {
     tool: Tools.setupRepositoryTool,
@@ -164,7 +167,9 @@ const toolDefinitions: { [key in ToolKeys]: ToolDefinition } = {
 
 // Register tools
 server.setRequestHandler(ListToolsRequestSchema, async () => ({
-  tools: Object.values(toolDefinitions).map(({ tool }) => tool),
+  tools: Object.values(toolDefinitions)
+    .filter(({ noAuth }) => CODACY_ACCOUNT_TOKEN || noAuth)
+    .map(({ tool }) => tool),
 }));
 
 // Register request handlers
