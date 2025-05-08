@@ -1,25 +1,36 @@
 import { AccountService, OrganizationService, RepositoryService } from '../api/client/index.js';
 
+const ORGANIZATIONS_ITERATION_LIMIT = 100;
+
 const findOrganization = async (provider: string, organization: string, cursor?: string) => {
   try {
-    const { data: orgs, pagination } = await AccountService.listOrganizations(
-      provider,
-      cursor,
-      100
-    );
-    const existingOrg = orgs.find(org => org.name === organization && org.provider === provider);
-    if (!existingOrg) {
-      if (pagination?.cursor === null) {
+    let currentCursor = cursor;
+    let hasMore = true;
+    let iteration = 0;
+    while (hasMore && iteration < ORGANIZATIONS_ITERATION_LIMIT) {
+      const { data: orgs, pagination } = await AccountService.listOrganizations(
+        provider,
+        currentCursor,
+        100
+      );
+      console.error(orgs, pagination);
+      const existingOrg = orgs.find(org => org.name === organization && org.provider === provider);
+      if (existingOrg) {
         return {
-          success: false,
-          message: 'Organization not found',
+          success: true,
+          organization: existingOrg,
         };
       }
-      return findOrganization(provider, organization, pagination?.cursor);
+      if (!pagination?.cursor) {
+        hasMore = false;
+      } else {
+        currentCursor = pagination.cursor;
+      }
+      iteration++;
     }
     return {
-      success: true,
-      organization: existingOrg,
+      success: false,
+      message: 'Organization not found',
     };
   } catch (error) {
     return {
