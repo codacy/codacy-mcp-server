@@ -13,7 +13,6 @@ const findOrganization = async (provider: string, organization: string, cursor?:
         currentCursor,
         100
       );
-      console.error(orgs, pagination);
       const existingOrg = orgs.find(org => org.name === organization && org.provider === provider);
       if (existingOrg) {
         return {
