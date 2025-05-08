@@ -1,6 +1,6 @@
 import { AccountService, OrganizationService, RepositoryService } from '../api/client/index.js';
 
-const ORGANIZATIONS_ITERATION_LIMIT = 100;
+const ORGANIZATIONS_ITERATION_LIMIT = 5;
 
 const findOrganization = async (provider: string, organization: string, cursor?: string) => {
   try {
