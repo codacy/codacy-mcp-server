@@ -33,7 +33,7 @@ const execAsync: (
           return;
         }
 
-        if (stderr && (!stdout || /error|fail|exception/i.test(stderr))) {
+        if (stderr && !stdout) {
           reject(new Error(stderr));
           return;
         }
