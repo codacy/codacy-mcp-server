@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { exec } from 'child_process';
+import os from 'os';
 
 const CODACY_ACCOUNT_TOKEN = process.env.CODACY_ACCOUNT_TOKEN;
 const CODACY_CLI_VERSION = process.env.CODACY_CLI_VERSION;
@@ -10,19 +11,64 @@ const CLI_FOLDER_NAME = '.codacy';
 const CLI_LOCAL_COMMAND = `${CLI_FOLDER_NAME}/${CLI_FILE_NAME}`;
 const CLI_GLOBAL_COMMAND = 'codacy-cli';
 
+// Function to detect if user is on Windows
+const isWindows = () => {
+  const isWindows = os.platform() === 'win32';
+  return isWindows;
+};
+
+const isWSL = async (): Promise<boolean> => {
+  if (!isWindows()) return false;
+  
+  return new Promise((resolve) => {
+    exec('wsl --list', (error) => {
+      resolve(!error);
+    });
+  });
+};
+
+// Convert Windows path to WSL path
+const convertToWslPath = async (windowsPath: string): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    exec(`wsl wslpath -a "${windowsPath}"`, (error, stdout) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+      resolve(stdout.trim());
+    });
+  });
+};
+
 // Set a larger buffer size (10MB)
 const MAX_BUFFER_SIZE = 1024 * 1024 * 10;
 
 const execAsync: (
   command: string,
   options: { rootPath: string }
-) => Promise<{ stdout: string; stderr: string }> = (
+) => Promise<{ stdout: string; stderr: string }> = async (
   command: string,
   options: { rootPath: string }
 ) => {
-  return new Promise((resolve, reject) => {
+  const hasWsl = await isWSL();
+
+  const cliVersion = hasWsl ? `export CODACY_CLI_V2_VERSION=${CODACY_CLI_VERSION} && ` : `CODACY_CLI_V2_VERSION=${CODACY_CLI_VERSION}`;
+  
+  return new Promise(async (resolve, reject) => {
+    let workingDir = options.rootPath;
+    
+    if (hasWsl) {
+      try {
+        workingDir = await convertToWslPath(options.rootPath);
+      } catch (error) {
+        reject(new Error(`Failed to convert Windows path to WSL path: ${error}`));
+        return;
+      }
+    }
+    
+    const execCommand = ` ${CODACY_CLI_VERSION ?  cliVersion : ''}${command}`;
     exec(
-      `${CODACY_CLI_VERSION ? `CODACY_CLI_V2_VERSION=${CODACY_CLI_VERSION} ` : ''}${command}`,
+      `${hasWsl ? `wsl bash -c "${execCommand}"` : execCommand}`,
       {
         cwd: options.rootPath,
         maxBuffer: MAX_BUFFER_SIZE, // To solve: stdout maxBuffer exceeded
@@ -73,7 +119,9 @@ const ensureCodacyConfig = async (
   organization?: string,
   repository?: string
 ) => {
+  const hasWsl = await isWSL();
   const codacyConfigPath = path.join(rootPath, CLI_FOLDER_NAME, 'codacy.yaml');
+  // const codacyConfigPath = hasWsl ? await convertToWslPath(codacyConfigPathRaw) : codacyConfigPathRaw
   if (!fs.existsSync(codacyConfigPath)) {
     const apiToken = CODACY_ACCOUNT_TOKEN ? `--api-token ${CODACY_ACCOUNT_TOKEN}` : '';
     const repositoryAccess =
@@ -98,6 +146,7 @@ const ensureCodacyCLIExists = async (
   repository?: string
 ) => {
   let isCLIAvailable = false;
+  const hasWsl = await isWSL();
 
   try {
     await execAsync(`${CLI_LOCAL_COMMAND} --help`, { rootPath });
@@ -124,12 +173,13 @@ const ensureCodacyCLIExists = async (
   // Download cli.sh if it doesn't exist
   const codacyCliPath = path.join(codacyFolder, CLI_FILE_NAME);
   if (!fs.existsSync(codacyCliPath)) {
+    const cliPath = hasWsl ? `$(wslpath -a "$(Get-Location)\/${CLI_LOCAL_COMMAND}.sh")` : CLI_LOCAL_COMMAND;
     await execAsync(
-      `curl -Ls -o "${CLI_LOCAL_COMMAND}" https://raw.githubusercontent.com/codacy/codacy-cli-v2/main/codacy-cli.sh`,
+      `curl -Ls -o "${cliPath}" https://raw.githubusercontent.com/codacy/codacy-cli-v2/main/codacy-cli.sh`,
       { rootPath }
     );
 
-    await execAsync(`chmod +x "${CLI_LOCAL_COMMAND}"`, { rootPath });
+    await execAsync(`chmod +x "${cliPath}"`, { rootPath });
   }
 
   // initialize codacy-cli
@@ -139,10 +189,23 @@ const ensureCodacyCLIExists = async (
 };
 
 export const cliAnalyzeHandler = async (args: any) => {
+  const wslInstalled = await isWSL();
+  if (isWindows()) {
+    
+    if (!wslInstalled) {
+      return {
+        success: false,
+        errorType: 'cli-unsupported-os',
+        output: 'Codacy CLI is only available on Windows via WSL. Please install WSL (Windows Subsystem for Linux) and try again.',
+      };
+    }
+  }
+  
   try {
+    const correctRootPath = wslInstalled ? await convertToWslPath(args.rootPath) : args.rootPath;
     // Ensure codacy-cli is installed
     const cliCommand = await ensureCodacyCLIExists(
-      args.rootPath,
+      correctRootPath,
       args.provider,
       args.organization,
       args.repository
@@ -158,7 +221,7 @@ export const cliAnalyzeHandler = async (args: any) => {
     // Check for mandatory configuration file and initialize if needed
     const configExists = await ensureCodacyConfig(
       cliCommand,
-      args.rootPath,
+      correctRootPath,
       args.provider,
       args.organization,
       args.repository
