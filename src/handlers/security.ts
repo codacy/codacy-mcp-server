@@ -17,7 +17,10 @@ export const searchSecurityItemsHandler = async (args: any) => {
 export const searchRepositorySecurityItemsHandler = async (args: any) => {
   const { provider, organization, repository, cursor, limit, sort, direction, options } = args;
 
-  options.repositories = [repository];
+  const optionsWithRepositories = {
+    ...options,
+    repositories: [repository],
+  };
 
   return await SecurityService.searchSecurityItems(
     provider,
@@ -26,6 +29,6 @@ export const searchRepositorySecurityItemsHandler = async (args: any) => {
     limit,
     sort,
     direction,
-    options
+    optionsWithRepositories
   );
 };
