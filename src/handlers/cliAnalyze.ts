@@ -13,6 +13,13 @@ const CLI_GLOBAL_COMMAND = 'codacy-cli';
 // Set a larger buffer size (10MB)
 const MAX_BUFFER_SIZE = 1024 * 1024 * 10;
 
+// Function to detect if user is on Windows
+const isWindows = () => {
+  const isWindows = process.platform === 'win32';
+  return isWindows;
+};
+
+
 const execAsync: (
   command: string,
   options: { rootPath: string }
@@ -139,6 +146,15 @@ const ensureCodacyCLIExists = async (
 };
 
 export const cliAnalyzeHandler = async (args: any) => {
+ 
+  if (isWindows()) {
+    // If the user is on Windows return an error message
+    return {
+      success: false,
+      errorType: 'cli-unsupported-os',
+      output: 'Codacy CLI is only available on Windows via WSL (Windows Subsystem for Linux).',
+    };
+  }
   try {
     // Ensure codacy-cli is installed
     const cliCommand = await ensureCodacyCLIExists(
