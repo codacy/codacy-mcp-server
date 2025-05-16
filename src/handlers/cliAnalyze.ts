@@ -19,7 +19,7 @@ const isWindows = () => {
 
 const isWSL = async (): Promise<boolean> => {
   if (!isWindows()) return false;
-  
+
   return new Promise((resolve) => {
     exec('wsl --list', (error) => {
       resolve(!error);
@@ -35,7 +35,9 @@ const convertToWslPath = async (windowsPath: string): Promise<string> => {
         reject(error);
         return;
       }
-      resolve(stdout.trim());
+      // Replace backslashes with forward slashes
+      const sanitizedPath = stdout.trim().replace(/\\/g, '/');
+      resolve(sanitizedPath);
     });
   });
 };
@@ -50,45 +52,39 @@ const execAsync: (
   command: string,
   options: { rootPath: string }
 ) => {
-  const hasWsl = await isWSL();
+    const hasWsl = await isWSL();
 
-  const cliVersion = hasWsl ? `export CODACY_CLI_V2_VERSION=${CODACY_CLI_VERSION} && ` : `CODACY_CLI_V2_VERSION=${CODACY_CLI_VERSION}`;
-  
-  return new Promise(async (resolve, reject) => {
-    let workingDir = options.rootPath;
-    
-    if (hasWsl) {
-      try {
-        workingDir = await convertToWslPath(options.rootPath);
-      } catch (error) {
-        reject(new Error(`Failed to convert Windows path to WSL path: ${error}`));
-        return;
-      }
-    }
-    
-    const execCommand = ` ${CODACY_CLI_VERSION ?  cliVersion : ''}${command}`;
-    exec(
-      `${hasWsl ? `wsl bash -c "${execCommand}"` : execCommand}`,
-      {
-        cwd: options.rootPath,
-        maxBuffer: MAX_BUFFER_SIZE, // To solve: stdout maxBuffer exceeded
-      },
-      (error, stdout, stderr) => {
-        if (error) {
-          reject(error);
-          return;
+    const cliVersion = hasWsl ? `export CODACY_CLI_V2_VERSION=${CODACY_CLI_VERSION} && ` : `CODACY_CLI_V2_VERSION=${CODACY_CLI_VERSION}`;
+
+    return new Promise(async (resolve, reject) => {
+
+      const execCommand = ` ${CODACY_CLI_VERSION ? cliVersion : ''}${command}`;
+      exec(
+        `${hasWsl ? `wsl bash -c "${execCommand}"` : execCommand}`,
+        {
+          cwd: options.rootPath,
+          maxBuffer: MAX_BUFFER_SIZE, // To solve: stdout maxBuffer exceeded
+        },
+        (error, stdout, stderr) => {
+          console.error('execCommand', execCommand);
+          console.error('cwd', options.rootPath);
+           console.error('stdout', stdout);
+          console.error('stderr', stderr);
+          if (error) {
+            reject(error);
+            return;
+          }
+
+          if (stderr && !stdout) {
+            reject(new Error(stderr));
+            return;
+          }
+
+          resolve({ stdout, stderr });
         }
-
-        if (stderr && !stdout) {
-          reject(new Error(stderr));
-          return;
-        }
-
-        resolve({ stdout, stderr });
-      }
-    );
-  });
-};
+      );
+    });
+  };
 
 // Safeguard: Validate and sanitize command inputs
 const sanitizeCommand = (command?: string): string => {
@@ -119,9 +115,8 @@ const ensureCodacyConfig = async (
   organization?: string,
   repository?: string
 ) => {
-  const hasWsl = await isWSL();
   const codacyConfigPath = path.join(rootPath, CLI_FOLDER_NAME, 'codacy.yaml');
-  // const codacyConfigPath = hasWsl ? await convertToWslPath(codacyConfigPathRaw) : codacyConfigPathRaw
+
   if (!fs.existsSync(codacyConfigPath)) {
     const apiToken = CODACY_ACCOUNT_TOKEN ? `--api-token ${CODACY_ACCOUNT_TOKEN}` : '';
     const repositoryAccess =
@@ -145,15 +140,15 @@ const ensureCodacyCLIExists = async (
   organization?: string,
   repository?: string
 ) => {
-  let isCLIAvailable = false;
   const hasWsl = await isWSL();
-
+  let isCLIAvailable = false;
   try {
     await execAsync(`${CLI_LOCAL_COMMAND} --help`, { rootPath });
     return CLI_LOCAL_COMMAND;
   } catch {
     isCLIAvailable = false;
   }
+
 
   if (!isCLIAvailable) {
     try {
@@ -166,20 +161,21 @@ const ensureCodacyCLIExists = async (
 
   // install locally if not available
   const codacyFolder = path.join(rootPath, CLI_FOLDER_NAME);
+  console.error('codacyFolder', codacyFolder);
   if (!fs.existsSync(codacyFolder)) {
+    console.error('folder', codacyFolder)
     fs.mkdirSync(codacyFolder, { recursive: true });
   }
 
   // Download cli.sh if it doesn't exist
   const codacyCliPath = path.join(codacyFolder, CLI_FILE_NAME);
   if (!fs.existsSync(codacyCliPath)) {
-    const cliPath = hasWsl ? `$(wslpath -a "$(Get-Location)\/${CLI_LOCAL_COMMAND}.sh")` : CLI_LOCAL_COMMAND;
     await execAsync(
-      `curl -Ls -o "${cliPath}" https://raw.githubusercontent.com/codacy/codacy-cli-v2/main/codacy-cli.sh`,
+      `curl -Ls -o "${CLI_LOCAL_COMMAND}" https://raw.githubusercontent.com/codacy/codacy-cli-v2/main/codacy-cli.sh`,
       { rootPath }
     );
 
-    await execAsync(`chmod +x "${cliPath}"`, { rootPath });
+    await execAsync(`chmod +x "${CLI_LOCAL_COMMAND}"`, { rootPath });
   }
 
   // initialize codacy-cli
@@ -191,7 +187,6 @@ const ensureCodacyCLIExists = async (
 export const cliAnalyzeHandler = async (args: any) => {
   const wslInstalled = await isWSL();
   if (isWindows()) {
-    
     if (!wslInstalled) {
       return {
         success: false,
@@ -200,12 +195,12 @@ export const cliAnalyzeHandler = async (args: any) => {
       };
     }
   }
-  
+
   try {
-    const correctRootPath = wslInstalled ? await convertToWslPath(args.rootPath) : args.rootPath;
+
     // Ensure codacy-cli is installed
     const cliCommand = await ensureCodacyCLIExists(
-      correctRootPath,
+      args.rootPath,
       args.provider,
       args.organization,
       args.repository
@@ -221,7 +216,7 @@ export const cliAnalyzeHandler = async (args: any) => {
     // Check for mandatory configuration file and initialize if needed
     const configExists = await ensureCodacyConfig(
       cliCommand,
-      correctRootPath,
+      args.rootPath,
       args.provider,
       args.organization,
       args.repository
@@ -234,8 +229,10 @@ export const cliAnalyzeHandler = async (args: any) => {
         output: 'Failed to find Codacy CLI configuration.',
       };
     }
+     const correctRootPath = wslInstalled ? await convertToWslPath(args.rootPath) : args.rootPath;
+    const correctFilePath = wslInstalled ? await convertToWslPath(args.file) : args.file;
 
-    const { stdout, stderr } = await runAnalysis(cliCommand, args);
+    const { stdout, stderr } = await runAnalysis(cliCommand, { ...args, rootPath: correctRootPath, file: correctFilePath });
 
     // Try to extract JSON from the output if it's embedded in other text
     const jsonMatch = /(\{[\s\S]*\}|\[[\s\S]*\])/.exec(stdout);
