@@ -38,13 +38,21 @@ export class Cli {
     const platform = process.platform;
 
     if (platform === 'darwin') {
+      console.log('Creating MacCodacyCli instance');
       Cli.cliInstance = new MacCodacyCli(rootPath, provider, organization, repository);
     } else if (platform === 'linux') {
+      console.log('Creating LinuxCodacyCli instance');
       Cli.cliInstance = new LinuxCodacyCli(rootPath, provider, organization, repository);
     } else if (platform === 'win32') {
       // is WSL installed?
-      const stdout = execSync('wsl --list', { stdio: 'inherit', encoding: 'utf-8' });
-      const hasWSL = stdout.toString().includes('Default Distribution');
+      // console.log('HERE');
+      // const stdout = execSync('wsl --list', { stdio: 'inherit', encoding: 'utf-8' }).toString().replace(/\u0000/g, '');
+      // const hasWSL = stdout.includes('Default Distribution');
+      // console.log('THERE! stdout', stdout);
+
+      // console.log(hasWSL ? 'Creating WinWSLCodacyCli instance' : 'Creating WinCodacyCli instance');
+
+      const hasWSL = true
 
       Cli.cliInstance = hasWSL
         ? new WinWSLCodacyCli(rootPath, provider, organization, repository)
