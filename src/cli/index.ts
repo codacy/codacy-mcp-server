@@ -19,7 +19,6 @@ export class Cli {
     if (!Cli.cliInstance) {
       return Cli.createInstance(options);
     } else if (
-      options.rootPath !== Cli.cliInstance.rootPath ||
       options.provider !== Cli.cliInstance.provider ||
       options.organization !== Cli.cliInstance.organization ||
       options.repository !== Cli.cliInstance.repository

@@ -4,7 +4,8 @@ import { MacCodacyCli } from './MacCodacyCli.js';
 export class WinWSLCodacyCli extends MacCodacyCli {
 
   constructor(rootPath: string, provider?: string, organization?: string, repository?: string) {
-    super(rootPath, provider, organization, repository);
+    const winRootPath = rootPath.startsWith('/mnt/') ? WinWSLCodacyCli.fromWSLPath(rootPath) : rootPath;
+    super(winRootPath, provider, organization, repository);
   }
 
   private static toWSLPath(path: string): string {

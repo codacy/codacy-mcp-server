@@ -54,7 +54,7 @@ export abstract class CodacyCli {
     // Add the args to the command and remove any shell metacharacters
     const cmd = `${command} ${argsString}`.trim().replace(/[;&|`$]/g, '');
 
-    console.log(`Executing command: ${cmd}`);
+    console.log(`Executing command: ${cmd} at ${this.rootPath}`);
 
     // Add the CODACY_CLI_VERSION to the command
     return new Promise((resolve, reject) => {
