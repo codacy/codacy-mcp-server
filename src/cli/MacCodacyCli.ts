@@ -50,33 +50,29 @@ export class MacCodacyCli extends CodacyCli {
   }
 
   public async install(): Promise<void> {
-    console.log('Installing codacy-cli...');
     try {
       const codacyFolder = path.join(this.rootPath, CODACY_FOLDER_NAME);
       if (!fs.existsSync(codacyFolder)) {
         fs.mkdirSync(codacyFolder, { recursive: true });
       }
 
-      console.log('Downloading codacy-cli...');
-
       // Download cli.sh if it doesn't exist
       const codacyCliPath = path.join(CODACY_FOLDER_NAME, 'cli.sh');
-      console.log(`CLI path: ${codacyCliPath}`);
-      if (!fs.existsSync(codacyCliPath)) {
-        console.log('Downloading codacy-cli.sh......');
 
+      if (!fs.existsSync(codacyCliPath)) {
         const execPath = this.preparePathForExec(codacyCliPath);
 
         await this.execAsync(
           `curl -Ls -o "${execPath}" https://raw.githubusercontent.com/codacy/codacy-cli-v2/main/codacy-cli.sh`
         );
 
-        console.log('Making codacy-cli executable...');
-
         await this.execAsync(`chmod +x "${execPath}"`);
 
         this.setCliCommand(
-          this._cliVersion ? `CODACY_CLI_VERSION=${this._cliVersion} ${codacyCliPath}` : codacyCliPath);
+          this._cliVersion
+            ? `CODACY_CLI_VERSION=${this._cliVersion} ${codacyCliPath}`
+            : codacyCliPath
+        );
       }
     } catch (error) {
       throw new Error(`Failed to install CLI: ${error}`);
@@ -87,7 +83,6 @@ export class MacCodacyCli extends CodacyCli {
   }
 
   public async installDependencies(): Promise<void> {
-    console.log('Installing dependencies...');
     const command = `${this.getCliCommand()} install`;
     try {
       await this.execAsync(command);
@@ -97,7 +92,6 @@ export class MacCodacyCli extends CodacyCli {
   }
 
   public async update(): Promise<void> {
-    console.log('Updating codacy-cli...');
     const command = `${this.getCliCommand()} update`;
     try {
       await this.execAsync(command);
@@ -109,7 +103,6 @@ export class MacCodacyCli extends CodacyCli {
   }
 
   public async initialize(): Promise<void> {
-    console.log('Initializing codacy-cli...');
     // Check if the configuration files exist
     const configFilePath = path.join(this.rootPath, CODACY_FOLDER_NAME, 'codacy.yaml');
     const toolsFolderPath = path.join(this.rootPath, CODACY_FOLDER_NAME, 'tools-configs');
@@ -158,7 +151,6 @@ export class MacCodacyCli extends CodacyCli {
   }
 
   public async analyze(options: { file?: string; tool?: string }): Promise<Log | null> {
-    console.log('Analyzing code...');
     await this.preflightCodacyCli();
 
     if (!this.getCliCommand()) {

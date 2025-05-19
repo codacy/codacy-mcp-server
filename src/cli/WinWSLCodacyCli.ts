@@ -1,10 +1,10 @@
-import { Log } from 'sarif';
 import { MacCodacyCli } from './MacCodacyCli.js';
 
 export class WinWSLCodacyCli extends MacCodacyCli {
-
   constructor(rootPath: string, provider?: string, organization?: string, repository?: string) {
-    const winRootPath = rootPath.startsWith('/mnt/') ? WinWSLCodacyCli.fromWSLPath(rootPath) : rootPath;
+    const winRootPath = rootPath.startsWith('/mnt/')
+      ? WinWSLCodacyCli.fromWSLPath(rootPath)
+      : rootPath;
     super(winRootPath, provider, organization, repository);
   }
 
@@ -37,5 +37,4 @@ export class WinWSLCodacyCli extends MacCodacyCli {
   protected getCliCommand(): string {
     return WinWSLCodacyCli.toWSLPath(super.getCliCommand());
   }
-
 }
