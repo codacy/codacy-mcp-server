@@ -208,7 +208,7 @@ import { Cli, CliOptions } from '../cli/index.js';
 // };
 
 export const cliAnalyzeHandler = async (args: any) => {
-  const cli = Cli.get(args as CliOptions);
+  const cli = await Cli.get(args as CliOptions);
 
   try {
     const results = await cli.analyze({
