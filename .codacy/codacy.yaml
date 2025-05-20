@@ -1,6 +1,7 @@
 runtimes:
     - node@22.2.0
 tools:
-    - pmd@6.55.0
-    - eslint@8.57.0
+    - eslint@9.3.0
     - trivy@0.59.1
+    - semgrep@1.78.0
+    - lizard@1.17.19

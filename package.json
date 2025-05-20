@@ -34,6 +34,7 @@
     "@modelcontextprotocol/sdk": "1.0.1",
     "@types/node": "^22",
     "@types/node-fetch": "^2.6.12",
+    "@types/sarif": "2.1.7",
     "node-fetch": "^3.3.2",
     "universal-user-agent": "^7.0.2"
   },
