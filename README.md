@@ -1,5 +1,7 @@
 # Codacy MCP Server
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/7be4b119dc1e420198f3495017b57c89)](https://app.codacy.com/gh/codacy/codacy-mcp-server/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+
 MCP Server for the Codacy API, enabling access to repositories, files, quality, coverage, security and more.
 
 ## Features / Tools
