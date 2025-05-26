@@ -46,6 +46,6 @@ export const cliAnalyzeTool: CodacyTool = {
         default: '',
       },
     },
-    required: ['provider', 'organization', 'repository', 'rootPath'],
+    required: ['rootPath'],
   },
 };
