@@ -8,6 +8,10 @@ MCP Server for the Codacy API, enabling access to repositories, files, quality, 
 
 The following tools are available through the Codacy MCP Server:
 
+### Repository Setup and Management
+
+- `codacy_setup_repository`: Add or follow a repository in Codacy if not already present. This tool ensures the repository is registered with Codacy, allowing further analysis and management.
+
 ### Organization and Repository Management
 
 - `codacy_list_organizations`: List organizations with pagination support.
