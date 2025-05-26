@@ -55,7 +55,7 @@ export const repositorySchema = {
   repository: {
     type: 'string',
     description:
-      "Repository name on the Git provider.  Try to extract it from the repository's git remote URL using 'git remote -v', it should be something like this for gh:'https://github.com/<owner>/<repository>.git' for gl:'https://gitlab.com/<owner>/<repository>.git' for bb:'https://bitbucket.org/<owner>/<repository>.git'.",
+      "Repository name on the Git provider. Try to extract it from the repository's git remote URL using 'git remote -v', it should be something like this for gh:'https://github.com/<owner>/<repository>.git' for gl:'https://gitlab.com/<owner>/<repository>.git' for bb:'https://bitbucket.org/<owner>/<repository>.git'.",
   },
 };
 
