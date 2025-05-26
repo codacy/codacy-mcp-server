@@ -87,6 +87,8 @@ Ensure your machine has the following tools installed:
 - node.js
   - ensure that the `npx` command runs without issues.
 
+For local analysis, the MCP Server requires the [Codacy CLI](https://github.com/codacy/codacy-cli-v2) to be installed. If it is not available, the MCP Server will attempt to install it for you. Codacy CLI v2 runs on macOS, Linux, and Windows (only with WSL).
+
 ### Personal API Access Token
 
 Get your Codacy's Account API Token from your [Codacy Account](https://app.codacy.com/account/access-management).
