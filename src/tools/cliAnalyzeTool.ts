@@ -22,7 +22,7 @@ const rules = `
   ${generalRepositoryMistakes}
 `;
 
-const optionalRepositorySchema = { ...repositorySchema };
+const optionalRepositorySchema = JSON.parse(JSON.stringify(repositorySchema));
 optionalRepositorySchema.provider.description = `Optional. ${repositorySchema.provider.description}`;
 optionalRepositorySchema.organization.description = `Optional. ${repositorySchema.organization.description}`;
 optionalRepositorySchema.repository.description = `Optional. ${repositorySchema.repository.description}`;
