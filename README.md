@@ -1,10 +1,16 @@
 # Codacy MCP Server
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/7be4b119dc1e420198f3495017b57c89)](https://app.codacy.com/gh/codacy/codacy-mcp-server/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+
 MCP Server for the Codacy API, enabling access to repositories, files, quality, coverage, security and more.
 
 ## Features / Tools
 
 The following tools are available through the Codacy MCP Server:
+
+### Repository Setup and Management
+
+- `codacy_setup_repository`: Add or follow a repository in Codacy if not already present. This tool ensures the repository is registered with Codacy, allowing further analysis and management.
 
 ### Organization and Repository Management
 
@@ -86,6 +92,8 @@ Ensure your machine has the following tools installed:
 - git
 - node.js
   - ensure that the `npx` command runs without issues.
+
+For local analysis, the MCP Server requires the [Codacy CLI](https://github.com/codacy/codacy-cli-v2) to be installed. If it is not available, the MCP Server will attempt to install it for you. Codacy CLI v2 runs on macOS, Linux, and Windows (only with WSL).
 
 ### Personal API Access Token
 
