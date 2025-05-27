@@ -129,18 +129,20 @@ export class MacCodacyCli extends CodacyCli {
         ? { 'api-token': this._accountToken }
         : {};
 
+      // Repository params are required for the "api-token" flag to work; it only works all together
       const repositoryAccess: Record<string, string> =
         this.repository && this.provider && this.organization
           ? {
               provider: this.provider,
               organization: this.organization,
               repository: this.repository,
+              ...apiToken,
             }
           : {};
 
       try {
         // initialize codacy-cli
-        await this.execAsync(`${this.getCliCommand()} init`, { ...apiToken, ...repositoryAccess });
+        await this.execAsync(`${this.getCliCommand()} init`, { ...repositoryAccess });
       } catch (error) {
         throw new Error(`Failed to initialize CLI: ${error}`);
       }
