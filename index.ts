@@ -181,6 +181,14 @@ server.setRequestHandler(CallToolRequestSchema, async request => {
     const toolDefinition = toolDefinitions[request.params.name as ToolKeys];
     if (!toolDefinition) throw new Error(`Unknown tool: ${request.params.name}`);
 
+    // Validate required arguments
+    const requiredArguments = (toolDefinition.tool.inputSchema.required || []) as string[];
+    requiredArguments.forEach(required => {
+      if (!request.params.arguments?.[required]) {
+        throw new Error(`Argument ${required} is required`);
+      }
+    });
+
     const result = await toolDefinition.handler(request.params.arguments);
     return {
       content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
