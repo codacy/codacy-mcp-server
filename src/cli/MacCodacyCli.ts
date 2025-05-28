@@ -18,7 +18,7 @@ export class MacCodacyCli extends CodacyCli {
 
     if (fs.existsSync(fullPath)) {
       this.setCliCommand(
-        this._cliVersion ? `CODACY_CLI_VERSION=${this._cliVersion} ${localPath}` : localPath
+        this._cliVersion ? `CODACY_CLI_V2_VERSION=${this._cliVersion} ${localPath}` : localPath
       );
       return;
     }
@@ -27,7 +27,7 @@ export class MacCodacyCli extends CodacyCli {
     try {
       // first set the command for the getCliCommand to do the right thing when called
       this.setCliCommand(
-        this._cliVersion ? `CODACY_CLI_VERSION=${this._cliVersion} codacy-cli` : 'codacy-cli'
+        this._cliVersion ? `CODACY_CLI_V2_VERSION=${this._cliVersion} codacy-cli` : 'codacy-cli'
       );
       await this.execAsync(`${this.getCliCommand()} --help`);
 
@@ -70,7 +70,7 @@ export class MacCodacyCli extends CodacyCli {
 
         this.setCliCommand(
           this._cliVersion
-            ? `CODACY_CLI_VERSION=${this._cliVersion} ${codacyCliPath}`
+            ? `CODACY_CLI_V2_VERSION=${this._cliVersion} ${codacyCliPath}`
             : codacyCliPath
         );
       }
