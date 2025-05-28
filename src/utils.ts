@@ -97,23 +97,6 @@ export const organizationSecurityScanTypes = {
   PenTesting: 'Penetration testing',
 };
 
-export const extractOrganizationFromUrl = (url: string): string | null => {
-  const patterns = [
-    /git@github\.com:([^/]+)\/[^/]+\.git$/,
-    /https:\/\/github\.com\/([^/]+)\/[^/]+\.git$/,
-    /https:\/\/gitlab\.com\/([^/]+)\/[^/]+\.git$/,
-    /https:\/\/bitbucket\.org\/([^/]+)\/[^/]+\.git$/,
-  ];
-
-  for (const pattern of patterns) {
-    const match = pattern.exec(url);
-    if (match?.[1]) {
-      return match[1];
-    }
-  }
-  return null;
-};
-
 // Helper function to parse URI based on template
 export const parseUri = (uri: string, template: string): Record<string, string> | null => {
   const templateParts = template.split('/');

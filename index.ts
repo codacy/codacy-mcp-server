@@ -10,7 +10,6 @@ import { OpenAPI } from './src/api/client/index.js';
 import * as Tools from './src/tools/index.js';
 import type { ToolKeys } from './src/schemas.js';
 import * as Handlers from './src/handlers/index.js';
-import { validateOrganization } from './src/middleware/validation.js';
 
 // Check for API key
 const CODACY_ACCOUNT_TOKEN = process.env.CODACY_ACCOUNT_TOKEN;
@@ -182,10 +181,13 @@ server.setRequestHandler(CallToolRequestSchema, async request => {
     const toolDefinition = toolDefinitions[request.params.name as ToolKeys];
     if (!toolDefinition) throw new Error(`Unknown tool: ${request.params.name}`);
 
-    // Validate organization if the tool requires it
-    if (request.params.arguments.organization) {
-      request.params.arguments = validateOrganization(request.params.arguments);
-    }
+    // Validate required arguments
+    const requiredArguments = (toolDefinition.tool.inputSchema.required || []) as string[];
+    requiredArguments.forEach(required => {
+      if (!request.params.arguments?.[required]) {
+        throw new Error(`Argument ${required} is required`);
+      }
+    });
 
     const result = await toolDefinition.handler(request.params.arguments);
     return {
