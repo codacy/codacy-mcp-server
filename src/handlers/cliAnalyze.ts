@@ -13,7 +13,7 @@ export const cliAnalyzeHandler = async (args: any) => {
     const cleanedResults = (results?.runs ?? []).map(run => {
       return {
         tool: run.tool.driver,
-        results: run.results?.map(r => ({
+        results: (run.results ?? []).map(r => ({
           level: r.level,
           message: r.message.text,
           locations: r.locations,
