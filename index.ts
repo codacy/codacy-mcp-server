@@ -10,7 +10,6 @@ import { OpenAPI } from './src/api/client/index.js';
 import * as Tools from './src/tools/index.js';
 import type { ToolKeys } from './src/schemas.js';
 import * as Handlers from './src/handlers/index.js';
-import { validateOrganization } from './src/middleware/validation.js';
 
 // Check for API key
 const CODACY_ACCOUNT_TOKEN = process.env.CODACY_ACCOUNT_TOKEN;
