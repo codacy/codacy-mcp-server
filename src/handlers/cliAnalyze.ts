@@ -9,8 +9,8 @@ export const cliAnalyzeHandler = async (args: any) => {
       tool: args.tool,
     });
 
-    // clean up the results to remove superflous information
-    const cleanedResults = results?.runs.map(run => {
+    // clean up the results to remove superfluous information
+    const cleanedResults = (results?.runs ?? []).map(run => {
       return {
         tool: run.tool.driver,
         results: run.results?.map(r => ({
