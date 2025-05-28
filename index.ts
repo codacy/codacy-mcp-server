@@ -182,11 +182,6 @@ server.setRequestHandler(CallToolRequestSchema, async request => {
     const toolDefinition = toolDefinitions[request.params.name as ToolKeys];
     if (!toolDefinition) throw new Error(`Unknown tool: ${request.params.name}`);
 
-    // Validate organization if the tool requires it
-    if (request.params.arguments.organization) {
-      request.params.arguments = validateOrganization(request.params.arguments);
-    }
-
     const result = await toolDefinition.handler(request.params.arguments);
     return {
       content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
