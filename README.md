@@ -1,12 +1,31 @@
-[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=codacy&config=eyJjb21tYW5kIjoibnB4IC15IEBjb2RhY3kvY29kYWN5LW1jcEBsYXRlc3QiLCJlbnYiOnsiQ09EQUNZX0FDQ09VTlRfVE9LRU4iOiI8WW91ciBwZXJzb25hbCB0b2tlbj4ifX0%3D)
-
----
-
 # Codacy MCP Server
-
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/7be4b119dc1e420198f3495017b57c89)](https://app.codacy.com/gh/codacy/codacy-mcp-server/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
+
 MCP Server for the Codacy API, enabling access to repositories, files, quality, coverage, security and more.
+
+
+## Table of Contents
+- [Features / Tools](#features--tools)
+  - [Repository Setup and Management](#repository-setup-and-management)
+  - [Organization and Repository Management](#organization-and-repository-management)
+  - [Code Quality and Analysis](#code-quality-and-analysis)
+  - [File Management and Analysis](#file-management-and-analysis)
+  - [Security Analysis](#security-analysis)
+  - [Pull Request Analysis](#pull-request-analysis)
+  - [Tool and Pattern Management](#tool-and-pattern-management)
+  - [CLI Analysis](#cli-analysis)
+- [Setup](#setup)
+  - [Requirements](#requirements)
+  - [Personal API Access Token](#personal-api-access-token)
+  - [Install](#install)
+    - [Cursor, Windsurf, and others](#cursor-windsurf-and-others)
+    - [VS Code with Copilot](#vs-code-with-copilot)
+- [Troubleshooting](#troubleshooting)
+- [Contribute](#contribute)
+- [Codacy-CLI Support](#codacy-cli-support)
+- [License](#license)
+  
 
 ## Features / Tools
 
@@ -105,15 +124,19 @@ Get your Codacy's Account API Token from your [Codacy Account](https://app.codac
 
 You'll need it later in the setup.
 
-### Usage
+### Install
 
 In supported IDEs like VS Code, Cursor, and Windsurf, the easiest way to install Codacy's MCP Server is to do it from the Codacy extension. If you haven't yet, install the extension from within your IDE, or from any of the available marketplaces ([Microsoft](https://marketplace.visualstudio.com/items?itemName=codacy-app.codacy), [OpenVSX](https://open-vsx.org/extension/codacy-app/codacy)). From the extension panel, just click on Add Codacy MCP Server. Restart your IDE afterwards.
 
 Without the extension, you can still use and install the MCP Server:
 
-### Cursor, Windsurf, and others
+#### Cursor, Windsurf, and others
 
-Depending on what you are connecting the MCP Server to, you can use the following methods:
+You can use the one-click install for Cursor:
+
+[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=codacy&config=eyJjb21tYW5kIjoibnB4IC15IEBjb2RhY3kvY29kYWN5LW1jcEBsYXRlc3QiLCJlbnYiOnsiQ09EQUNZX0FDQ09VTlRfVE9LRU4iOiI8WW91ciBwZXJzb25hbCB0b2tlbj4ifX0%3D) 
+
+Otherwise, depending on what you are connecting the MCP Server to, you can use the following methods:
 
 - Cursor: edit the `.cursor/mcp.json` file to add the following
 - Windsurf: edit the `.codeium/windsurf/mcp_config.json` file to add the following
@@ -126,15 +149,21 @@ Depending on what you are connecting the MCP Server to, you can use the followin
       "command": "npx",
       "args": ["-y", "@codacy/codacy-mcp"],
       "env": {
-        "CODACY_ACCOUNT_TOKEN": "<YOUR_TOKEN>",
-        "CODACY_CLI_VERSION": "<VERSION>"
+        "CODACY_ACCOUNT_TOKEN": "<YOUR_TOKEN>"
       }
     }
   }
 }
 ```
 
-### VS Code with Copilot
+
+#### VS Code with Copilot
+
+You can use the one-click install for VS Code:
+
+[![Install with Codacy in VS Code](https://img.shields.io/badge/VS_Code-Install_Codacy_Server-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=codacy&inputs=%5B%7B%22id%22%3A%22codacy_token%22%2C%22type%22%3A%22promptString%22%2C%22description%22%3A%22Codacy%20Account%20Token%22%2C%22password%22%3Atrue%7D%5D&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22%40codacy%2Fcodacy-mcp%40latest%22%5D%2C%22env%22%3A%7B%22CODACY_ACCOUNT_TOKEN%22%3A%22%24%7Binput%3Acodacy_token%7D%22%7D%7D) [![Install with Codacy in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install_Codacy_Server-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=codacy&inputs=%5B%7B%22id%22%3A%22codacy_token%22%2C%22type%22%3A%22promptString%22%2C%22description%22%3A%22Codacy%20Account%20Token%22%2C%22password%22%3Atrue%7D%5D&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22%40codacy%2Fcodacy-mcp%40latest%22%5D%2C%22env%22%3A%7B%22CODACY_ACCOUNT_TOKEN%22%3A%22%24%7Binput%3Acodacy_token%7D%22%7D%7D&quality=insiders) 
+
+Otherwise, if you wish to set it up manually:
 
 1. For connecting the MCP Server to Copilot in VS Code, add the following to the global config of the IDE:
 
@@ -147,8 +176,7 @@ Depending on what you are connecting the MCP Server to, you can use the followin
         "command": "npx",
         "args": ["-y", "@codacy/codacy-mcp"],
         "env": {
-          "CODACY_ACCOUNT_TOKEN": "<YOUR_TOKEN>",
-          "CODACY_CLI_VERSION": "<VERSION>"
+          "CODACY_ACCOUNT_TOKEN": "<YOUR_TOKEN>"
         }
       }
     }
@@ -174,9 +202,9 @@ Don't forget to update the value of `CODACY_ACCOUNT_TOKEN` with your token.
 
 ![Copilot Agent with Codacy tools](docs/copilot_agent.png)
 
-### Node Troubleshooting
+## Troubleshooting
 
-#### Claude Desktop
+### Claude Desktop and NVM
 
 When using NVM with Claude Desktop, NPX may not work. You should first install the MCP Server globally, and then use Node directly:
 
@@ -191,17 +219,16 @@ npm install -g @codacy/codacy-mcp
       "command": "/Users/yourusername/.nvm/versions/node/vXX.X.X/bin/node",
       "args": ["/path-to/codacy-mcp/dist/index.js"],
       "env": {
-        "CODACY_ACCOUNT_TOKEN": "<YOUR_TOKEN>",
-        "CODACY_CLI_VERSION": "<VERSION>"
+        "CODACY_ACCOUNT_TOKEN": "<YOUR_TOKEN>"
       }
     }
   }
 }
 ```
 
-## Build
+## Contribute
 
-Local:
+To work locally on the MCP Server code, run:
 
 ```bash
 npm install
@@ -209,9 +236,25 @@ npm run update-api
 npm run build
 ```
 
-## Codacy-CLI Support (WIP)
+Then you can test your local instance configuring the MCP Server as follows:
 
-In order to use the [Codacy-CLI](https://github.com/codacy/codacy-cli-v2), it needs to be installed. Note that the `CODACY_CLI_VERSION` variable is optional, in case you want to use a specific version of our CLI.
+```
+"codacy": {
+  "command": "/path/to/bin/node",
+  "args": [
+    "/path/to/codacy-mcp-server/dist/index.js"
+  ],
+  "env": {
+    "CODACY_ACCOUNT_TOKEN": "<YOUR_TOKEN>"
+  }
+}
+```
+
+## Codacy-CLI Support
+
+In order to use the [Codacy-CLI](https://github.com/codacy/codacy-cli-v2), it needs to be installed. Whenever the MCP Server will receive a request to analyze, it will try to install the CLI and initialize it.
+
+In case you want to use a specific version of our CLI, send a `CODACY_CLI_VERSION` env variable in the MCP Server configuration.
 
 ## License
 
