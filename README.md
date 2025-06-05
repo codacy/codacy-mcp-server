@@ -1,3 +1,7 @@
+[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=codacy&config=eyJjb21tYW5kIjoibnB4IC15IEBjb2RhY3kvY29kYWN5LW1jcEBsYXRlc3QiLCJlbnYiOnsiQ09EQUNZX0FDQ09VTlRfVE9LRU4iOiI8WW91ciBwZXJzb25hbCB0b2tlbj4ifX0%3D)
+
+---
+
 # Codacy MCP Server
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/7be4b119dc1e420198f3495017b57c89)](https://app.codacy.com/gh/codacy/codacy-mcp-server/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
