@@ -105,9 +105,13 @@ export class MacCodacyCli extends CodacyCli {
   public async initialize(): Promise<void> {
     // Check if the configuration files exist
     const configFilePath = path.join(this.rootPath, CODACY_FOLDER_NAME, 'codacy.yaml');
+    const cliConfigFilePath = path.join(this.rootPath, CODACY_FOLDER_NAME, 'cli-config.yaml');
     const toolsFolderPath = path.join(this.rootPath, CODACY_FOLDER_NAME, 'tools-configs');
 
-    let needsInitialization = !fs.existsSync(configFilePath) || !fs.existsSync(toolsFolderPath);
+    let needsInitialization =
+      !fs.existsSync(configFilePath) ||
+      !fs.existsSync(toolsFolderPath) ||
+      !fs.existsSync(cliConfigFilePath);
 
     if (!needsInitialization) {
       // Check if the mode matches the current properties
