@@ -23,21 +23,9 @@ export class MacCodacyCli extends CodacyCli {
       return;
     }
 
-    // check if codacy-cli is installed globally
-    try {
-      // first set the command for the getCliCommand to do the right thing when called
-      this.setCliCommand(
-        this._cliVersion ? `CODACY_CLI_V2_VERSION=${this._cliVersion} codacy-cli` : 'codacy-cli'
-      );
-      await this.execAsync(`${this.getCliCommand()} --help`);
-
-      return;
-    } catch {
-      // CLI not found, clear it, and attempt to install it
-      this.setCliCommand('');
-      await this.install();
-      return undefined;
-    }
+    // CLI not found, attempt to install it
+    await this.install();
+    return;
   }
 
   private async preflightCodacyCli(): Promise<void> {
