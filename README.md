@@ -236,6 +236,16 @@ npm run update-api
 npm run build
 ```
 
+### Testing with Inspector
+
+You can test the MCP server using the inspector tool. You can either set a `CODACY_ACCOUNT_TOKEN` environment variable or pass it inline:
+
+```bash
+CODACY_ACCOUNT_TOKEN=your_token_here npm run inspect
+```
+
+This will build the project and launch the MCP inspector with your Codacy token.
+
 Then you can test your local instance configuring the MCP Server as follows:
 
 ```
