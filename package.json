@@ -28,7 +28,7 @@
     "lint:fix": "eslint . --ext .ts --fix",
     "format": "prettier --write \"**/*.{ts,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,json,md}\"",
-    "inspect": "npm run build && npx @modelcontextprotocol/inspector -e CODACY_ACCOUNT_TOKEN=123456 node dist/index.js"
+    "inspect": "npm run build && npx @modelcontextprotocol/inspector -e CODACY_ACCOUNT_TOKEN=$CODACY_ACCOUNT_TOKEN node dist/index.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.0.1",
