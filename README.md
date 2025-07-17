@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/codacy-codacy-mcp-server-badge.png)](https://mseep.ai/app/codacy-codacy-mcp-server)
+
 # Codacy MCP Server
 
 MCP Server for the Codacy API, enabling access to repositories, files, quality, coverage, security and more.
