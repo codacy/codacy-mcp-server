@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
   CallToolRequestSchema,
@@ -10,6 +9,7 @@ import { OpenAPI } from './src/api/client/index.js';
 import * as Tools from './src/tools/index.js';
 import type { ToolKeys } from './src/schemas.js';
 import * as Handlers from './src/handlers/index.js';
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 // Check for API key
 const CODACY_ACCOUNT_TOKEN = process.env.CODACY_ACCOUNT_TOKEN;
@@ -20,7 +20,7 @@ OpenAPI.HEADERS = {
   'X-Codacy-Origin': 'mcp-server',
 };
 
-const server = new Server(
+const mcpServer = new McpServer(
   {
     name: 'codacy-mcp-server',
     version: '0.1.0',
@@ -29,6 +29,8 @@ const server = new Server(
     capabilities: {
       tools: {},
       resources: {},
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
       triggers: {
         patterns: [
           'codacy',
@@ -170,14 +172,14 @@ const toolDefinitions: { [key in ToolKeys]: ToolDefinition } = {
 };
 
 // Register tools
-server.setRequestHandler(ListToolsRequestSchema, async () => ({
+mcpServer.server.setRequestHandler(ListToolsRequestSchema, async () => ({
   tools: Object.values(toolDefinitions)
     .filter(({ noAuth }) => CODACY_ACCOUNT_TOKEN || noAuth)
     .map(({ tool }) => tool),
 }));
 
 // Register request handlers
-server.setRequestHandler(CallToolRequestSchema, async request => {
+mcpServer.server.setRequestHandler(CallToolRequestSchema, async request => {
   try {
     if (!request.params.arguments) {
       throw new Error('Arguments are required');
@@ -206,7 +208,7 @@ server.setRequestHandler(CallToolRequestSchema, async request => {
 
 async function runServer() {
   const transport = new StdioServerTransport();
-  await server.connect(transport);
+  await mcpServer.connect(transport);
   console.error('Codacy MCP Server running on stdio');
 }
 
