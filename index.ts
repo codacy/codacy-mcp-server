@@ -29,35 +29,6 @@ const mcpServer = new McpServer(
     capabilities: {
       tools: {},
       resources: {},
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
-      triggers: {
-        patterns: [
-          'codacy',
-          'code quality',
-          'code analysis',
-          'security vulnerabilities',
-          'repository issues',
-          'pull request analysis',
-          'code coverage',
-          'issues',
-          'security',
-          'srm',
-          'analysis',
-          'tool',
-          'pattern',
-          'pull request',
-          'repository',
-          'file',
-          'coverage',
-          'git',
-          'diff',
-          'branch',
-          'commit',
-          'severity',
-          'organization',
-        ],
-      },
     },
   }
 );
