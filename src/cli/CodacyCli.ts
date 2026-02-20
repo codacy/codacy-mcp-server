@@ -1,6 +1,7 @@
 export const CODACY_FOLDER_NAME = '.codacy';
 import { exec } from 'child_process';
 import { Log } from 'sarif';
+import * as path from 'path';
 
 // Set a larger buffer size (10MB)
 const MAX_BUFFER_SIZE = 1024 * 1024 * 10;
@@ -38,8 +39,39 @@ export abstract class CodacyCli {
     this._cliCommand = command;
   }
 
+  protected isPathSafe(filePath: string): boolean {
+    // Reject null bytes (always a security risk)
+    if (filePath.includes('\0')) {
+      return false;
+    }
+
+    // Reject all control characters (including newline, tab, carriage return)
+    // as they are very unusual for file names
+    // eslint-disable-next-line no-control-regex -- Intentionally checking for control chars to reject them for security
+    const hasUnsafeControlChars = /[\x00-\x1F\x7F]/.test(filePath);
+    if (hasUnsafeControlChars) {
+      return false;
+    }
+
+    // Resolve the path to check for path traversal attempts
+    const resolvedPath = path.resolve(this.rootPath, filePath);
+    const normalizedRoot = path.normalize(this.rootPath);
+    // Check if the resolved path is within the workspace
+    if (!resolvedPath.startsWith(normalizedRoot)) {
+      return false;
+    }
+
+    return true;
+  }
+
   protected preparePathForExec(path: string): string {
-    return path;
+    // Validate path security before escaping
+    if (!this.isPathSafe(path)) {
+      throw new Error(`Unsafe file path rejected: ${path}`);
+    }
+
+    // Escape special characters for shell execution
+    return path.replace(/([\s'"\\;&|`$()[\]{}*?~<>])/g, '\\$1');
   }
 
   protected execAsync(
@@ -48,11 +80,20 @@ export abstract class CodacyCli {
   ): Promise<{ stdout: string; stderr: string }> {
     // stringyfy the args
     const argsString = Object.entries(args || {})
-      .map(([key, value]) => `--${key} ${value}`)
+      .map(([key, value]) => {
+        // Validate argument key (should be alphanumeric and hyphens only)
+        if (!/^[a-zA-Z0-9-]+$/.test(key)) {
+          throw new Error(`Invalid argument key: ${key}`);
+        }
+
+        // Escape the value to prevent injection
+        const escapedValue = value.replace(/([\s'"\\;&|`$()[\]{}*?~<>])/g, '\\$1');
+        return `--${key} ${escapedValue}`;
+      })
       .join(' ');
 
-    // Add the args to the command and remove any shell metacharacters
-    const cmd = `${command} ${argsString}`.trim().replace(/[;&|`$]/g, '');
+    // Build the command - no need to strip characters since we've already escaped them properly
+    const cmd = `${command} ${argsString}`.trim();
 
     return new Promise((resolve, reject) => {
       exec(
