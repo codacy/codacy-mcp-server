@@ -5,7 +5,7 @@ export const cliAnalyzeHandler = async (args: any) => {
 
   try {
     const results = await cli.analyze({
-      file: args.file,
+      file: `'${args.file}'`,
       tool: args.tool,
     });
 
