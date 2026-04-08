@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/codacy-codacy-mcp-server-badge.png)](https://mseep.ai/app/codacy-codacy-mcp-server)
+
 # Codacy MCP Server
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/7be4b119dc1e420198f3495017b57c89)](https://app.codacy.com/gh/codacy/codacy-mcp-server/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
