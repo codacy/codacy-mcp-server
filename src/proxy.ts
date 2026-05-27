@@ -14,24 +14,17 @@ function matchesNoProxy(hostname: string): boolean {
     .some(entry => entry === '*' || lower === entry || lower.endsWith('.' + entry));
 }
 
-// Routes each fetch() call through HTTPS_PROXY or HTTP_PROXY based on the request protocol,
-// bypassing the proxy for any host that matches NO_PROXY. Falls back to super (direct Agent)
-// for bypassed hosts. Extends Agent so all Dispatcher methods are already implemented.
+// Routes each fetch() call through HTTPS_PROXY or HTTP_PROXY based on the request
+// protocol, bypassing the proxy for any host that matches NO_PROXY.
+// Extends Agent so all Dispatcher methods are already implemented.
 class ProxyRoutingDispatcher extends Agent {
   private readonly _httpsProxy: ProxyAgent | undefined;
   private readonly _httpProxy: ProxyAgent | undefined;
 
-  constructor(httpProxy: string | undefined, httpsProxy: string | undefined, disableSSL: boolean) {
-    // The Agent base handles direct connections (NO_PROXY bypass).
-    super(disableSSL ? { connect: { rejectUnauthorized: false } } : {});
-
-    // requestTls — TLS to the target server through the CONNECT tunnel.
-    // proxyTls  — TLS to the proxy itself (relevant when proxy URL is HTTPS).
-    const tlsOpts = disableSSL ? { rejectUnauthorized: false } : undefined;
-    const proxyOpts = tlsOpts ? { requestTls: tlsOpts, proxyTls: tlsOpts } : {};
-
-    this._httpsProxy = httpsProxy ? new ProxyAgent({ uri: httpsProxy, ...proxyOpts }) : undefined;
-    this._httpProxy = httpProxy ? new ProxyAgent({ uri: httpProxy, ...proxyOpts }) : undefined;
+  constructor(httpProxy: string | undefined, httpsProxy: string | undefined) {
+    super();
+    this._httpsProxy = httpsProxy ? new ProxyAgent({ uri: httpsProxy }) : undefined;
+    this._httpProxy = httpProxy ? new ProxyAgent({ uri: httpProxy }) : undefined;
   }
 
   dispatch(options: Dispatcher.DispatchOptions, handler: Dispatcher.DispatchHandlers): boolean {
@@ -57,7 +50,12 @@ class ProxyRoutingDispatcher extends Agent {
  *   HTTPS_PROXY / https_proxy — proxy for HTTPS requests
  *   HTTP_PROXY  / http_proxy  — proxy for HTTP requests
  *   NO_PROXY    / no_proxy    — comma-separated list of hosts to bypass
- *   NODE_TLS_REJECT_UNAUTHORIZED=0 — disable TLS certificate verification
+ *
+ * For corporate environments that use SSL inspection (MITM proxies), add the
+ * corporate CA certificate to Node's trust store rather than disabling verification:
+ *   NODE_EXTRA_CA_CERTS=/path/to/corporate-ca.pem
+ * Node reads this at startup and it applies to all TLS connections, including
+ * the inner tunnel established through a CONNECT proxy.
  */
 export function applyProxyConfig(): void {
   const httpsProxy = process.env.HTTPS_PROXY ?? process.env.https_proxy;
@@ -65,6 +63,5 @@ export function applyProxyConfig(): void {
 
   if (!httpsProxy && !httpProxy) return;
 
-  const disableSSL = process.env.NODE_TLS_REJECT_UNAUTHORIZED === '0';
-  setGlobalDispatcher(new ProxyRoutingDispatcher(httpProxy, httpsProxy, disableSSL));
+  setGlobalDispatcher(new ProxyRoutingDispatcher(httpProxy, httpsProxy));
 }
