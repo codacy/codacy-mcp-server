@@ -27,12 +27,18 @@ class ProxyRoutingDispatcher extends Agent {
   private readonly _httpsProxy: ProxyAgent | undefined;
   private readonly _httpProxy: ProxyAgent | undefined;
 
-  constructor(httpProxy: string | undefined, httpsProxy: string | undefined) {
+  constructor(httpProxy: string | undefined, httpsProxy: string | undefined, disableSSL: boolean) {
     super();
+    // requestTls — TLS to the target server through the CONNECT tunnel.
+    // proxyTls  — TLS to the proxy itself (relevant when proxy URL is HTTPS).
+    const tlsOpts = disableSSL ? { rejectUnauthorized: false } : undefined;
+    const proxyOpts = tlsOpts ? { requestTls: tlsOpts, proxyTls: tlsOpts } : {};
     this._httpsProxy = httpsProxy
-      ? new ProxyAgent({ uri: normalizeProxyUrl(httpsProxy) })
+      ? new ProxyAgent({ uri: normalizeProxyUrl(httpsProxy), ...proxyOpts })
       : undefined;
-    this._httpProxy = httpProxy ? new ProxyAgent({ uri: normalizeProxyUrl(httpProxy) }) : undefined;
+    this._httpProxy = httpProxy
+      ? new ProxyAgent({ uri: normalizeProxyUrl(httpProxy), ...proxyOpts })
+      : undefined;
   }
 
   dispatch(options: Dispatcher.DispatchOptions, handler: Dispatcher.DispatchHandlers): boolean {
@@ -58,8 +64,9 @@ class ProxyRoutingDispatcher extends Agent {
  *   HTTPS_PROXY / https_proxy — proxy for HTTPS requests
  *   HTTP_PROXY  / http_proxy  — proxy for HTTP requests
  *   NO_PROXY    / no_proxy    — comma-separated list of hosts to bypass
+ *   NODE_TLS_REJECT_UNAUTHORIZED=0 — disable TLS certificate verification
  *
- * For corporate environments that use SSL inspection (MITM proxies), add the
+ * For corporate environments that use SSL inspection (MITM proxies), prefer adding the
  * corporate CA certificate to Node's trust store rather than disabling verification:
  *   NODE_EXTRA_CA_CERTS=/path/to/corporate-ca.pem
  * Node reads this at startup and it applies to all TLS connections, including
@@ -71,5 +78,6 @@ export function applyProxyConfig(): void {
 
   if (!httpsProxy && !httpProxy) return;
 
-  setGlobalDispatcher(new ProxyRoutingDispatcher(httpProxy, httpsProxy));
+  const disableSSL = process.env.NODE_TLS_REJECT_UNAUTHORIZED === '0';
+  setGlobalDispatcher(new ProxyRoutingDispatcher(httpProxy, httpsProxy, disableSSL));
 }
