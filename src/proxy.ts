@@ -14,6 +14,12 @@ function matchesNoProxy(hostname: string): boolean {
     .some(entry => entry === '*' || lower === entry || lower.endsWith('.' + entry));
 }
 
+// Ensures a proxy URL has a protocol prefix. A bare host:port (e.g. "localhost:8080")
+// is treated as HTTP, matching the convention used by curl and most proxy tools.
+function normalizeProxyUrl(url: string): string {
+  return /^https?:\/\//i.test(url) ? url : `http://${url}`;
+}
+
 // Routes each fetch() call through HTTPS_PROXY or HTTP_PROXY based on the request
 // protocol, bypassing the proxy for any host that matches NO_PROXY.
 // Extends Agent so all Dispatcher methods are already implemented.
@@ -23,8 +29,10 @@ class ProxyRoutingDispatcher extends Agent {
 
   constructor(httpProxy: string | undefined, httpsProxy: string | undefined) {
     super();
-    this._httpsProxy = httpsProxy ? new ProxyAgent({ uri: httpsProxy }) : undefined;
-    this._httpProxy = httpProxy ? new ProxyAgent({ uri: httpProxy }) : undefined;
+    this._httpsProxy = httpsProxy
+      ? new ProxyAgent({ uri: normalizeProxyUrl(httpsProxy) })
+      : undefined;
+    this._httpProxy = httpProxy ? new ProxyAgent({ uri: normalizeProxyUrl(httpProxy) }) : undefined;
   }
 
   dispatch(options: Dispatcher.DispatchOptions, handler: Dispatcher.DispatchHandlers): boolean {
