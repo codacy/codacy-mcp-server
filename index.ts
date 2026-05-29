@@ -10,6 +10,10 @@ import * as Tools from './src/tools/index.js';
 import type { ToolKeys } from './src/schemas.js';
 import * as Handlers from './src/handlers/index.js';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { applyProxyConfig } from './src/proxy.js';
+
+// Apply proxy / SSL configuration before any outbound requests are made.
+applyProxyConfig();
 
 // Check for API key
 const CODACY_ACCOUNT_TOKEN = process.env.CODACY_ACCOUNT_TOKEN;
