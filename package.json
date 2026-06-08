@@ -6,6 +6,13 @@
   "license": "MIT",
   "author": "Codacy",
   "homepage": "https://www.codacy.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codacy/codacy-mcp-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/codacy/codacy-mcp-server/issues"
+  },
   "keywords": [
     "codacy",
     "mcp",
