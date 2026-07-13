@@ -37,6 +37,15 @@ async function execWindowsCmdAsync(command: string): Promise<{ stdout: string; s
   });
 }
 
+async function isWslAvailable(): Promise<boolean> {
+  try {
+    await execWindowsCmdAsync('wsl --status');
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export class Cli {
   private static cliInstance: CodacyCli | null = null;
 
@@ -67,9 +76,7 @@ export class Cli {
       Cli.cliInstance = new LinuxCodacyCli(rootPath, provider, organization, repository);
     } else if (platform === 'win32') {
       // is WSL installed?
-      const { stdout } = await execWindowsCmdAsync('wsl --status');
-      const hasWSL = stdout.includes('Default Distribution');
-
+      const hasWSL = await isWslAvailable();
       Cli.cliInstance = hasWSL
         ? new WinWSLCodacyCli(rootPath, provider, organization, repository)
         : new WinCodacyCli(rootPath, provider, organization, repository);
