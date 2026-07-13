@@ -39,8 +39,8 @@ async function execWindowsCmdAsync(command: string): Promise<{ stdout: string; s
 
 async function isWslAvailable(): Promise<boolean> {
   try {
-    await execWindowsCmdAsync('wsl --status');
-    return true;
+    const { stdout } = await execWindowsCmdAsync('wsl -l -q');
+    return stdout.trim().length > 0;
   } catch {
     return false;
   }
