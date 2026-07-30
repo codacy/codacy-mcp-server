@@ -36,7 +36,7 @@ const extractErrorMessage = (error: unknown): string => {
 
 const cleanErrorMessage = (error: unknown, token: string | undefined): string => {
   const message = extractErrorMessage(error) || 'Unknown error';
-  return token ? message.replace(token, '***') : message;
+  return token ? message.replaceAll(token, '***') : message;
 };
 
 /**
