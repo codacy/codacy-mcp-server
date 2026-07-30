@@ -10,10 +10,14 @@ import * as Tools from './src/tools/index.js';
 import type { ToolKeys } from './src/schemas.js';
 import * as Handlers from './src/handlers/index.js';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { applyProxyConfig } from './src/proxy.js';
+import { configureProxy } from '@codacy/analysis-runner';
 
-// Apply proxy / SSL configuration before any outbound requests are made.
-applyProxyConfig();
+// Route the server's own outbound fetch — Codacy API calls and, through the
+// runner, tool/runtime downloads — via the standard proxy environment variables
+// (HTTP(S)_PROXY, NO_PROXY, SSL_CERT_FILE / NODE_EXTRA_CA_CERTS, CODACY_CLI_INSECURE).
+// `configureProxy` installs undici's global dispatcher, which Node's native fetch
+// does not otherwise read proxy vars from. Must run before any request is made.
+configureProxy();
 
 // Check for API key
 const CODACY_ACCOUNT_TOKEN = process.env.CODACY_ACCOUNT_TOKEN;

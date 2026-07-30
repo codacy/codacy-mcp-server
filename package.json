@@ -29,13 +29,16 @@
     "lint:fix": "eslint . --ext .ts --fix",
     "format": "prettier --write \"**/*.{ts,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,json,md}\"",
-    "inspect": "npm run build && npx @modelcontextprotocol/inspector -e CODACY_ACCOUNT_TOKEN=$CODACY_ACCOUNT_TOKEN node dist/index.js"
+    "inspect": "npm run build && npx @modelcontextprotocol/inspector -e CODACY_ACCOUNT_TOKEN=$CODACY_ACCOUNT_TOKEN node dist/index.js",
+    "inspect-with-proxy": "export CODACY_ACCOUNT_TOKEN=$CODACY_ACCOUNT_TOKEN; export HTTP_PROXY=$HTTP_PROXY; export NODE_EXTRA_CA_CERTS=$NODE_EXTRA_CA_CERTS; npm run build && npx @modelcontextprotocol/inspector node dist/index.js"
   },
   "dependencies": {
+    "@codacy/analysis-adapters": "^0.16.0",
+    "@codacy/analysis-runner": "^0.16.0",
+    "@codacy/tooling": "^0.16.0",
     "@modelcontextprotocol/sdk": "1.29.0",
     "@types/node": "^22",
     "@types/sarif": "2.1.7",
-    "undici": "^6.0.0",
     "universal-user-agent": "^7.0.2"
   },
   "devDependencies": {

@@ -4,7 +4,7 @@ export const cliInstallHandler = async (args: any) => {
   const cli = await Cli.get(args as CliOptions);
 
   try {
-    await cli.install();
+    await cli.setup();
 
     return {
       success: true,

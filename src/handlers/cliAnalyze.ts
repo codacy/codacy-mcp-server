@@ -5,26 +5,13 @@ export const cliAnalyzeHandler = async (args: any) => {
 
   try {
     const results = await cli.analyze({
-      file: `'${args.file}'`,
-      tool: args.tool,
-    });
-
-    // clean up the results to remove superfluous information
-    const cleanedResults = (results?.runs ?? []).map(run => {
-      return {
-        tool: run.tool.driver,
-        results: (run.results ?? []).map(r => ({
-          level: r.level,
-          message: r.message.text,
-          locations: r.locations,
-          ruleId: r.ruleId,
-        })),
-      };
+      file: args.file || undefined,
+      tool: args.tool || undefined,
     });
 
     return {
       success: true,
-      result: cleanedResults,
+      result: results ?? [],
     };
   } catch (error) {
     return {
