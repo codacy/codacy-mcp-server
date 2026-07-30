@@ -10,6 +10,10 @@ import {
   configureApiToken,
   writeCodacyConfig,
   readCodacyConfig,
+  readBaselineConfig,
+  writeBaselineConfig,
+  updateConfigIncremental,
+  mergeConfigs,
   createLogger,
 } from '@codacy/analysis-runner';
 import { registerBuiltinAdapters, loadUnsupportedPatterns } from '@codacy/analysis-adapters';
@@ -145,10 +149,22 @@ export class CodacyCli {
   /**
    * "Set up local analysis": generates the repository config and downloads any
    * tool dependencies.
+   *
+   * On a repository that is already initialized with a matching identification
+   * state, this performs an incremental config update instead — picking up newly
+   * detected languages/frameworks while preserving local edits (disabled patterns,
+   * tuned parameters, custom excludes). This matters because the MCP server and the
+   * VS Code extension share the same `.codacy/` config: a destructive regenerate
+   * here would clobber edits the user made through the extension.
    */
   public async setup(): Promise<void> {
     try {
-      await this.initialize();
+      if (this.configExists() && !(await this.needsRegeneration())) {
+        await this.updateConfig();
+        await this.installDependencies();
+      } else {
+        await this.initialize();
+      }
     } catch (error) {
       const cleanedErrorMessage = cleanErrorMessage(error, this._accountToken);
       throw new Error(`Failed to set up Codacy local analysis: ${cleanedErrorMessage}`);
@@ -169,22 +185,21 @@ export class CodacyCli {
     }
   }
 
+  /**
+   * Whether the config must be rebuilt from scratch: either it doesn't exist yet,
+   * or the repo's identification state no longer matches it (e.g. it was created
+   * remotely but we now lack a token, or vice versa). A mismatch is a reset — the
+   * previous config no longer applies, so local edits are intentionally discarded.
+   */
+  private async needsRegeneration(): Promise<boolean> {
+    if (!this.configExists()) return true;
+    const config = await readCodacyConfig(this.rootPath).catch(() => null);
+    const isRemote = config?.metadata?.source === 'remote';
+    return isRemote !== this.hasIdentification();
+  }
+
   public async initialize(): Promise<void> {
-    const configExists = this.configExists();
-
-    let needsInitialization = !configExists;
-
-    if (configExists) {
-      // Regenerate if the repo's identification state no longer matches the config
-      // (e.g. it was created remotely but we now lack a token, or vice versa).
-      const config = await readCodacyConfig(this.rootPath).catch(() => null);
-      const isRemote = config?.metadata?.source === 'remote';
-      if (isRemote !== this.hasIdentification()) {
-        needsInitialization = true;
-      }
-    }
-
-    if (!needsInitialization) {
+    if (!(await this.needsRegeneration())) {
       return;
     }
 
@@ -199,12 +214,81 @@ export class CodacyCli {
     await this.installDependencies();
   }
 
-  /** Rebuilds the Codacy config from the current identification state and writes it. */
+  /**
+   * Writes the live config plus its baseline snapshot.
+   *
+   * The baseline (`codacy.config.baseline.json`, committed alongside the config) is
+   * always the *exact generator output* — never the merged/edited result — so the
+   * next {@link updateConfig} can tell a user-disabled pattern apart from a
+   * default-off one. On a full regenerate `config === baseline`; on an incremental
+   * update `config` is the merge result while `baseline` is the fresh generation.
+   */
+  private async writeConfigAndBaseline(
+    config: CodacyConfig,
+    baseline: CodacyConfig
+  ): Promise<void> {
+    // writeCodacyConfig writes the live config to `.codacy/codacy.config.json` and
+    // ensures `.codacy/.gitignore` so generated tool configs stay untracked.
+    await writeCodacyConfig(this.rootPath, config);
+    // writeBaselineConfig persists the generator-output snapshot to
+    // `.codacy/codacy.config.baseline.json` (a committed sibling of the config) with
+    // no `.codacy/` side effects, so the next updateConfig() can diff against it.
+    await writeBaselineConfig(this.rootPath, baseline);
+  }
+
+  /**
+   * Rebuilds the Codacy config from scratch, discarding any local edits (the reset
+   * path). Used for first-time init and when the identification state changes
+   * (remote↔local), where the previous config no longer applies.
+   */
   private async regenerateConfig(): Promise<void> {
     const config = await this.buildConfig();
-    // writeCodacyConfig also ensures `.codacy/.gitignore` so generated tool configs
-    // stay untracked.
-    await writeCodacyConfig(this.rootPath, config);
+    await this.writeConfigAndBaseline(config, config);
+  }
+
+  /**
+   * Incrementally updates the config, preserving local edits. Re-runs the original
+   * init mode to produce `next`, then three-way merges it into the current config
+   * against the committed baseline: newly-detected languages/frameworks add
+   * tools/patterns, stack elements that disappeared are removed, and user edits
+   * (disabled patterns, tuned parameters, custom excludes) survive.
+   *
+   * - Remote configs are authoritative: they are re-synced wholesale from Codacy
+   *   Cloud, with no local-edit preservation.
+   * - When no baseline snapshot exists (a config predating baselines), we cannot
+   *   distinguish user-disabled patterns from default-off ones, so we fall back to
+   *   an additive merge (edits kept, stale tools not pruned) and warn.
+   */
+  private async updateConfig(): Promise<void> {
+    const next = await this.buildConfig();
+
+    if (next.metadata?.source === 'remote') {
+      await this.writeConfigAndBaseline(next, next);
+      return;
+    }
+
+    const [base, current] = await Promise.all([
+      readBaselineConfig(this.rootPath).catch(() => null),
+      readCodacyConfig(this.rootPath).catch(() => null),
+    ]);
+
+    let result: CodacyConfig;
+    if (base && current) {
+      result = updateConfigIncremental(base, current, next);
+    } else if (current) {
+      // The MCP protocol owns stdout, so diagnostics go to stderr.
+      console.error(
+        'No Codacy config baseline snapshot found; performing an additive merge ' +
+          '(local edits are kept, but tools for a removed language/framework are not pruned).'
+      );
+      // dest = current so the user's edits win; preferDestParameters keeps their
+      // tuned parameters over freshly-generated defaults.
+      result = mergeConfigs(next, current, { preferDestParameters: true });
+    } else {
+      result = next;
+    }
+
+    await this.writeConfigAndBaseline(result, next);
   }
 
   public async analyze(options: {
