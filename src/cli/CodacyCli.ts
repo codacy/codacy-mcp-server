@@ -331,34 +331,30 @@ export class CodacyCli {
    * resolve outside the workspace.
    */
   private toRepoRelativePath(filePath: string): string {
-    if (!this.isPathSafe(filePath)) {
+    // Reject null bytes and all other control characters (including newline, tab,
+    // carriage return) — always a security risk.
+    // eslint-disable-next-line no-control-regex -- Intentionally checking for control chars to reject them for security
+    if (/[\x00-\x1F\x7F]/.test(filePath)) {
       throw new Error(`Unsafe file path rejected: ${filePath}`);
     }
 
-    const resolved = path.isAbsolute(filePath) ? filePath : path.resolve(this.rootPath, filePath);
-    return path.relative(this.rootPath, resolved);
-  }
+    const resolved = path.resolve(this.rootPath, filePath);
+    const relative = path.relative(this.rootPath, resolved);
 
-  private isPathSafe(filePath: string): boolean {
-    // Reject null bytes (always a security risk)
-    if (filePath.includes('\0')) {
-      return false;
+    // An empty result means the path is the root itself. A `..` segment prefix means it
+    // escaped the workspace. An absolute result means a different Windows drive.
+    // Comparing resolved path strings with `startsWith` would instead let sibling
+    // directories sharing a prefix with the root through (e.g. `<root>-secrets`).
+    const escapesRoot =
+      relative === '' ||
+      relative === '..' ||
+      relative.startsWith(`..${path.sep}`) ||
+      path.isAbsolute(relative);
+
+    if (escapesRoot) {
+      throw new Error(`Unsafe file path rejected: ${filePath}`);
     }
 
-    // Reject all control characters (including newline, tab, carriage return)
-    // eslint-disable-next-line no-control-regex -- Intentionally checking for control chars to reject them for security
-    const hasUnsafeControlChars = /[\x00-\x1F\x7F]/.test(filePath);
-    if (hasUnsafeControlChars) {
-      return false;
-    }
-
-    // Resolve the path to check for path traversal attempts
-    const resolvedPath = path.resolve(this.rootPath, filePath);
-    const normalizedRoot = path.normalize(this.rootPath);
-    if (!resolvedPath.startsWith(normalizedRoot)) {
-      return false;
-    }
-
-    return true;
+    return relative;
   }
 }
