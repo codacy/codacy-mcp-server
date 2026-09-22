@@ -102,8 +102,17 @@ export class CodacyCli {
     });
   }
 
-  /** Builds a fresh CodacyConfig using remote (if identified) or local auto-detection. */
-  private async buildConfig(): Promise<CodacyConfig> {
+  /**
+   * Builds a fresh CodacyConfig using remote (if identified) or local auto-detection.
+   *
+   * @param existingConfig The config currently on disk, when regenerating for an
+   *   incremental update. Auto-detection unions its excludes (global and per-tool)
+   *   with `.codacy.yaml` so re-discovery sees the same file set `analyze` will —
+   *   without it, a tool whose only evidence sits in an excluded path gets
+   *   re-enabled on every update and then analyzes zero files. Omit for a fresh
+   *   init, where only `.codacy.yaml` applies.
+   */
+  private async buildConfig(existingConfig?: CodacyConfig): Promise<CodacyConfig> {
     const adapters = await getRegisteredAdapters();
 
     if (this.hasIdentification()) {
@@ -130,7 +139,8 @@ export class CodacyCli {
       undefined,
       undefined,
       undefined,
-      loadUnsupportedPatterns
+      loadUnsupportedPatterns,
+      existingConfig ? { existingConfig } : undefined
     );
     return config;
   }
@@ -260,17 +270,19 @@ export class CodacyCli {
    *   an additive merge (edits kept, stale tools not pruned) and warn.
    */
   private async updateConfig(): Promise<void> {
-    const next = await this.buildConfig();
+    // Read before regenerating: the current config feeds back into auto-detection so
+    // its excludes constrain re-discovery (see {@link buildConfig}).
+    const [base, current] = await Promise.all([
+      readBaselineConfig(this.rootPath).catch(() => null),
+      readCodacyConfig(this.rootPath).catch(() => null),
+    ]);
+
+    const next = await this.buildConfig(current ?? undefined);
 
     if (next.metadata?.source === 'remote') {
       await this.writeConfigAndBaseline(next, next);
       return;
     }
-
-    const [base, current] = await Promise.all([
-      readBaselineConfig(this.rootPath).catch(() => null),
-      readCodacyConfig(this.rootPath).catch(() => null),
-    ]);
 
     let result: CodacyConfig;
     if (base && current) {

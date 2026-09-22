@@ -33,9 +33,9 @@
     "inspect-with-proxy": "export CODACY_ACCOUNT_TOKEN=$CODACY_ACCOUNT_TOKEN; export HTTP_PROXY=$HTTP_PROXY; export NODE_EXTRA_CA_CERTS=$NODE_EXTRA_CA_CERTS; npm run build && npx @modelcontextprotocol/inspector node dist/index.js"
   },
   "dependencies": {
-    "@codacy/analysis-adapters": "^0.16.0",
-    "@codacy/analysis-runner": "^0.16.0",
-    "@codacy/tooling": "^0.16.0",
+    "@codacy/analysis-adapters": "^0.23.1",
+    "@codacy/analysis-runner": "^0.23.1",
+    "@codacy/tooling": "^0.23.1",
     "@modelcontextprotocol/sdk": "1.29.0",
     "@types/node": "^22",
     "@types/sarif": "2.1.7",
@@ -53,6 +53,17 @@
     "prettier": "^3.2.5",
     "shx": "^0.3.4",
     "typescript": "^5.6.2"
+  },
+  "overrides": {
+    "ajv@8": "^8.18.0",
+    "brace-expansion@1": "^1.1.21",
+    "brace-expansion@2": "^2.1.7",
+    "handlebars": "^4.7.9",
+    "js-yaml@4": "^4.3.2",
+    "minimatch@3": "^3.1.5",
+    "minimatch@9": "^9.0.9",
+    "minimatch@10": "^10.2.6",
+    "picomatch@2": "^2.3.2"
   },
   "lint-staged": {
     "*.{ts,json,md}": [
