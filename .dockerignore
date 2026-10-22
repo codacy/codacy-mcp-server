@@ -1,0 +1,6 @@
+node_modules
+dist
+api-v3
+src/api/client
+.git
+.codacy
