@@ -25,6 +25,13 @@ export const CODACY_FOLDER_NAME = '.codacy';
 export const CODACY_CONFIG_FILE = 'codacy.config.json';
 
 /**
+ * Repositories whose tools were installed by this process. The install step runs
+ * once per repository per process, so a config that is kept as is (rather than
+ * regenerated, which installs) still gets its tools on a fresh machine.
+ */
+const installedRepositories = new Set<string>();
+
+/**
  * Strips the account token from an error message so it never leaks into a tool
  * response, and always returns a printable string.
  */
@@ -150,6 +157,12 @@ export class CodacyCli {
   public async preflightCodacyCli(autoInstall: boolean): Promise<void> {
     if (this.configExists()) {
       await this.initialize();
+      // initialize() installs only when it regenerates the config. A kept config
+      // (e.g. a committed remote one, used without identification) may still be
+      // missing tools on this machine.
+      if (autoInstall && !installedRepositories.has(this.rootPath)) {
+        await this.installDependencies();
+      }
       return;
     }
 
@@ -195,6 +208,7 @@ export class CodacyCli {
         mode: 'install',
         logger: this.createRunnerLogger(),
       });
+      installedRepositories.add(this.rootPath);
     } catch (error) {
       const cleanedErrorMessage = cleanErrorMessage(error, this._accountToken);
       throw new Error(`Failed to install dependencies: ${cleanedErrorMessage}`);
