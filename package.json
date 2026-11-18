@@ -6,6 +6,13 @@
   "license": "MIT",
   "author": "Codacy",
   "homepage": "https://www.codacy.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codacy/codacy-mcp-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/codacy/codacy-mcp-server/issues"
+  },
   "keywords": [
     "codacy",
     "mcp",
@@ -33,9 +40,9 @@
     "inspect-with-proxy": "export CODACY_ACCOUNT_TOKEN=$CODACY_ACCOUNT_TOKEN; export HTTP_PROXY=$HTTP_PROXY; export NODE_EXTRA_CA_CERTS=$NODE_EXTRA_CA_CERTS; npm run build && npx @modelcontextprotocol/inspector node dist/index.js"
   },
   "dependencies": {
-    "@codacy/analysis-adapters": "0.30.0",
-    "@codacy/analysis-runner": "0.30.0",
-    "@codacy/tooling": "0.30.0",
+    "@codacy/analysis-adapters": "0.31.0",
+    "@codacy/analysis-runner": "0.31.0",
+    "@codacy/tooling": "0.31.0",
     "@modelcontextprotocol/sdk": "1.32.2",
     "@types/node": "^22",
     "@types/sarif": "2.1.7",

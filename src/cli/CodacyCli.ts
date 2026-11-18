@@ -25,6 +25,13 @@ export const CODACY_FOLDER_NAME = '.codacy';
 export const CODACY_CONFIG_FILE = 'codacy.config.json';
 
 /**
+ * Repositories whose tools were installed by this process. The install step runs
+ * once per repository per process, so a config that is kept as is (rather than
+ * regenerated, which installs) still gets its tools on a fresh machine.
+ */
+const installedRepositories = new Set<string>();
+
+/**
  * Strips the account token from an error message so it never leaks into a tool
  * response, and always returns a printable string.
  */
@@ -150,6 +157,12 @@ export class CodacyCli {
   public async preflightCodacyCli(autoInstall: boolean): Promise<void> {
     if (this.configExists()) {
       await this.initialize();
+      // initialize() installs only when it regenerates the config. A kept config
+      // (e.g. a committed remote one, used without identification) may still be
+      // missing tools on this machine.
+      if (autoInstall && !installedRepositories.has(this.rootPath)) {
+        await this.installDependencies();
+      }
       return;
     }
 
@@ -170,7 +183,11 @@ export class CodacyCli {
   public async setup(): Promise<void> {
     try {
       if (this.configExists() && !(await this.needsRegeneration())) {
-        await this.updateConfig();
+        // Without identification an update would rebuild a remote config from local
+        // detection; keep it and only make sure its tools are installed.
+        if (this.hasIdentification() || !(await this.isRemoteConfig())) {
+          await this.updateConfig();
+        }
         await this.installDependencies();
       } else {
         await this.initialize();
@@ -183,12 +200,15 @@ export class CodacyCli {
 
   public async installDependencies(): Promise<void> {
     try {
-      // "auto-install" downloads any missing runtimes/tools before analysis.
+      // "install" downloads any missing runtimes/tools for the configured tool set
+      // and returns without analyzing. ("auto-install" would go on to analyze every
+      // file in the repository.)
       await runnerAnalyze({
         repositoryRoot: this.rootPath,
-        mode: 'auto-install',
+        mode: 'install',
         logger: this.createRunnerLogger(),
       });
+      installedRepositories.add(this.rootPath);
     } catch (error) {
       const cleanedErrorMessage = cleanErrorMessage(error, this._accountToken);
       throw new Error(`Failed to install dependencies: ${cleanedErrorMessage}`);
@@ -197,15 +217,23 @@ export class CodacyCli {
 
   /**
    * Whether the config must be rebuilt from scratch: either it doesn't exist yet,
-   * or the repo's identification state no longer matches it (e.g. it was created
-   * remotely but we now lack a token, or vice versa). A mismatch is a reset — the
-   * previous config no longer applies, so local edits are intentionally discarded.
+   * or it was detected locally and the repository is now identified, so the remote
+   * config applies. A rebuild is a reset: local edits are intentionally discarded.
+   *
+   * Never the other way: a call without identification keeps a remote config as is.
+   * Downgrading it made the config switch remote → local → remote between calls
+   * with and without organization/repository, re-running the install step each
+   * time — and the `.codacy/` config is shared with the VS Code extension.
    */
   private async needsRegeneration(): Promise<boolean> {
     if (!this.configExists()) return true;
+    if (await this.isRemoteConfig()) return false;
+    return this.hasIdentification();
+  }
+
+  private async isRemoteConfig(): Promise<boolean> {
     const config = await readCodacyConfig(this.rootPath).catch(() => null);
-    const isRemote = config?.metadata?.source === 'remote';
-    return isRemote !== this.hasIdentification();
+    return config?.metadata?.source === 'remote';
   }
 
   public async initialize(): Promise<void> {
